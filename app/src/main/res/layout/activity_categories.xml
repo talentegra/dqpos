@@ -33,20 +33,20 @@
             android:layout_height="wrap_content">
 
             <android.support.design.widget.TabItem
-                android:id="@+id/tabItem"
+                android:id="@+id/tabListCat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/tab_cat_text_listcat" />
 
 
             <android.support.design.widget.TabItem
-                android:id="@+id/tabItem2"
+                android:id="@+id/tabAddCat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/tab_cat_text_addcat" />
 
             <android.support.design.widget.TabItem
-                android:id="@+id/tabItem3"
+                android:id="@+id/tabUpdateCat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/tab_cat_text_updatecat" />

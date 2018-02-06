@@ -45,6 +45,9 @@ public class Tables extends AppCompatActivity {
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
+
+        //getJSON("http://teswaiter.dqserv.com/api/get_tables");
+
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.

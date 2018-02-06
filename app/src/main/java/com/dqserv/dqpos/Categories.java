@@ -1,5 +1,6 @@
 package com.dqserv.dqpos;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,13 +12,19 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.dqserv.connection.DBConstants;
 
 public class Categories extends AppCompatActivity {
 
@@ -43,6 +50,9 @@ public class Categories extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //getJSON("http://teswaiter.dqserv.com/api/get_categories");
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -118,10 +128,68 @@ public class Categories extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_categories, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
+          //  View rootView = inflater.inflate(R.layout.fragment_categories, container, false);
+           // TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+            //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+              View rootView=null;
+              final EditText editTextCatName;
+            if(getArguments().getInt(ARG_SECTION_NUMBER) ==1) {
+
+
+            }
+
+            if(getArguments().getInt(ARG_SECTION_NUMBER) ==2) {
+
+                rootView = inflater.inflate(R.layout.fragment_add_category, container, false);
+                editTextCatName = (EditText) rootView.findViewById(R.id.editTextCatName);
+                Button addcat_btn = (Button) rootView.findViewById(R.id.cat_add_btn);
+
+                addcat_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            String cat_name = editTextCatName.getText().toString();
+
+                            //Open the database
+                            String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
+                            SQLiteDatabase myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
+
+                            String insertSQL = "INSERT INTO categories \n" +
+                                    "(category_name)\n" +
+                                    "VALUES \n" +
+                                    "('" + cat_name + "');";
+                            Log.i("Add Category SQL ", insertSQL);
+                            //using the same method execsql for inserting values
+                            //this time it has two parameters
+                            //first is the sql string and second is the parameters that is to be binded with the query
+                            myDataBase.execSQL(insertSQL);
+
+                            myDataBase.close();
+                            Toast.makeText(v.getContext(),
+                                    "Category "+cat_name+" Successfully Added ", Toast.LENGTH_SHORT).show();
+
+                        }catch (Exception ex){
+                            Toast.makeText(v.getContext(),
+                                    "Problem in Adding Category "+ex.getMessage(), Toast.LENGTH_SHORT).show();
+                            ex.printStackTrace();
+                        }
+
+
+                    }
+                });
+
+
+                return rootView;
+
+
+
+            }
+            if(getArguments().getInt(ARG_SECTION_NUMBER) ==3) {
+
+            }
+
+
+                return rootView;
         }
     }
 
