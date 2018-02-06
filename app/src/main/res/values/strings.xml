@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">dqpos</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_categories">Categories</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="tab_text_3">Tab 3</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_tables">Tables</string>
+    <string name="title_activity_products">Products</string>
+    <string name="tab_cat_text_addcat">Add Category</string>
+    <string name="tab_cat_text_updatecat">Update Category</string>
+    <string name="tab_cat_text_listcat">List Categories</string>
+
+    <string name="tab_prod_text_listprod">List Products</string>
+    <string name="tab_prod_text_addprod">Add Product</string>
+    <string name="tab_prod_text_updateprod">Update Product</string>
+
+    <string name="tab_text_listtab">List Tables</string>
+    <string name="tab_text_addtab">Add Table</string>
+    <string name="tab_text_updatetab">Update Table</string>
+
+
+
+
+
+</resources>
