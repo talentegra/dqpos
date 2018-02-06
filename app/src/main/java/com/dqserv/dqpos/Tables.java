@@ -1,5 +1,6 @@
 package com.dqserv.dqpos;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,13 +12,19 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.dqserv.connection.DBConstants;
 
 public class Tables extends AppCompatActivity {
 
@@ -121,9 +128,74 @@ public class Tables extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_tables, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+          //  View rootView = inflater.inflate(R.layout.fragment_tables, container, false);
+          //  TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+          //  textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+
+            View rootView=null;
+            final EditText editTextTabName, editTextTabCode;
+
+            if(getArguments().getInt(ARG_SECTION_NUMBER) ==1) {
+
+
+            }
+
+            if(getArguments().getInt(ARG_SECTION_NUMBER) ==2) {
+
+                rootView = inflater.inflate(R.layout.fragment_add_table, container, false);
+                editTextTabCode = (EditText) rootView.findViewById(R.id.editTextTabCode);
+                editTextTabName = (EditText) rootView.findViewById(R.id.editTextTabName);
+                Button addtab_btn = (Button) rootView.findViewById(R.id.tab_add_btn);
+
+                addtab_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            String tab_code = editTextTabCode.getText().toString();
+                            String tab_name = editTextTabName.getText().toString();
+
+                            //Open the database
+                            String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
+                            SQLiteDatabase myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
+
+                            String insertSQL = "INSERT INTO tables \n" +
+                                    "(table_code, table_name)\n" +
+                                    "VALUES \n" +
+                                    "('" + tab_code + "', '" + tab_name + "');";
+
+                            Log.i("Add Table SQL ", insertSQL);
+                            //using the same method execsql for inserting values
+                            //this time it has two parameters
+                            //first is the sql string and second is the parameters that is to be binded with the query
+                            myDataBase.execSQL(insertSQL);
+
+                            myDataBase.close();
+                            Toast.makeText(v.getContext(),
+                                    "Table "+tab_name+" Successfully Added ", Toast.LENGTH_SHORT).show();
+
+                        }catch (Exception ex){
+                            Toast.makeText(v.getContext(),
+                                    "Problem in Adding Table "+ex.getMessage(), Toast.LENGTH_SHORT).show();
+                            ex.printStackTrace();
+                        }
+
+
+                    }
+                });
+
+
+                return rootView;
+
+
+
+            }
+            if(getArguments().getInt(ARG_SECTION_NUMBER) ==3) {
+
+            }
+
+
+
+
             return rootView;
         }
     }

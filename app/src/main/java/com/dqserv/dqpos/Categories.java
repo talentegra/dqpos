@@ -132,7 +132,8 @@ public class Categories extends AppCompatActivity {
            // TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
               View rootView=null;
-              final EditText editTextCatName;
+              final EditText editTextCatName, editTextCatCode;
+
             if(getArguments().getInt(ARG_SECTION_NUMBER) ==1) {
 
 
@@ -141,6 +142,7 @@ public class Categories extends AppCompatActivity {
             if(getArguments().getInt(ARG_SECTION_NUMBER) ==2) {
 
                 rootView = inflater.inflate(R.layout.fragment_add_category, container, false);
+                editTextCatCode = (EditText) rootView.findViewById(R.id.editTextCatCode);
                 editTextCatName = (EditText) rootView.findViewById(R.id.editTextCatName);
                 Button addcat_btn = (Button) rootView.findViewById(R.id.cat_add_btn);
 
@@ -148,6 +150,7 @@ public class Categories extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         try {
+                            String cat_code = editTextCatCode.getText().toString();
                             String cat_name = editTextCatName.getText().toString();
 
                             //Open the database
@@ -155,9 +158,10 @@ public class Categories extends AppCompatActivity {
                             SQLiteDatabase myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
 
                             String insertSQL = "INSERT INTO categories \n" +
-                                    "(category_name)\n" +
+                                    "(category_code, category_name)\n" +
                                     "VALUES \n" +
-                                    "('" + cat_name + "');";
+                                    "('" + cat_code + "', '" + cat_name + "');";
+
                             Log.i("Add Category SQL ", insertSQL);
                             //using the same method execsql for inserting values
                             //this time it has two parameters
