@@ -25,7 +25,8 @@
     <string name="tab_text_updatetab">Update Table</string>
 
 
-
+    <!--products-->
+    <string name="sync_latest_products">Sync Latest Products</string>
 
 
 </resources>

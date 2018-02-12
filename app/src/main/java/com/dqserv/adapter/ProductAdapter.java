@@ -20,12 +20,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
     private List<ProductObject.Products> productsList;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvProductCode, tvProductName;
+        public TextView tvProductCode, tvProductName, tvProductPrice;
 
         public MyViewHolder(View view) {
             super(view);
             tvProductCode = (TextView) view.findViewById(R.id.row_product_code);
             tvProductName = (TextView) view.findViewById(R.id.row_product_name);
+            tvProductPrice = (TextView) view.findViewById(R.id.row_product_price);
         }
     }
 
@@ -47,6 +48,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
         ProductObject.Products oProduct = productsList.get(position);
         holder.tvProductCode.setText("Product Code: " + oProduct.getProductCode());
         holder.tvProductName.setText("Product Name: " + oProduct.getProductName());
+        holder.tvProductPrice.setText("Product Price: " + oProduct.getProductCost());
     }
 
     @Override

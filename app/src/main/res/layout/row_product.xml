@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/fab_margin"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/box_background">
 
     <TextView
         android:id="@+id/row_product_code"
@@ -17,6 +18,15 @@
 
     <TextView
         android:id="@+id/row_product_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/appbar_padding_top"
+        android:background="@android:color/white"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/fab_margin" />
+
+    <TextView
+        android:id="@+id/row_product_price"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"

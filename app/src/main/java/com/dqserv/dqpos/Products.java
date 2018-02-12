@@ -1,30 +1,45 @@
 package com.dqserv.dqpos;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.design.widget.TabLayout;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.dqserv.ConnectivityReceiver;
+import com.dqserv.adapter.ProductAdapter;
 import com.dqserv.connection.DBConstants;
+import com.dqserv.rest.ApiClient;
+import com.dqserv.rest.ApiInterface;
+import com.dqserv.rest.ProductObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Products extends AppCompatActivity {
 
@@ -42,6 +57,7 @@ public class Products extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    static List<ProductObject.Products> results;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,20 +143,100 @@ public class Products extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-          //  View rootView = inflater.inflate(R.layout.fragment_products, container, false);
-           // TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+            //  View rootView = inflater.inflate(R.layout.fragment_products, container, false);
+            // TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 
 
-            View rootView=null;
+            View rootView = null;
             final EditText editTextProdName, editTextProdCode, editTextProdPrice;
 
-            if(getArguments().getInt(ARG_SECTION_NUMBER) ==1) {
+            if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) {
+                final ProductAdapter[] productAdapter = new ProductAdapter[1];
+                results = new ArrayList<>();
 
+                rootView = inflater.inflate(R.layout.fragment_products, container, false);
 
+                final RelativeLayout mProgressBar = (RelativeLayout) rootView.findViewById(R.id.products_rl_progress);
+                final RecyclerView rv = (RecyclerView) rootView.findViewById(R.id.products_recycler_view);
+                final Button btnSyncProducts = (Button) rootView.findViewById(R.id.products_btn_sync_data);
+
+                if (ConnectivityReceiver.isConnected()) {
+                    mProgressBar.setVisibility(View.VISIBLE);
+                    ApiInterface apiService =
+                            ApiClient.getClient().create(ApiInterface.class);
+                    Call<ProductObject> call = apiService.getProducts
+                            ("aW5jYXNlb2ZlbWVyZ2VuY3licmVha3RoZWdsYXNz");
+                    call.enqueue(new Callback<ProductObject>() {
+                        @Override
+                        public void onResponse(Call<ProductObject> call, Response<ProductObject> response) {
+                            results.clear();
+                            fetchResults(response);
+                            if (results.size() > 0) {
+                                ProductAdapter productAdapter = new ProductAdapter(results);
+                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
+                                        LinearLayoutManager.VERTICAL, false);
+                                rv.setLayoutManager(linearLayoutManager);
+                                rv.setItemAnimator(new DefaultItemAnimator());
+                                rv.setAdapter(productAdapter);
+                            }
+                            mProgressBar.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onFailure(Call<ProductObject> call, Throwable t) {
+                            mProgressBar.setVisibility(View.GONE);
+                        }
+                    });
+                } else {
+                    results.clear();
+                    getProductsFromLocal();
+                    if (results.size() > 0) {
+                        productAdapter[0] = new ProductAdapter(results);
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
+                                LinearLayoutManager.VERTICAL, false);
+                        rv.setLayoutManager(linearLayoutManager);
+                        rv.setItemAnimator(new DefaultItemAnimator());
+                        rv.setAdapter(productAdapter[0]);
+                    }
+                }
+
+                btnSyncProducts.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (ConnectivityReceiver.isConnected()) {
+                            mProgressBar.setVisibility(View.VISIBLE);
+                            ApiInterface apiService =
+                                    ApiClient.getClient().create(ApiInterface.class);
+                            Call<ProductObject> call = apiService.getProducts
+                                    ("aW5jYXNlb2ZlbWVyZ2VuY3licmVha3RoZWdsYXNz");
+                            call.enqueue(new Callback<ProductObject>() {
+                                @Override
+                                public void onResponse(Call<ProductObject> call, Response<ProductObject> response) {
+                                    results.clear();
+                                    fetchResults(response);
+                                    if (results.size() > 0) {
+                                        productAdapter[0] = new ProductAdapter(results);
+                                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
+                                                LinearLayoutManager.VERTICAL, false);
+                                        rv.setLayoutManager(linearLayoutManager);
+                                        rv.setItemAnimator(new DefaultItemAnimator());
+                                        rv.setAdapter(productAdapter[0]);
+                                    }
+                                    mProgressBar.setVisibility(View.GONE);
+                                }
+
+                                @Override
+                                public void onFailure(Call<ProductObject> call, Throwable t) {
+                                    mProgressBar.setVisibility(View.GONE);
+                                }
+                            });
+                        }
+                    }
+                });
             }
 
-            if(getArguments().getInt(ARG_SECTION_NUMBER) ==2) {
+            if (getArguments().getInt(ARG_SECTION_NUMBER) == 2) {
 
                 rootView = inflater.inflate(R.layout.fragment_add_product, container, false);
                 editTextProdCode = (EditText) rootView.findViewById(R.id.editTextProdCode);
@@ -173,15 +269,13 @@ public class Products extends AppCompatActivity {
 
                             myDataBase.close();
                             Toast.makeText(v.getContext(),
-                                    "Product "+prod_name+" Successfully Added ", Toast.LENGTH_SHORT).show();
+                                    "Product " + prod_name + " Successfully Added ", Toast.LENGTH_SHORT).show();
 
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             Toast.makeText(v.getContext(),
-                                    "Problem in Adding Product "+ex.getMessage(), Toast.LENGTH_SHORT).show();
+                                    "Problem in Adding Product " + ex.getMessage(), Toast.LENGTH_SHORT).show();
                             ex.printStackTrace();
                         }
-
-
                     }
                 });
 
@@ -189,13 +283,10 @@ public class Products extends AppCompatActivity {
                 return rootView;
 
 
+            }
+            if (getArguments().getInt(ARG_SECTION_NUMBER) == 3) {
 
             }
-            if(getArguments().getInt(ARG_SECTION_NUMBER) ==3) {
-
-            }
-
-
 
 
             return rootView;
@@ -223,6 +314,67 @@ public class Products extends AppCompatActivity {
         public int getCount() {
             // Show 3 total pages.
             return 3;
+        }
+    }
+
+
+    //get Products
+    private static void fetchResults(Response<ProductObject> response) {
+        ProductObject productObj = response.body();
+        saveProducts(productObj.getProducts());
+    }
+
+    private static void saveProducts(List<ProductObject.Products> items) {
+        //Open the database
+        String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
+        SQLiteDatabase myDataBase = SQLiteDatabase.openDatabase(myPath, null,
+                SQLiteDatabase.OPEN_READWRITE);
+        for (int productIndex = 0; productIndex < items.size(); productIndex++) {
+            try {
+                results.add(items.get(productIndex));
+                String insertSQL = "INSERT OR REPLACE INTO products \n" +
+                        "(product_code, product_name, sale_price)\n" +
+                        "VALUES \n" +
+                        "('" + items.get(productIndex).getProductCode() + "', " +
+                        "'" + items.get(productIndex).getProductName() + "', " +
+                        "'" + items.get(productIndex).getProductCost() + "');";
+
+                myDataBase.execSQL(insertSQL);
+            } catch (Exception ex) {
+                Log.e("Error", "Problem in Adding Product." + ex.getMessage());
+                ex.printStackTrace();
+            }
+        }
+        myDataBase.close();
+
+        Log.e("Success", "Products Successfully Added.");
+    }
+
+    public static void getProductsFromLocal() {
+        String POSTS_SELECT_QUERY = String.format("SELECT * FROM products");
+
+        //Open the database
+        String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
+        SQLiteDatabase myDataBase = SQLiteDatabase.openDatabase(myPath, null,
+                SQLiteDatabase.OPEN_READWRITE);
+        Cursor cursor = myDataBase.rawQuery(POSTS_SELECT_QUERY, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    ProductObject.Products newProduct = new ProductObject.Products();
+                    newProduct.setProductCode(cursor.getString(cursor.getColumnIndex("product_code")));
+                    newProduct.setProductName(cursor.getString(cursor.getColumnIndex("product_name")));
+                    newProduct.setProductCost(cursor.getString(cursor.getColumnIndex("sale_price")));
+
+                    results.add(newProduct);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.d("LocalResponse", "Error while trying to get posts from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
     }
 }
