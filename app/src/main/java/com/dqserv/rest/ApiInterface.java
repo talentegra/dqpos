@@ -11,4 +11,12 @@ public interface ApiInterface {
     @FormUrlEncoded
     @POST("get_products")
     Call<ProductObject> getProducts(@Field("auth_token") String authToken);
+
+    @FormUrlEncoded
+    @POST("get_tables")
+    Call<TableObject> getTables(@Field("auth_token") String authToken);
+
+    @FormUrlEncoded
+    @POST("get_categories")
+    Call<CategoryObject> getCategories(@Field("auth_token") String authToken);
 }

@@ -23,12 +23,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.dqserv.ConnectivityReceiver;
 import com.dqserv.adapter.ProductAdapter;
+import com.dqserv.config.Constants;
 import com.dqserv.connection.DBConstants;
 import com.dqserv.rest.ApiClient;
 import com.dqserv.rest.ApiInterface;
@@ -166,19 +166,19 @@ public class Products extends AppCompatActivity {
                     ApiInterface apiService =
                             ApiClient.getClient().create(ApiInterface.class);
                     Call<ProductObject> call = apiService.getProducts
-                            ("aW5jYXNlb2ZlbWVyZ2VuY3licmVha3RoZWdsYXNz");
+                            (Constants.AUTH_TOKEN);
                     call.enqueue(new Callback<ProductObject>() {
                         @Override
                         public void onResponse(Call<ProductObject> call, Response<ProductObject> response) {
                             results.clear();
                             fetchResults(response);
                             if (results.size() > 0) {
-                                ProductAdapter productAdapter = new ProductAdapter(results);
+                                productAdapter[0] = new ProductAdapter(results);
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
                                         LinearLayoutManager.VERTICAL, false);
                                 rv.setLayoutManager(linearLayoutManager);
                                 rv.setItemAnimator(new DefaultItemAnimator());
-                                rv.setAdapter(productAdapter);
+                                rv.setAdapter(productAdapter[0]);
                             }
                             mProgressBar.setVisibility(View.GONE);
                         }
@@ -209,7 +209,7 @@ public class Products extends AppCompatActivity {
                             ApiInterface apiService =
                                     ApiClient.getClient().create(ApiInterface.class);
                             Call<ProductObject> call = apiService.getProducts
-                                    ("aW5jYXNlb2ZlbWVyZ2VuY3licmVha3RoZWdsYXNz");
+                                    (Constants.AUTH_TOKEN);
                             call.enqueue(new Callback<ProductObject>() {
                                 @Override
                                 public void onResponse(Call<ProductObject> call, Response<ProductObject> response) {
@@ -234,6 +234,8 @@ public class Products extends AppCompatActivity {
                         }
                     }
                 });
+
+                return rootView;
             }
 
             if (getArguments().getInt(ARG_SECTION_NUMBER) == 2) {
@@ -333,8 +335,9 @@ public class Products extends AppCompatActivity {
             try {
                 results.add(items.get(productIndex));
                 String insertSQL = "INSERT OR REPLACE INTO products \n" +
-                        "(product_code, product_name, sale_price)\n" +
+                        "(product_id, product_code, product_name, sale_price)\n" +
                         "VALUES \n" +
+                        "('" + items.get(productIndex).getProductId() + "', " +
                         "('" + items.get(productIndex).getProductCode() + "', " +
                         "'" + items.get(productIndex).getProductName() + "', " +
                         "'" + items.get(productIndex).getProductCost() + "');";
@@ -362,6 +365,7 @@ public class Products extends AppCompatActivity {
             if (cursor.moveToFirst()) {
                 do {
                     ProductObject.Products newProduct = new ProductObject.Products();
+                    newProduct.setProductId(cursor.getString(cursor.getColumnIndex("product_id")));
                     newProduct.setProductCode(cursor.getString(cursor.getColumnIndex("product_code")));
                     newProduct.setProductName(cursor.getString(cursor.getColumnIndex("product_name")));
                     newProduct.setProductCost(cursor.getString(cursor.getColumnIndex("sale_price")));

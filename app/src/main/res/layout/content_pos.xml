@@ -1,36 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.dqserv.dqpos.Products$PlaceholderFragment">
-
-    <Button
-        android:id="@+id/products_btn_sync_data"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/_10sdp"
-        android:layout_marginRight="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:background="@color/colorPrimary"
-        android:text="@string/sync_latest_products"
-        android:textAllCaps="true"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/_14ssp" />
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.dqserv.dqpos.POS"
+    tools:showIn="@layout/app_bar_pos">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/products_recycler_view"
+        android:id="@+id/pos_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/products_btn_sync_data"
+        android:layout_gravity="center_horizontal"
         android:layout_marginLeft="@dimen/_10sdp"
         android:layout_marginRight="@dimen/_10sdp"
         android:layout_marginTop="@dimen/_10sdp"
         android:scrollbars="none" />
 
-
     <RelativeLayout
-        android:id="@+id/products_rl_progress"
+        android:id="@+id/tables_rl_progress"
         android:layout_width="@dimen/_200sdp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -40,7 +29,7 @@
         android:visibility="gone">
 
         <ProgressBar
-            android:id="@+id/products_progress"
+            android:id="@+id/tables_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:indeterminateTint="@color/colorPrimary" />
@@ -49,11 +38,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/products_progress"
+            android:layout_toRightOf="@+id/tables_progress"
             android:ellipsize="end"
             android:gravity="center_horizontal"
             android:lines="2"
-            android:text="Get Latest Products, Please Wait..."
+            android:text="Getting Tables, Please Wait..."
             android:textColor="@color/colorPrimary"
             android:textSize="@dimen/fab_margin" />
 

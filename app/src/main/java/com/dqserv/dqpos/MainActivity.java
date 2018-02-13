@@ -3,9 +3,8 @@ package com.dqserv.dqpos;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,6 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import com.dqserv.connection.DataBaseHelper;
 
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity
         try {
             DataBaseHelper database = new DataBaseHelper(getApplicationContext());
             database.createDataBase();
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -89,25 +90,33 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
         if (id == R.id.nav_pos) {
             // Handle the camera action
+            if (!MainActivity.class.getSimpleName().equalsIgnoreCase("POS")) {
+                startActivity(new Intent(this, POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
         } else if (id == R.id.nav_gallery) {
-
+            if (!MainActivity.class.getSimpleName().equalsIgnoreCase("Orders")) {
+                startActivity(new Intent(this, Orders.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
-            startActivity(new Intent(this, Categories.class));
-
+            if (!MainActivity.class.getSimpleName().equalsIgnoreCase("Categories")) {
+                startActivity(new Intent(this, Categories.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
         } else if (id == R.id.nav_products) {
-            startActivity(new Intent(this, Products.class));
-
+            if (!MainActivity.class.getSimpleName().equalsIgnoreCase("Products")) {
+                startActivity(new Intent(this, Products.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
         } else if (id == R.id.nav_categories) {
-            startActivity(new Intent(this, Categories.class));
-
+            if (!MainActivity.class.getSimpleName().equalsIgnoreCase("Categories")) {
+                startActivity(new Intent(this, Categories.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
         } else if (id == R.id.nav_tables) {
-            startActivity(new Intent(this, Tables.class));
-
+            if (!MainActivity.class.getSimpleName().equalsIgnoreCase("Tables")) {
+                startActivity(new Intent(this, Tables.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

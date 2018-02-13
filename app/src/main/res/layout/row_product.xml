@@ -4,9 +4,9 @@
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/fab_margin"
-    android:orientation="vertical"
-    android:background="@drawable/box_background">
+    android:layout_marginBottom="@dimen/_10sdp"
+    android:background="@drawable/box_background"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/row_product_code"
@@ -14,16 +14,16 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
         android:textColor="@android:color/white"
-        android:textSize="@dimen/fab_margin" />
+        android:textSize="@dimen/_14ssp" />
 
     <TextView
         android:id="@+id/row_product_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/appbar_padding_top"
+        android:layout_marginTop="@dimen/_5sdp"
         android:background="@android:color/white"
         android:textColor="@color/colorPrimary"
-        android:textSize="@dimen/fab_margin" />
+        android:textSize="@dimen/_14ssp" />
 
     <TextView
         android:id="@+id/row_product_price"
@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:background="@android:color/white"
         android:textColor="@color/colorPrimary"
-        android:textSize="@dimen/fab_margin" />
+        android:textSize="@dimen/_14ssp" />
 
 
 </LinearLayout>

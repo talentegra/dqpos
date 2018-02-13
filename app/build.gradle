@@ -35,4 +35,7 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     // recycler view
     compile 'com.android.support:recyclerview-v7:26.+'
+    //dimens
+    compile 'com.intuit.sdp:sdp-android:1.0.5'
+    compile 'com.intuit.ssp:ssp-android:1.0.5'
 }
