@@ -335,12 +335,13 @@ public class Products extends AppCompatActivity {
             try {
                 results.add(items.get(productIndex));
                 String insertSQL = "INSERT OR REPLACE INTO products \n" +
-                        "(product_id, product_code, product_name, sale_price)\n" +
+                        "(product_id, product_code, product_name, sale_price, category_id)\n" +
                         "VALUES \n" +
                         "('" + items.get(productIndex).getProductId() + "', " +
-                        "('" + items.get(productIndex).getProductCode() + "', " +
+                        "'" + items.get(productIndex).getProductCode() + "', " +
                         "'" + items.get(productIndex).getProductName() + "', " +
-                        "'" + items.get(productIndex).getProductCost() + "');";
+                        "'" + items.get(productIndex).getProductCost() + "', " +
+                        "'" + items.get(productIndex).getCategoryId() + "');";
 
                 myDataBase.execSQL(insertSQL);
             } catch (Exception ex) {
@@ -369,6 +370,7 @@ public class Products extends AppCompatActivity {
                     newProduct.setProductCode(cursor.getString(cursor.getColumnIndex("product_code")));
                     newProduct.setProductName(cursor.getString(cursor.getColumnIndex("product_name")));
                     newProduct.setProductCost(cursor.getString(cursor.getColumnIndex("sale_price")));
+                    newProduct.setCategoryId(cursor.getString(cursor.getColumnIndex("category_id")));
 
                     results.add(newProduct);
                 } while (cursor.moveToNext());

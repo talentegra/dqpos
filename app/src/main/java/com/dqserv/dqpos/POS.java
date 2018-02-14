@@ -71,8 +71,10 @@ public class POS extends AppCompatActivity
                         tableAdapter = new TableAdapter(results, new CustomItemClickListener() {
                             @Override
                             public void onItemClick(View v, int position) {
+                                String[] aTableValues = v.getTag().toString().split("\\|");
                                 startActivity(new Intent(getApplicationContext(), Orders.class)
-                                        .putExtra("param_table_id", v.getTag().toString())
+                                        .putExtra("param_table_id", aTableValues[0])
+                                        .putExtra("param_table_name", aTableValues[1])
                                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             }
                         });
@@ -96,8 +98,10 @@ public class POS extends AppCompatActivity
                 tableAdapter = new TableAdapter(results, new CustomItemClickListener() {
                     @Override
                     public void onItemClick(View v, int position) {
+                        String[] aTableValues = v.getTag().toString().split("\\|");
                         startActivity(new Intent(getApplicationContext(), Orders.class)
-                                .putExtra("param_table_id", v.getTag().toString())
+                                .putExtra("param_table_id", aTableValues[0])
+                                .putExtra("param_table_name", aTableValues[1])
                                 .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                     }
                 });

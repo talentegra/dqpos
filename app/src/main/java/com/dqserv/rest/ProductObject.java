@@ -31,6 +31,9 @@ public class ProductObject {
         @SerializedName("product_cost")
         private String productCost;
 
+        @SerializedName("category_id")
+        private String categoryId;
+
         public String getProductId() {
             return productId;
         }
@@ -61,6 +64,14 @@ public class ProductObject {
 
         public void setProductCost(String productCost) {
             this.productCost = productCost;
+        }
+
+        public void setCategoryId(String categoryId) {
+            this.categoryId = categoryId;
+        }
+
+        public String getCategoryId() {
+            return categoryId;
         }
     }
 

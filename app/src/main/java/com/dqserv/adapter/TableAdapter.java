@@ -53,7 +53,7 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.MyViewHolder
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         TableObject.Tables oTable = tablesList.get(position);
-        holder.itemView.setTag(oTable.getTableId());
+        holder.itemView.setTag(oTable.getTableId() + "|" + oTable.getTableName());
         holder.tvTableName.setText(oTable.getTableName());
     }
 
