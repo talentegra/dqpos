@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/appbar_padding_top"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
@@ -65,7 +66,7 @@
                     android:background="@android:color/white" />
 
                 <TextView
-                    android:layout_width="@dimen/_50sdp"
+                    android:layout_width="@dimen/_40sdp"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="Price"
@@ -116,20 +117,11 @@
 
             </LinearLayout>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/orders_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/orders_recycler_view_header"
-                android:layout_marginLeft="@dimen/_10sdp"
-                android:layout_marginRight="@dimen/_10sdp" />
-
-
             <LinearLayout
                 android:id="@+id/orders_recycler_view_footer"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_30sdp"
-                android:layout_below="@+id/orders_recycler_view"
+                android:layout_alignParentBottom="true"
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:layout_marginLeft="@dimen/_10sdp"
                 android:layout_marginRight="@dimen/_10sdp"
@@ -159,7 +151,7 @@
                     android:background="@android:color/white" />
 
                 <TextView
-                    android:layout_width="@dimen/_50sdp"
+                    android:layout_width="@dimen/_40sdp"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:textColor="@android:color/white"
@@ -208,6 +200,14 @@
 
             </LinearLayout>
 
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/orders_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/orders_recycler_view_footer"
+                android:layout_below="@+id/orders_recycler_view_header"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:layout_marginRight="@dimen/_10sdp" />
         </RelativeLayout>
 
         <android.support.design.widget.TabLayout
@@ -247,9 +247,9 @@
             android:id="@+id/orders_btn_order_complete"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_gravity="center|left"
             android:background="@android:color/transparent"
             android:text="Complete Order"
-            android:layout_gravity="center|left"
             android:textColor="@android:color/white"
             android:textSize="@dimen/_14ssp" />
 

@@ -1,6 +1,8 @@
 package com.dqserv.dqpos;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -10,26 +12,38 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.dqserv.connection.DBConstants;
 import com.dqserv.connection.DataBaseHelper;
+import com.dqserv.rest.ProductObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    List<ProductObject.Products> resultProducts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        resultProducts = new ArrayList<>();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         try {
             DataBaseHelper database = new DataBaseHelper(getApplicationContext());
             database.createDataBase();
+            getProductsFromLocal();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -91,13 +105,22 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if (id == R.id.nav_pos) {
-            // Handle the camera action
-            if (!MainActivity.class.getSimpleName().equalsIgnoreCase("POS")) {
-                startActivity(new Intent(this, POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            getProductsFromLocal();
+            if (resultProducts.size() > 0) {
+                if (!MainActivity.class.getSimpleName().equalsIgnoreCase("POS")) {
+                    startActivity(new Intent(this, POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                }
+            }else{
+                Toast.makeText(getApplicationContext(), "Sync Products", Toast.LENGTH_SHORT).show();
             }
         } else if (id == R.id.nav_gallery) {
-            if (!MainActivity.class.getSimpleName().equalsIgnoreCase("Orders")) {
-                startActivity(new Intent(this, Orders.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            getProductsFromLocal();
+            if (resultProducts.size() > 0) {
+                if (!MainActivity.class.getSimpleName().equalsIgnoreCase("Orders")) {
+                    startActivity(new Intent(this, Orders.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "Sync Products", Toast.LENGTH_SHORT).show();
             }
         } else if (id == R.id.nav_slideshow) {
 
@@ -122,5 +145,34 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void getProductsFromLocal() {
+        String POSTS_SELECT_QUERY = String.format("SELECT * FROM products");
+
+        String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
+        SQLiteDatabase myDataBase = SQLiteDatabase.openDatabase(myPath, null,
+                SQLiteDatabase.OPEN_READWRITE);
+        Cursor cursor = myDataBase.rawQuery(POSTS_SELECT_QUERY, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    ProductObject.Products newProduct = new ProductObject.Products();
+                    newProduct.setProductId(cursor.getString(cursor.getColumnIndex("product_id")));
+                    newProduct.setProductCode(cursor.getString(cursor.getColumnIndex("product_code")));
+                    newProduct.setProductName(cursor.getString(cursor.getColumnIndex("product_name")));
+                    newProduct.setProductCost(cursor.getString(cursor.getColumnIndex("sale_price")));
+                    newProduct.setCategoryId(cursor.getString(cursor.getColumnIndex("category_id")));
+
+                    resultProducts.add(newProduct);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.d("LocalResponse", "Error while trying to get posts from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
     }
 }

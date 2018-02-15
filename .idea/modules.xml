@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://D:\Fiverr\dqpos\app\app.iml" filepath="D:\Fiverr\dqpos\app\app.iml" />
       <module fileurl="file://$PROJECT_DIR$/dqpos.iml" filepath="$PROJECT_DIR$/dqpos.iml" />
+      <module fileurl="file://D:\Fiverr\dqpos\dqpos.iml" filepath="D:\Fiverr\dqpos\dqpos.iml" />
     </modules>
   </component>
 </project>

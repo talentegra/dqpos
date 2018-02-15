@@ -20,9 +20,9 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:gravity="center"
-            android:lines="1"
+            android:lines="2"
             android:textColor="@color/colorPrimary"
-            android:textSize="@dimen/_14ssp" />
+            android:textSize="@dimen/_11ssp" />
 
         <RelativeLayout
             android:layout_width="@dimen/_2sdp"
@@ -31,11 +31,11 @@
 
         <TextView
             android:id="@+id/row_order_tv_price"
-            android:layout_width="@dimen/_50sdp"
+            android:layout_width="@dimen/_40sdp"
             android:layout_height="match_parent"
             android:gravity="center"
             android:textColor="@color/colorPrimary"
-            android:textSize="@dimen/_14ssp" />
+            android:textSize="@dimen/_11ssp" />
 
         <RelativeLayout
             android:layout_width="@dimen/_2sdp"
@@ -48,7 +48,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:textColor="@color/colorPrimary"
-            android:textSize="@dimen/_14ssp" />
+            android:textSize="@dimen/_11ssp" />
 
         <RelativeLayout
             android:layout_width="@dimen/_2sdp"
@@ -61,7 +61,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:textColor="@color/colorPrimary"
-            android:textSize="@dimen/_14ssp" />
+            android:textSize="@dimen/_11ssp" />
 
         <RelativeLayout
             android:layout_width="@dimen/_2sdp"
