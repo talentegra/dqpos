@@ -244,19 +244,21 @@
         android:background="@color/colorPrimary">
 
         <Button
-            android:layout_width="@dimen/_200sdp"
+            android:id="@+id/orders_btn_order_complete"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="left|center_horizontal"
             android:background="@android:color/transparent"
             android:text="Complete Order"
+            android:layout_gravity="center|left"
             android:textColor="@android:color/white"
             android:textSize="@dimen/_14ssp" />
 
 
         <Button
-            android:layout_width="@dimen/_150sdp"
+            android:id="@+id/orders_btn_order_cancel"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="right|center_horizontal"
+            android:layout_gravity="center|right"
             android:background="@android:color/transparent"
             android:text="Cancel"
             android:textColor="@android:color/white"

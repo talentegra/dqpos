@@ -22,6 +22,9 @@ public class OrderObject {
         @SerializedName("order_id")
         private String orderId;
 
+        @SerializedName("product_id")
+        private String productId;
+
         @SerializedName("product_name")
         private String productName;
 
@@ -72,6 +75,14 @@ public class OrderObject {
 
         public String getOrderId() {
             return orderId;
+        }
+
+        public void setProductId(String productId) {
+            this.productId = productId;
+        }
+
+        public String getProductId() {
+            return productId;
         }
     }
 
