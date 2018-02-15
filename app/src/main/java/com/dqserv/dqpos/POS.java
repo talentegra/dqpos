@@ -77,6 +77,11 @@ public class POS extends AppCompatActivity
                                         .putExtra("param_table_name", aTableValues[1])
                                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             }
+
+                            @Override
+                            public void deleteViewOnClick(View v, int position) {
+
+                            }
                         });
                         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 3);
                         rv.setLayoutManager(gridLayoutManager);
@@ -103,6 +108,11 @@ public class POS extends AppCompatActivity
                                 .putExtra("param_table_id", aTableValues[0])
                                 .putExtra("param_table_name", aTableValues[1])
                                 .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                    }
+
+                    @Override
+                    public void deleteViewOnClick(View v, int position) {
+
                     }
                 });
                 GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 3);

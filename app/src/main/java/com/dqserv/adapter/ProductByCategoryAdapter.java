@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.dqserv.dqpos.R;
 import com.dqserv.rest.ProductObject;
+import com.dqserv.widget.CustomItemClickListener;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ import java.util.List;
 public class ProductByCategoryAdapter extends RecyclerView.Adapter<ProductByCategoryAdapter.MyViewHolder> {
 
     private List<ProductObject.Products> productsList;
+    CustomItemClickListener listener;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public Button btnProduct;
@@ -30,23 +32,30 @@ public class ProductByCategoryAdapter extends RecyclerView.Adapter<ProductByCate
     }
 
 
-    public ProductByCategoryAdapter(List<ProductObject.Products> productsList) {
+    public ProductByCategoryAdapter(List<ProductObject.Products> productsList, CustomItemClickListener listener) {
         this.productsList = productsList;
+        this.listener = listener;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.row_orders_product, parent, false);
-
-        return new MyViewHolder(itemView);
+        final MyViewHolder viewHolder = new MyViewHolder(itemView);
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onItemClick(v, viewHolder.getAdapterPosition());
+            }
+        });
+        return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         ProductObject.Products oProduct = productsList.get(position);
         holder.btnProduct.setText(oProduct.getProductName() + "\n" + oProduct.getProductCost());
-        holder.btnProduct.setTag(oProduct.getProductId());
+        holder.itemView.setTag(oProduct.getProductId());
     }
 
     @Override
