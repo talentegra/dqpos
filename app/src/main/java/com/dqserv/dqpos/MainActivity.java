@@ -1,12 +1,20 @@
 package com.dqserv.dqpos;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -29,11 +37,16 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     List<ProductObject.Products> resultProducts;
+    String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (!hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, 100);
+        }
 
         resultProducts = new ArrayList<>();
 
@@ -110,7 +123,7 @@ public class MainActivity extends AppCompatActivity
                 if (!MainActivity.class.getSimpleName().equalsIgnoreCase("POS")) {
                     startActivity(new Intent(this, POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 }
-            }else{
+            } else {
                 Toast.makeText(getApplicationContext(), "Sync Products", Toast.LENGTH_SHORT).show();
             }
         } else if (id == R.id.nav_gallery) {
@@ -172,6 +185,31 @@ public class MainActivity extends AppCompatActivity
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
+            }
+        }
+    }
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == 100) {
+            if (grantResults.length <= 0) {
+                Toast.makeText(getApplicationContext(), "User interaction was cancelled.",
+                        Toast.LENGTH_SHORT).show();
+            } else if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getApplicationContext(), "Permission was denied, but is needed " +
+                        "for core functionality.", Toast.LENGTH_SHORT).show();
             }
         }
     }

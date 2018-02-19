@@ -16,7 +16,7 @@ import java.io.OutputStream;
  * Created by Vivek Raghunathan on 05-02-2018.
  */
 
-public class DataBaseHelper extends SQLiteOpenHelper{
+public class DataBaseHelper extends SQLiteOpenHelper {
 
     //The Android's default system path of your application database.
 
@@ -50,18 +50,12 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     public static final String COLUMN_ITEM_QTY = "quantity";
 
 
-
-
-
-
-
-
-
     private final Context myContext;
 
     /**
      * Constructor
      * Takes and keeps a reference of the passed context in order to access to the application assets and resources.
+     *
      * @param context
      */
     public DataBaseHelper(Context context) {
@@ -72,14 +66,14 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 
     /**
      * Creates a empty database on the system and rewrites it with your own database.
-     * */
-    public void createDataBase() throws IOException{
+     */
+    public void createDataBase() throws IOException {
 
         boolean dbExist = checkDataBase();
 
-        if(dbExist){
+        if (dbExist) {
             //do nothing - database already exist
-        }else{
+        } else {
 
             //By calling this method and empty database will be created into the default system path
             //of your application so we are gonna be able to overwrite that database with our database.
@@ -100,28 +94,20 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 
     /**
      * Check if the database already exist to avoid re-copying the file each time you open the application.
+     *
      * @return true if it exists, false if it doesn't
      */
-    private boolean checkDataBase(){
-
+    private boolean checkDataBase() {
         SQLiteDatabase checkDB = null;
-
-        try{
+        try {
             String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
             checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
-
-        }catch(SQLiteException e){
-
+        } catch (SQLiteException e) {
             //database does't exist yet.
-
         }
-
-        if(checkDB != null){
-
+        if (checkDB != null) {
             checkDB.close();
-
         }
-
         return checkDB != null ? true : false;
     }
 
@@ -129,24 +115,24 @@ public class DataBaseHelper extends SQLiteOpenHelper{
      * Copies your database from your local assets-folder to the just created empty database in the
      * system folder, from where it can be accessed and handled.
      * This is done by transfering bytestream.
-     * */
-    private void copyDataBase() throws IOException{
+     */
+    private void copyDataBase() throws IOException {
 
-        Log.i("DB","Started Copying database");
+        Log.i("DB", "Started Copying database");
         //Open your local db as the input stream
         InputStream myInput = myContext.getAssets().open(DBConstants.DB_NAME);
 
         // Path to the just created empty db
         String outFileName = DBConstants.DB_PATH + DBConstants.DB_NAME;
 
-        Log.i("DB","Path "+outFileName);
+        Log.i("DB", "Path " + outFileName);
         //Open the empty db as the output stream
         OutputStream myOutput = new FileOutputStream(outFileName);
 
         //transfer bytes from the inputfile to the outputfile
         byte[] buffer = new byte[1024];
         int length;
-        while ((length = myInput.read(buffer))>0){
+        while ((length = myInput.read(buffer)) > 0) {
             myOutput.write(buffer, 0, length);
         }
 
@@ -154,10 +140,10 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         myOutput.flush();
         myOutput.close();
         myInput.close();
-        Log.i("DB","Copied succesfully");
+        Log.i("DB", "Copied succesfully");
     }
 
-    public void openDataBase() throws SQLException{
+    public void openDataBase() throws SQLException {
 
         //Open the database
         String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
@@ -168,7 +154,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     @Override
     public synchronized void close() {
 
-        if(myDataBase != null)
+        if (myDataBase != null)
             myDataBase.close();
 
         super.close();
@@ -177,14 +163,12 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-      //  db.execSQL("create table " + TABLE_NAME + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_FIRST_NAME + " VARCHAR, " + COLUMN_LAST_NAME + " VARCHAR);");
-        db.execSQL("create table " + CAT_TABLE_NAME + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_CAT_CODE + " VARCHAR, " + COLUMN_CAT_NAME + " VARCHAR,"  + COLUMN_CAT_IMG + " VARCHAR, " + COLUMN_ACTIVE + " INTEGER);");
-        db.execSQL("create table " + TAB_TABLE_NAME + " ( " + COLUMN_TAB_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_TAB_CODE + " VARCHAR, " + COLUMN_TAB_NAME + " VARCHAR,"  + COLUMN_TAB_CAPACITY + " VARCHAR, " + COLUMN_STATUS + " INTEGER);");
+        //  db.execSQL("create table " + TABLE_NAME + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_FIRST_NAME + " VARCHAR, " + COLUMN_LAST_NAME + " VARCHAR);");
+        db.execSQL("create table " + CAT_TABLE_NAME + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_CAT_CODE + " VARCHAR, " + COLUMN_CAT_NAME + " VARCHAR," + COLUMN_CAT_IMG + " VARCHAR, " + COLUMN_ACTIVE + " INTEGER);");
+        db.execSQL("create table " + TAB_TABLE_NAME + " ( " + COLUMN_TAB_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_TAB_CODE + " VARCHAR, " + COLUMN_TAB_NAME + " VARCHAR," + COLUMN_TAB_CAPACITY + " VARCHAR, " + COLUMN_STATUS + " INTEGER);");
         db.execSQL("create table " + PROD_TABLE_NAME + " ( " + COLUMN_PROD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_PROD_CODE + " VARCHAR, " + COLUMN_PROD_NAME + " VARCHAR," + COLUMN_PROD_IMG + " VARCHAR, " + COLUMN_PROD_PRICE + " REAL," + COLUMN_ID + " INTEGER," + COLUMN_ACTIVE + " INTEGER);");
-        db.execSQL("create table " + ORD_TABLE_NAME + " ( " + COLUMN_ORD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_ORD_DATE + " TEXT, " + COLUMN_TAB_ID + " INTEGER,"  + COLUMN_ORD_TOTAL + " REAL, " + COLUMN_ORD_TOT_ITEMS + " INTEGER," + COLUMN_STATUS  + " INTEGER);");
-        db.execSQL("create table " + ORD_ITEMS_TABLE_NAME + " ( " + COLUMN_ORD_ITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_ORD_ID + " INTEGER UNIQUE," + COLUMN_PROD_ID + " INTEGER," + COLUMN_PROD_CODE  +  " VARCHAR, " + COLUMN_PROD_NAME + " VARCHAR," + COLUMN_ITEM_QTY + " INTEGER, " + COLUMN_PROD_PRICE + " REAL," + COLUMN_SUB_TOTAL + " REAL);");
-
-
+        db.execSQL("create table " + ORD_TABLE_NAME + " ( " + COLUMN_ORD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_ORD_DATE + " TEXT, " + COLUMN_TAB_ID + " INTEGER," + COLUMN_ORD_TOTAL + " REAL, " + COLUMN_ORD_TOT_ITEMS + " INTEGER," + COLUMN_STATUS + " INTEGER);");
+        db.execSQL("create table " + ORD_ITEMS_TABLE_NAME + " ( " + COLUMN_ORD_ITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_ORD_ID + " INTEGER UNIQUE," + COLUMN_PROD_ID + " INTEGER," + COLUMN_PROD_CODE + " VARCHAR, " + COLUMN_PROD_NAME + " VARCHAR," + COLUMN_ITEM_QTY + " INTEGER, " + COLUMN_PROD_PRICE + " REAL," + COLUMN_SUB_TOTAL + " REAL);");
     }
 
     @Override

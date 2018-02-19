@@ -221,7 +221,7 @@ public class POS extends AppCompatActivity
                 String insertSQL = "INSERT OR REPLACE INTO tables \n" +
                         "(table_id, table_name)\n" +
                         "VALUES \n" +
-                        "('" + items.get(tableIndex).getTableId() + "', " +
+                        "(" + items.get(tableIndex).getTableId() + ", " +
                         "'" + items.get(tableIndex).getTableName() + "');";
 
                 myDataBase.execSQL(insertSQL);

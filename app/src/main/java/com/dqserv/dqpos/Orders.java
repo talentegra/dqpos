@@ -46,7 +46,13 @@ import com.dqserv.rest.OrderObject;
 import com.dqserv.rest.ProductObject;
 import com.dqserv.widget.CustomItemClickListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import retrofit2.Call;
@@ -154,7 +160,50 @@ public class Orders extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (ConnectivityReceiver.isConnected()) {
+                    ApiInterface apiService =
+                            ApiClient.getClient().create(ApiInterface.class);
+                    JSONObject objOrder = null;
+                    JSONArray jsonArray = new JSONArray();
+                    for (int aIndex = 0; aIndex < resultOrders.size(); aIndex++) {
+                        //grand_total:same as total
+                        //date:"order date and time "
+                        //product_code:get from product table
+                        //sale_price:get from product table
+                        objOrder = new JSONObject();
+                        try {
+                            objOrder.put("grand_total", resultOrders.get(aIndex).getSubTotal());
+                            objOrder.put("table_name", sTableName);
+                            objOrder.put("date", "2018");
+                            objOrder.put("product_id", resultOrders.get(aIndex).getProductId());
+                            objOrder.put("quantity", resultOrders.get(aIndex).getQuantity());
+                            objOrder.put("unit_price", resultOrders.get(aIndex).getSalePrice());
+                            objOrder.put("net_unit_price", resultOrders.get(aIndex).getSalePrice());
+                            objOrder.put("real_unit_price", resultOrders.get(aIndex).getSalePrice());
+                            objOrder.put("subtotal", resultOrders.get(aIndex).getSubTotal());
+                            objOrder.put("product_code", resultOrders.get(aIndex).getProductName());
+                            objOrder.put("product_name", resultOrders.get(aIndex).getProductName());
+                            objOrder.put("sale_price", resultOrders.get(aIndex).getSalePrice());
 
+                        } catch (JSONException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        jsonArray.put(objOrder);
+                    }
+                    Log.e("Response", "" + jsonArray.toString());
+                    Call<OrderObject> call = apiService.addOrders(Constants.AUTH_TOKEN, sTableId,
+                            jsonArray);
+                    call.enqueue(new Callback<OrderObject>() {
+                        @Override
+                        public void onResponse(Call<OrderObject> call, Response<OrderObject> response) {
+                            Log.e("Response", response.body().toString());
+                        }
+
+                        @Override
+                        public void onFailure(Call<OrderObject> call, Throwable t) {
+                            Log.e("Response", "Error");
+                        }
+                    });
                 } else {
                     deleteOrderInformationData();
                     getOrders(sTableId);
@@ -369,9 +418,10 @@ public class Orders extends AppCompatActivity {
             try {
                 resultCategories.add(items.get(tableIndex));
                 String insertSQL = "INSERT OR REPLACE INTO categories \n" +
-                        "(category_id, category_name)\n" +
+                        "(category_id, category_code, category_name)\n" +
                         "VALUES \n" +
-                        "('" + items.get(tableIndex).getCategoryId() + "', " +
+                        "(" + items.get(tableIndex).getCategoryId() + ", " +
+                        "'" + items.get(tableIndex).getCategoryCode() + "', " +
                         "'" + items.get(tableIndex).getCategoryName() + "');";
 
                 myDataBase.execSQL(insertSQL);
@@ -396,6 +446,7 @@ public class Orders extends AppCompatActivity {
                 do {
                     CategoryObject.Categories newCategory = new CategoryObject.Categories();
                     newCategory.setCategoryId(cursor.getString(cursor.getColumnIndex("category_id")));
+                    newCategory.setCategoryCode(cursor.getString(cursor.getColumnIndex("category_code")));
                     newCategory.setCategoryName(cursor.getString(cursor.getColumnIndex("category_name")));
 
 
@@ -460,7 +511,7 @@ public class Orders extends AppCompatActivity {
                 SQLiteDatabase.OPEN_READWRITE);
         Cursor cursor = myDataBase.rawQuery(POSTS_SELECT_QUERY, null);
         try {
-            if (cursor.moveToFirst()) {
+            if (cursor.moveToLast()) {
                 do {
                     OrderObject.Orders newOrder = new OrderObject.Orders();
                     newOrder.setOrderId(cursor.getString(cursor.getColumnIndex("order_id")));
@@ -471,7 +522,7 @@ public class Orders extends AppCompatActivity {
                     newOrder.setSubTotal(cursor.getString(cursor.getColumnIndex("subtotal")));
 
                     resultOrders.add(newOrder);
-                } while (cursor.moveToNext());
+                } while (cursor.moveToPrevious());
             }
         } catch (Exception e) {
             Log.d("LocalResponse", "Error while trying to get posts from database");
@@ -578,6 +629,7 @@ public class Orders extends AppCompatActivity {
                         pCursor.close();
                     }
                 }
+                //COLUMN_ORD_DATE  COLUMN_ORD_TOTAL COLUMN_ORD_TOT_ITEMS COLUMN_STATUS
             } else {
                 String insertSQL = "INSERT OR REPLACE INTO orders \n" +
                         "(table_id)\n" +
@@ -720,6 +772,18 @@ public class Orders extends AppCompatActivity {
             // Show 2 total pages.
             return mNumOfTabs;
         }
+    }
+
+    public String currentdateTimeInString() {
+        String currentDate = null;
+        try {
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            currentDate = df.format(c.getTime());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return currentDate;
     }
 
 }

@@ -1,5 +1,7 @@
 package com.dqserv.rest;
 
+import org.json.JSONArray;
+
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -19,4 +21,11 @@ public interface ApiInterface {
     @FormUrlEncoded
     @POST("get_categories")
     Call<CategoryObject> getCategories(@Field("auth_token") String authToken);
+
+    @FormUrlEncoded
+    @POST("get_orders")
+    Call<OrderObject> addOrders(@Field("auth_token") String authToken,
+                                @Field("table_id") String sTableId,
+                                @Field("data") JSONArray data);
+
 }
