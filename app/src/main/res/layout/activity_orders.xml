@@ -12,8 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/appbar_padding_top"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -208,6 +208,41 @@
                 android:layout_below="@+id/orders_recycler_view_header"
                 android:layout_marginLeft="@dimen/_10sdp"
                 android:layout_marginRight="@dimen/_10sdp" />
+
+            <RelativeLayout
+                android:id="@+id/orders_rl_progress"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#80000000"
+                android:visibility="gone">
+
+                <RelativeLayout
+                    android:layout_width="@dimen/_200sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/box_background"
+                    android:padding="@dimen/_10sdp">
+
+                    <ProgressBar
+                        android:id="@+id/orders_progress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:indeterminateTint="@color/colorPrimary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@+id/orders_progress"
+                        android:ellipsize="end"
+                        android:gravity="center_horizontal"
+                        android:lines="2"
+                        android:text="Saving Order, Please Wait..."
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/fab_margin" />
+
+                </RelativeLayout>
+            </RelativeLayout>
         </RelativeLayout>
 
         <android.support.design.widget.TabLayout
@@ -266,7 +301,6 @@
 
 
     </FrameLayout>
-
 
 </android.support.design.widget.CoordinatorLayout>
 

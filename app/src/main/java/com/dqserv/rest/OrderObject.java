@@ -25,6 +25,9 @@ public class OrderObject {
         @SerializedName("product_id")
         private String productId;
 
+        @SerializedName("product_code")
+        private String productCode;
+
         @SerializedName("product_name")
         private String productName;
 
@@ -83,6 +86,14 @@ public class OrderObject {
 
         public String getProductId() {
             return productId;
+        }
+
+        public void setProductCode(String productCode) {
+            this.productCode = productCode;
+        }
+
+        public String getProductCode() {
+            return productCode;
         }
     }
 

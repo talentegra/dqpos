@@ -44,6 +44,7 @@ import com.dqserv.rest.ApiInterface;
 import com.dqserv.rest.CategoryObject;
 import com.dqserv.rest.OrderObject;
 import com.dqserv.rest.ProductObject;
+import com.dqserv.rest.ResponseOrderObject;
 import com.dqserv.widget.CustomItemClickListener;
 
 import org.json.JSONArray;
@@ -87,7 +88,11 @@ public class Orders extends AppCompatActivity {
     static RecyclerView rvOrders;
     static OrderAdapter orderAdapter = null;
     static TextView tvTotal;
+    static int total = 0;
+    static int quantity = 0;
+    static long currentOrderID = 0;
     static Button btnOrderComplete, btnOrderCancel;
+    static RelativeLayout mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +116,7 @@ public class Orders extends AppCompatActivity {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
+        mProgressBar = (RelativeLayout) findViewById(R.id.orders_rl_progress);
         llOrderHeader = (LinearLayout) findViewById(R.id.orders_recycler_view_header);
         llOrderFooter = (LinearLayout) findViewById(R.id.orders_recycler_view_footer);
         rvOrders = (RecyclerView) findViewById(R.id.orders_recycler_view);
@@ -160,27 +166,25 @@ public class Orders extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (ConnectivityReceiver.isConnected()) {
+                    mProgressBar.setVisibility(View.VISIBLE);
                     ApiInterface apiService =
                             ApiClient.getClient().create(ApiInterface.class);
                     JSONObject objOrder = null;
                     JSONArray jsonArray = new JSONArray();
                     for (int aIndex = 0; aIndex < resultOrders.size(); aIndex++) {
-                        //grand_total:same as total
-                        //date:"order date and time "
-                        //product_code:get from product table
-                        //sale_price:get from product table
                         objOrder = new JSONObject();
                         try {
-                            objOrder.put("grand_total", resultOrders.get(aIndex).getSubTotal());
+                            objOrder.put("total", total);
+                            objOrder.put("grand_total", total);
                             objOrder.put("table_name", sTableName);
-                            objOrder.put("date", "2018");
+                            objOrder.put("date", currentdateTimeInString());
                             objOrder.put("product_id", resultOrders.get(aIndex).getProductId());
                             objOrder.put("quantity", resultOrders.get(aIndex).getQuantity());
                             objOrder.put("unit_price", resultOrders.get(aIndex).getSalePrice());
                             objOrder.put("net_unit_price", resultOrders.get(aIndex).getSalePrice());
                             objOrder.put("real_unit_price", resultOrders.get(aIndex).getSalePrice());
                             objOrder.put("subtotal", resultOrders.get(aIndex).getSubTotal());
-                            objOrder.put("product_code", resultOrders.get(aIndex).getProductName());
+                            objOrder.put("product_code", resultOrders.get(aIndex).getProductCode());
                             objOrder.put("product_name", resultOrders.get(aIndex).getProductName());
                             objOrder.put("sale_price", resultOrders.get(aIndex).getSalePrice());
 
@@ -190,17 +194,18 @@ public class Orders extends AppCompatActivity {
                         }
                         jsonArray.put(objOrder);
                     }
-                    Log.e("Response", "" + jsonArray.toString());
-                    Call<OrderObject> call = apiService.addOrders(Constants.AUTH_TOKEN, sTableId,
+                    Call<ResponseOrderObject> call = apiService.addOrders(Constants.AUTH_TOKEN, sTableId,
                             jsonArray);
-                    call.enqueue(new Callback<OrderObject>() {
+                    call.enqueue(new Callback<ResponseOrderObject>() {
                         @Override
-                        public void onResponse(Call<OrderObject> call, Response<OrderObject> response) {
-                            Log.e("Response", response.body().toString());
+                        public void onResponse(Call<ResponseOrderObject> call, Response<ResponseOrderObject> response) {
+                            mProgressBar.setVisibility(View.GONE);
+                            deleteAllOrders();
+                            getOrders(sTableId);
                         }
 
                         @Override
-                        public void onFailure(Call<OrderObject> call, Throwable t) {
+                        public void onFailure(Call<ResponseOrderObject> call, Throwable t) {
                             Log.e("Response", "Error");
                         }
                     });
@@ -301,6 +306,7 @@ public class Orders extends AppCompatActivity {
                                         if (!sTableId.equalsIgnoreCase("")) {
                                             saveOrderTable(v.getTag().toString());
                                             getOrders(sTableId);
+                                            updateOrder(currentOrderID);
                                         } else {
                                             Toast.makeText(getActivity(), "No Table Selected", Toast.LENGTH_SHORT).show();
                                         }
@@ -347,6 +353,7 @@ public class Orders extends AppCompatActivity {
                                 if (!sTableId.equalsIgnoreCase("")) {
                                     saveOrderTable(v.getTag().toString());
                                     getOrders(sTableId);
+                                    updateOrder(currentOrderID);
                                 } else {
                                     Toast.makeText(getActivity(), "No Table Selected", Toast.LENGTH_SHORT).show();
                                 }
@@ -516,6 +523,7 @@ public class Orders extends AppCompatActivity {
                     OrderObject.Orders newOrder = new OrderObject.Orders();
                     newOrder.setOrderId(cursor.getString(cursor.getColumnIndex("order_id")));
                     newOrder.setProductId(cursor.getString(cursor.getColumnIndex("product_id")));
+                    newOrder.setProductCode(cursor.getString(cursor.getColumnIndex("product_code")));
                     newOrder.setProductName(cursor.getString(cursor.getColumnIndex("product_name")));
                     newOrder.setSalePrice(cursor.getString(cursor.getColumnIndex("sale_price")));
                     newOrder.setQuantity(cursor.getString(cursor.getColumnIndex("quantity")));
@@ -552,8 +560,8 @@ public class Orders extends AppCompatActivity {
             rvOrders.setNestedScrollingEnabled(true);
             rvOrders.setItemAnimator(new DefaultItemAnimator());
             rvOrders.setAdapter(orderAdapter);
-            int total = 0;
             for (int priceIndex = 0; priceIndex < resultOrders.size(); priceIndex++) {
+                quantity = priceIndex + (Integer.parseInt(resultOrders.get(priceIndex).getQuantity()));
                 total += (Integer.parseInt(resultOrders.get(priceIndex).getSalePrice()) *
                         Integer.parseInt(resultOrders.get(priceIndex).getQuantity()));
                 tvTotal.setText(total + "");
@@ -629,12 +637,15 @@ public class Orders extends AppCompatActivity {
                         pCursor.close();
                     }
                 }
-                //COLUMN_ORD_DATE  COLUMN_ORD_TOTAL COLUMN_ORD_TOT_ITEMS COLUMN_STATUS
             } else {
                 String insertSQL = "INSERT OR REPLACE INTO orders \n" +
-                        "(table_id)\n" +
+                        "(order_date, table_id, grand_total, total_items, status)\n" +
                         "VALUES \n" +
-                        "(" + sTableId + ");";
+                        "('" + currentdateTimeInString() + "', " +
+                        "" + sTableId + ", " +
+                        "'" + total + "', " +
+                        "" + quantity + ", " +
+                        "" + 1 + ");";
                 myDataBase.execSQL(insertSQL);
 
                 String query = "SELECT order_id from orders " +
@@ -679,11 +690,29 @@ public class Orders extends AppCompatActivity {
                     }
                 }
             }
+            currentOrderID = lastInsertedOrderId;
         } catch (Exception ex) {
             Log.e("Error", "Problem in Adding Product." + ex.getMessage());
             ex.printStackTrace();
         }
         myDataBase.close();
+    }
+
+
+    private static void updateOrder(long sOrderId) {
+        //Open the database
+        String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
+        SQLiteDatabase myDataBase = SQLiteDatabase.openDatabase(myPath, null,
+                SQLiteDatabase.OPEN_READWRITE);
+        String updateSQL = "UPDATE orders SET order_date = '" + currentdateTimeInString() + "' " +
+                "AND grand_total = '" + total + "' AND total_items = " + quantity + " " +
+                "WHERE order_id = " + sOrderId + " AND table_id = " + sTableId + "";
+        try {
+            myDataBase.execSQL(updateSQL);
+        } catch (Exception ex) {
+            Log.e("Error", "Problem in Adding Product." + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
 
@@ -774,11 +803,11 @@ public class Orders extends AppCompatActivity {
         }
     }
 
-    public String currentdateTimeInString() {
+    public static String currentdateTimeInString() {
         String currentDate = null;
         try {
             Calendar c = Calendar.getInstance();
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             currentDate = df.format(c.getTime());
         } catch (Exception e) {
             e.printStackTrace();

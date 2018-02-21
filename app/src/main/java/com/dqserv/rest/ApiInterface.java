@@ -23,8 +23,8 @@ public interface ApiInterface {
     Call<CategoryObject> getCategories(@Field("auth_token") String authToken);
 
     @FormUrlEncoded
-    @POST("get_orders")
-    Call<OrderObject> addOrders(@Field("auth_token") String authToken,
+    @POST("post_orders")
+    Call<ResponseOrderObject> addOrders(@Field("auth_token") String authToken,
                                 @Field("table_id") String sTableId,
                                 @Field("data") JSONArray data);
 
