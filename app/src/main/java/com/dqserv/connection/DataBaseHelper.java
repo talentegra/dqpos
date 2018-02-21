@@ -24,6 +24,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String PROD_TABLE_NAME = "products";
     public static final String ORD_TABLE_NAME = "orders";
     public static final String ORD_ITEMS_TABLE_NAME = "order_items";
+    public static final String ORD_PRINT_TABLE_NAME = "order_print";
+    public static final String ORD_PRINT_ITEMS_TABLE_NAME = "order_print_items";
+    public static final String SALE_TABLE_NAME = "sales";
+    public static final String SALE_ITEMS_TABLE_NAME = "sale_items";
     public static final String CAT_TABLE_NAME = "categories";
     public static final String COLUMN_ID = "category_id";
     public static final String COLUMN_CAT_CODE = "category_code";
@@ -48,6 +52,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ORD_TOT_ITEMS = "total_items";
     public static final String COLUMN_SUB_TOTAL = "subtotal";
     public static final String COLUMN_ITEM_QTY = "quantity";
+    public static final String COLUMN_SALE_ID = "sale_id";
+    public static final String COLUMN_SALE_DATE = "sale_date";
+    public static final String COLUMN_SALE_ITEM_ID = "sale_item_id";
+
+
 
 
     private final Context myContext;
@@ -169,6 +178,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.execSQL("create table " + PROD_TABLE_NAME + " ( " + COLUMN_PROD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_PROD_CODE + " VARCHAR, " + COLUMN_PROD_NAME + " VARCHAR," + COLUMN_PROD_IMG + " VARCHAR, " + COLUMN_PROD_PRICE + " REAL," + COLUMN_ID + " INTEGER," + COLUMN_ACTIVE + " INTEGER);");
         db.execSQL("create table " + ORD_TABLE_NAME + " ( " + COLUMN_ORD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_ORD_DATE + " TEXT, " + COLUMN_TAB_ID + " INTEGER UNIQUE," + COLUMN_ORD_TOTAL + " REAL, " + COLUMN_ORD_TOT_ITEMS + " INTEGER," + COLUMN_STATUS + " INTEGER);");
         db.execSQL("create table " + ORD_ITEMS_TABLE_NAME + " ( " + COLUMN_ORD_ITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_ORD_ID + " INTEGER UNIQUE," + COLUMN_PROD_ID + " INTEGER," + COLUMN_PROD_CODE + " VARCHAR, " + COLUMN_PROD_NAME + " VARCHAR," + COLUMN_ITEM_QTY + " INTEGER, " + COLUMN_PROD_PRICE + " REAL," + COLUMN_SUB_TOTAL + " REAL);");
+        db.execSQL("create table " + ORD_PRINT_TABLE_NAME + " ( " + COLUMN_ORD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_ORD_DATE + " TEXT, " + COLUMN_TAB_ID + " INTEGER UNIQUE," + COLUMN_ORD_TOTAL + " REAL, " + COLUMN_ORD_TOT_ITEMS + " INTEGER," + COLUMN_STATUS + " INTEGER);");
+        db.execSQL("create table " + ORD_PRINT_ITEMS_TABLE_NAME + " ( " + COLUMN_ORD_ITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_ORD_ID + " INTEGER UNIQUE," + COLUMN_PROD_ID + " INTEGER," + COLUMN_PROD_CODE + " VARCHAR, " + COLUMN_PROD_NAME + " VARCHAR," + COLUMN_ITEM_QTY + " INTEGER, " + COLUMN_PROD_PRICE + " REAL," + COLUMN_SUB_TOTAL + " REAL);");
+        db.execSQL("create table " + SALE_TABLE_NAME + " ( " + COLUMN_SALE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_SALE_DATE + " TEXT, " + COLUMN_TAB_ID + " INTEGER UNIQUE," + COLUMN_ORD_TOTAL + " REAL, " + COLUMN_ORD_TOT_ITEMS + " INTEGER," + COLUMN_STATUS + " INTEGER);");
+        db.execSQL("create table " + SALE_ITEMS_TABLE_NAME + " ( " + COLUMN_SALE_ITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_SALE_ID + " INTEGER UNIQUE," + COLUMN_PROD_ID + " INTEGER," + COLUMN_PROD_CODE + " VARCHAR, " + COLUMN_PROD_NAME + " VARCHAR," + COLUMN_ITEM_QTY + " INTEGER, " + COLUMN_PROD_PRICE + " REAL," + COLUMN_SUB_TOTAL + " REAL);");
+
+
+
+
     }
 
     @Override
