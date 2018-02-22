@@ -426,10 +426,10 @@ public class Orders extends AppCompatActivity {
     //get Tables
     private void fetchResults(Response<CategoryObject> response) {
         CategoryObject categoryObject = response.body();
-        saveTables(categoryObject.getCategories());
+        saveCategories(categoryObject.getCategories());
     }
 
-    private void saveTables(List<CategoryObject.Categories> items) {
+    private void saveCategories(List<CategoryObject.Categories> items) {
         //Open the database
         String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
         SQLiteDatabase myDataBase = SQLiteDatabase.openDatabase(myPath, null,
@@ -852,7 +852,7 @@ public class Orders extends AppCompatActivity {
         String currentDate = null;
         try {
             Calendar c = Calendar.getInstance();
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             currentDate = df.format(c.getTime());
         } catch (Exception e) {
             e.printStackTrace();

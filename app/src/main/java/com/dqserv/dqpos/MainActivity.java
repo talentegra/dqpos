@@ -37,29 +37,19 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     List<ProductObject.Products> resultProducts;
-    String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (!hasPermissions(this, PERMISSIONS)) {
-            ActivityCompat.requestPermissions(this, PERMISSIONS, 100);
-        }
-
         resultProducts = new ArrayList<>();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        try {
-            DataBaseHelper database = new DataBaseHelper(getApplicationContext());
-            database.createDataBase();
-            getProductsFromLocal();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        getProductsFromLocal();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -185,31 +175,6 @@ public class MainActivity extends AppCompatActivity
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
-            }
-        }
-    }
-
-    public static boolean hasPermissions(Context context, String... permissions) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == 100) {
-            if (grantResults.length <= 0) {
-                Toast.makeText(getApplicationContext(), "User interaction was cancelled.",
-                        Toast.LENGTH_SHORT).show();
-            } else if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(getApplicationContext(), "Permission was denied, but is needed " +
-                        "for core functionality.", Toast.LENGTH_SHORT).show();
             }
         }
     }

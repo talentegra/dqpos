@@ -81,22 +81,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if (dbExist) {
             //do nothing - database already exist
         } else {
-
-            //By calling this method and empty database will be created into the default system path
-            //of your application so we are gonna be able to overwrite that database with our database.
             this.getReadableDatabase();
-
+            this.close();
             try {
-
                 copyDataBase();
-
             } catch (IOException e) {
-
-                throw new Error("Error copying database");
-
+                e.printStackTrace();
             }
         }
-
     }
 
     /**
@@ -108,7 +100,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase checkDB = null;
         try {
             String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
-            checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+            checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
         } catch (SQLiteException e) {
             //database does't exist yet.
         }
@@ -151,11 +143,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public void openDataBase() throws SQLException {
-
         //Open the database
         String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
-        myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
-
+        myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
     }
 
     @Override
