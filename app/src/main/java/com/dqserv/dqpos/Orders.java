@@ -100,6 +100,9 @@ public class Orders extends AppCompatActivity {
         setContentView(R.layout.activity_orders);
 
         mContext = Orders.this;
+        total = 0;
+        quantity = 0;
+        currentOrderID = 0;
         resultOrders = new ArrayList<>();
         resultProductsFromCategory = new ArrayList<>();
         resultCategories = new ArrayList<>();
@@ -153,7 +156,7 @@ public class Orders extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
 
         if (!sTableId.equalsIgnoreCase("")) {
-            getOrders(sTableId);
+            getOrders(sTableId, currentOrderID);
         } else {
             toolbar.setTitle("No Table Selected");
         }
@@ -174,7 +177,8 @@ public class Orders extends AppCompatActivity {
                     for (int aIndex = 0; aIndex < resultOrders.size(); aIndex++) {
                         objOrder = new JSONObject();
                         try {
-                            objOrder.put("total", total);
+                            objOrder.put("total", (Integer.parseInt(resultOrders.get(aIndex).getQuantity())) *
+                                    (Integer.parseInt(resultOrders.get(aIndex).getSalePrice())));
                             objOrder.put("grand_total", total);
                             objOrder.put("table_name", sTableName);
                             objOrder.put("date", currentdateTimeInString());
@@ -201,7 +205,8 @@ public class Orders extends AppCompatActivity {
                         public void onResponse(Call<ResponseOrderObject> call, Response<ResponseOrderObject> response) {
                             mProgressBar.setVisibility(View.GONE);
                             deleteAllOrders();
-                            getOrders(sTableId);
+                            unregisterControls();
+                            getOrders(sTableId, currentOrderID);
                         }
 
                         @Override
@@ -211,7 +216,8 @@ public class Orders extends AppCompatActivity {
                     });
                 } else {
                     deleteOrderInformationData();
-                    getOrders(sTableId);
+                    unregisterControls();
+                    getOrders(sTableId, currentOrderID);
                 }
             }
         });
@@ -241,8 +247,9 @@ public class Orders extends AppCompatActivity {
                         @Override
                         public void onClick(View view) {
                             deleteAllOrders();
+                            unregisterControls();
                             pw.dismiss();
-                            getOrders(sTableId);
+                            getOrders(sTableId, currentOrderID);
                         }
                     });
                 } catch (Exception e) {
@@ -250,6 +257,12 @@ public class Orders extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void unregisterControls() {
+        quantity = 0;
+        total = 0;
+        currentOrderID = 0;
     }
 
 
@@ -305,7 +318,7 @@ public class Orders extends AppCompatActivity {
                                     public void onItemClick(View v, int position) {
                                         if (!sTableId.equalsIgnoreCase("")) {
                                             saveOrderTable(v.getTag().toString());
-                                            getOrders(sTableId);
+                                            getOrders(sTableId, currentOrderID);
                                             updateOrder(currentOrderID);
                                         } else {
                                             Toast.makeText(getActivity(), "No Table Selected", Toast.LENGTH_SHORT).show();
@@ -352,7 +365,7 @@ public class Orders extends AppCompatActivity {
                             public void onItemClick(View v, int position) {
                                 if (!sTableId.equalsIgnoreCase("")) {
                                     saveOrderTable(v.getTag().toString());
-                                    getOrders(sTableId);
+                                    getOrders(sTableId, currentOrderID);
                                     updateOrder(currentOrderID);
                                 } else {
                                     Toast.makeText(getActivity(), "No Table Selected", Toast.LENGTH_SHORT).show();
@@ -507,11 +520,10 @@ public class Orders extends AppCompatActivity {
     }
 
 
-    private static void getOrders(String idTable) {
+    private static void getOrders(String idTable, long sOrderID) {
         resultOrders.clear();
-        String POSTS_SELECT_QUERY = String.format("SELECT * FROM orders " +
-                "INNER JOIN order_items ON orders.order_id = order_items.order_id " +
-                "WHERE orders.table_id=" + idTable + "");
+        String POSTS_SELECT_QUERY = "select * from order_items LEFT JOIN orders ON " +
+                "order_items.order_id=orders.order_id where orders.table_id = " + idTable + "";
 
         String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
         SQLiteDatabase myDataBase = SQLiteDatabase.openDatabase(myPath, null,
@@ -551,7 +563,7 @@ public class Orders extends AppCompatActivity {
                 @Override
                 public void deleteViewOnClick(View v, int position) {
                     deleteOrder(v.getTag().toString());
-                    getOrders(sTableId);
+                    getOrders(sTableId, currentOrderID);
                 }
             });
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext,
@@ -560,8 +572,10 @@ public class Orders extends AppCompatActivity {
             rvOrders.setNestedScrollingEnabled(true);
             rvOrders.setItemAnimator(new DefaultItemAnimator());
             rvOrders.setAdapter(orderAdapter);
+            quantity = 0;
+            total = 0;
             for (int priceIndex = 0; priceIndex < resultOrders.size(); priceIndex++) {
-                quantity = priceIndex + (Integer.parseInt(resultOrders.get(priceIndex).getQuantity()));
+                quantity += (Integer.parseInt(resultOrders.get(priceIndex).getQuantity()));
                 total += (Integer.parseInt(resultOrders.get(priceIndex).getSalePrice()) *
                         Integer.parseInt(resultOrders.get(priceIndex).getQuantity()));
                 tvTotal.setText(total + "");
@@ -574,7 +588,7 @@ public class Orders extends AppCompatActivity {
 
     private static void saveOrderTable(String sProductId) {
         boolean isAlreadyAdded = false;
-        long lastInsertedOrderId = 0;
+        long lastInsertedOrderId = 0, lastInsertedOrderItemsId = 0;
         //Open the database
         String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
         SQLiteDatabase myDataBase = SQLiteDatabase.openDatabase(myPath, null,
@@ -594,14 +608,16 @@ public class Orders extends AppCompatActivity {
         try {
             if (isAlreadyAdded) {
                 int old_quantity = 0;
-                String query = "SELECT order_items.order_id, order_items.quantity FROM orders " +
-                        "INNER JOIN order_items ON orders.order_id = order_items.order_id " +
-                        "WHERE orders.table_id=" + sTableId + " AND order_items.product_id=" + sProductId + "";
+                String query = "select order_items.order_id, quantity, order_items.order_item_id from order_items LEFT JOIN orders ON " +
+                        "order_items.order_id=orders.order_id where orders.table_id = " + sTableId + " " +
+                        "AND order_items.product_id= " + sProductId + "";
                 Cursor cursor = myDataBase.rawQuery(query, null);
                 try {
                     if (cursor != null && cursor.moveToFirst()) {
                         lastInsertedOrderId = cursor.getLong(0);
                         old_quantity = cursor.getInt(1) + 1;
+                        lastInsertedOrderItemsId = cursor.getLong(2);
+                        currentOrderID = lastInsertedOrderId;
                     }
                 } catch (Exception e) {
                     Log.d("LocalResponse", "Error while trying to get posts from database");
@@ -618,9 +634,10 @@ public class Orders extends AppCompatActivity {
                     if (pCursor.moveToFirst()) {
                         do {
                             String insertItemsSQL = "INSERT OR REPLACE INTO order_items \n" +
-                                    "(order_id, product_id, product_code, product_name, quantity, sale_price, subtotal)\n" +
+                                    "(order_item_id, order_id, product_id, product_code, product_name, quantity, sale_price, subtotal)\n" +
                                     "VALUES \n" +
-                                    "(" + lastInsertedOrderId + ", " +
+                                    "(" + lastInsertedOrderItemsId + ", " +
+                                    "" + lastInsertedOrderId + ", " +
                                     "'" + pCursor.getString(pCursor.getColumnIndex("product_id")) + "', " +
                                     "'" + pCursor.getString(pCursor.getColumnIndex("product_code")) + "', " +
                                     "'" + pCursor.getString(pCursor.getColumnIndex("product_name")) + "', " +
@@ -638,28 +655,44 @@ public class Orders extends AppCompatActivity {
                     }
                 }
             } else {
-                String insertSQL = "INSERT OR REPLACE INTO orders \n" +
-                        "(order_date, table_id, grand_total, total_items, status)\n" +
-                        "VALUES \n" +
-                        "('" + currentdateTimeInString() + "', " +
-                        "" + sTableId + ", " +
-                        "'" + total + "', " +
-                        "" + quantity + ", " +
-                        "" + 1 + ");";
-                myDataBase.execSQL(insertSQL);
-
-                String query = "SELECT order_id from orders " +
-                        "order by order_id DESC limit 1";
-                Cursor cursor = myDataBase.rawQuery(query, null);
+                String queryOrder = "SELECT order_id from orders WHERE table_id=" + sTableId + "";
+                Cursor cursorOrder = myDataBase.rawQuery(queryOrder, null);
                 try {
-                    if (cursor != null && cursor.moveToFirst()) {
-                        lastInsertedOrderId = cursor.getLong(0);
+                    if (cursorOrder != null && cursorOrder.moveToFirst()) {
+                        lastInsertedOrderId = cursorOrder.getLong(0);
+                        currentOrderID = lastInsertedOrderId;
                     }
                 } catch (Exception e) {
                     Log.d("LocalResponse", "Error while trying to get posts from database");
                 } finally {
-                    if (cursor != null && !cursor.isClosed()) {
-                        cursor.close();
+                    if (cursorOrder != null && !cursorOrder.isClosed()) {
+                        cursorOrder.close();
+                    }
+                }
+                if (currentOrderID == 0) {
+                    String insertSQL = "INSERT OR REPLACE INTO orders \n" +
+                            "(order_date, table_id, grand_total, total_items, status)\n" +
+                            "VALUES \n" +
+                            "('" + currentdateTimeInString() + "', " +
+                            "" + sTableId + ", " +
+                            "'" + total + "', " +
+                            "" + quantity + ", " +
+                            "" + 1 + ");";
+                    myDataBase.execSQL(insertSQL);
+                    String query = "SELECT order_id from orders " +
+                            "order by order_id DESC limit 1";
+                    Cursor cursor = myDataBase.rawQuery(query, null);
+                    try {
+                        if (cursor != null && cursor.moveToFirst()) {
+                            lastInsertedOrderId = cursor.getLong(0);
+                            currentOrderID = lastInsertedOrderId;
+                        }
+                    } catch (Exception e) {
+                        Log.d("LocalResponse", "Error while trying to get posts from database");
+                    } finally {
+                        if (cursor != null && !cursor.isClosed()) {
+                            cursor.close();
+                        }
                     }
                 }
 
@@ -670,7 +703,7 @@ public class Orders extends AppCompatActivity {
                     if (pCursor.moveToFirst()) {
                         do {
                             String insertItemsSQL = "INSERT OR REPLACE INTO order_items \n" +
-                                    "(order_id, product_id, product_code, product_name, quantity, sale_price, subtotal)\n" +
+                                    "(order_id, product_id, product_code, product_name, quantity, sale_price, subtotal, product_id_table_id)\n" +
                                     "VALUES \n" +
                                     "(" + lastInsertedOrderId + ", " +
                                     "'" + pCursor.getString(pCursor.getColumnIndex("product_id")) + "', " +
@@ -678,7 +711,9 @@ public class Orders extends AppCompatActivity {
                                     "'" + pCursor.getString(pCursor.getColumnIndex("product_name")) + "', " +
                                     "" + 1 + ", " +
                                     "'" + pCursor.getString(pCursor.getColumnIndex("sale_price")) + "', " +
-                                    "" + (Integer.parseInt(pCursor.getString(pCursor.getColumnIndex("sale_price"))) * 1) + ");";
+                                    "" + (Integer.parseInt(pCursor.getString(pCursor.getColumnIndex("sale_price"))) * 1) + ", " +
+                                    "'" + pCursor.getString(pCursor.getColumnIndex("product_id")) + "_" + sTableId + "');";
+
                             myDataBase.execSQL(insertItemsSQL);
                         } while (pCursor.moveToNext());
                     }
@@ -690,7 +725,6 @@ public class Orders extends AppCompatActivity {
                     }
                 }
             }
-            currentOrderID = lastInsertedOrderId;
         } catch (Exception ex) {
             Log.e("Error", "Problem in Adding Product." + ex.getMessage());
             ex.printStackTrace();
@@ -709,6 +743,8 @@ public class Orders extends AppCompatActivity {
                 "WHERE order_id = " + sOrderId + " AND table_id = " + sTableId + "";
         try {
             myDataBase.execSQL(updateSQL);
+            quantity = 0;
+            total = 0;
         } catch (Exception ex) {
             Log.e("Error", "Problem in Adding Product." + ex.getMessage());
             ex.printStackTrace();
@@ -724,8 +760,21 @@ public class Orders extends AppCompatActivity {
         try {
             String deleteOrderSql = "DELETE FROM order_items WHERE order_id=" + sOrderId + "";
             myDataBase.execSQL(deleteOrderSql);
-            String deleteOrderItemsSql = "DELETE FROM order WHERE order_id=" + sOrderId + "";
-            myDataBase.execSQL(deleteOrderItemsSql);
+
+            String query = "SELECT * FROM order_items WHERE order_id = " + sOrderId + "";
+            Cursor cursor = myDataBase.rawQuery(query, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    String deleteOrderItemsSql = "DELETE FROM order WHERE order_id=" + sOrderId + "";
+                    myDataBase.execSQL(deleteOrderItemsSql);
+                }
+            } catch (Exception e) {
+                Log.d("LocalResponse", "Error while trying to get posts from database");
+            } finally {
+                if (cursor != null && !cursor.isClosed()) {
+                    cursor.close();
+                }
+            }
         } catch (Exception ex) {
             Log.e("Error", "Problem in Adding Product." + ex.getMessage());
             ex.printStackTrace();
@@ -741,12 +790,10 @@ public class Orders extends AppCompatActivity {
                 SQLiteDatabase.OPEN_READWRITE);
         try {
             if (resultOrders.size() > 0) {
-                for (int orderIndex = 0; orderIndex < resultOrders.size(); orderIndex++) {
-                    String deleteOrderSql = "DELETE FROM order_items WHERE order_id=" + resultOrders.get(orderIndex).getOrderId() + "";
-                    myDataBase.execSQL(deleteOrderSql);
-                    String deleteOrderItemsSql = "DELETE FROM orders WHERE order_id=" + resultOrders.get(orderIndex).getOrderId() + "";
-                    myDataBase.execSQL(deleteOrderItemsSql);
-                }
+                String deleteOrderSql = "DELETE FROM order_items WHERE order_id=" + resultOrders.get(0).getOrderId() + "";
+                myDataBase.execSQL(deleteOrderSql);
+                String deleteOrderItemsSql = "DELETE FROM orders WHERE order_id=" + resultOrders.get(0).getOrderId() + "";
+                myDataBase.execSQL(deleteOrderItemsSql);
             }
         } catch (Exception ex) {
             Log.e("Error", "Problem in Adding Product." + ex.getMessage());
@@ -763,10 +810,8 @@ public class Orders extends AppCompatActivity {
                 SQLiteDatabase.OPEN_READWRITE);
         try {
             if (resultOrders.size() > 0) {
-                for (int orderIndex = 0; orderIndex < resultOrders.size(); orderIndex++) {
-                    String deleteOrderSql = "DELETE FROM order_items WHERE order_id=" + resultOrders.get(orderIndex).getOrderId() + "";
-                    myDataBase.execSQL(deleteOrderSql);
-                }
+                String deleteOrderSql = "DELETE FROM order_items WHERE order_id=" + resultOrders.get(0).getOrderId() + "";
+                myDataBase.execSQL(deleteOrderSql);
             }
         } catch (Exception ex) {
             Log.e("Error", "Problem in Adding Product." + ex.getMessage());
@@ -815,4 +860,9 @@ public class Orders extends AppCompatActivity {
         return currentDate;
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        unregisterControls();
+    }
 }
