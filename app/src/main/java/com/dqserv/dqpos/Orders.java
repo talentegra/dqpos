@@ -177,8 +177,7 @@ public class Orders extends AppCompatActivity {
                     for (int aIndex = 0; aIndex < resultOrders.size(); aIndex++) {
                         objOrder = new JSONObject();
                         try {
-                            objOrder.put("total", (Integer.parseInt(resultOrders.get(aIndex).getQuantity())) *
-                                    (Integer.parseInt(resultOrders.get(aIndex).getSalePrice())));
+                            objOrder.put("total", total);
                             objOrder.put("grand_total", total);
                             objOrder.put("table_name", sTableName);
                             objOrder.put("date", currentdateTimeInString());
@@ -743,8 +742,6 @@ public class Orders extends AppCompatActivity {
                 "WHERE order_id = " + sOrderId + " AND table_id = " + sTableId + "";
         try {
             myDataBase.execSQL(updateSQL);
-            quantity = 0;
-            total = 0;
         } catch (Exception ex) {
             Log.e("Error", "Problem in Adding Product." + ex.getMessage());
             ex.printStackTrace();
