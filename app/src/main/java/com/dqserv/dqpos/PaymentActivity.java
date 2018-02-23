@@ -1,11 +1,8 @@
 package com.dqserv.dqpos;
 
 import android.content.Intent;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,12 +10,10 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.dqserv.ConnectivityReceiver;
-import com.dqserv.adapter.BillAdapter;
 import com.dqserv.adapter.PaymentAdapter;
 import com.dqserv.config.Constants;
 import com.dqserv.rest.ApiClient;
 import com.dqserv.rest.ApiInterface;
-import com.dqserv.rest.PaymentObject;
 import com.dqserv.rest.PaymentObject;
 import com.dqserv.widget.CustomItemClickListener;
 
