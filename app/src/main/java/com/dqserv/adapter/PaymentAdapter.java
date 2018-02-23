@@ -26,11 +26,14 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.MyViewHo
     CustomItemClickListener listener;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvProductID;
+        public TextView tvProductName, tvPrice, tvQty, tvSubTotal;
 
         public MyViewHolder(View view) {
             super(view);
-            tvProductID = (TextView) view.findViewById(R.id.row_payment_product_id);
+            tvProductName = (TextView) view.findViewById(R.id.row_payment_product_name);
+            tvPrice = (TextView) view.findViewById(R.id.row_payment_product_price);
+            tvQty = (TextView) view.findViewById(R.id.row_payment_product_qty);
+            tvSubTotal = (TextView) view.findViewById(R.id.row_payment_product_subtotal);
         }
     }
 
@@ -57,7 +60,10 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.MyViewHo
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         PaymentObject.Orders oPayment = paymentList.get(position);
-        holder.tvProductID.setText(oPayment.getProductId());
+        holder.tvProductName.setText(oPayment.getProductName());
+        holder.tvPrice.setText(oPayment.getUnitPrice());
+        holder.tvQty.setText(oPayment.getQuantity());
+        holder.tvSubTotal.setText(oPayment.getSubtotal());
     }
 
     @Override
