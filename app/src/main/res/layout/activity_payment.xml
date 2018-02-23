@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.dqserv.dqpos.PaymentActivity">
+
+    <RelativeLayout
+        android:id="@+id/payment_rl_progress"
+        android:layout_width="@dimen/_200sdp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/box_background"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/_10sdp"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/payment_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateTint="@color/colorPrimary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/payment_progress"
+            android:ellipsize="end"
+            android:gravity="center_horizontal"
+            android:lines="2"
+            android:text="Getting Bill Items, Please Wait..."
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/fab_margin" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/payment_ll_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_35sdp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/payment_btn_payment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            android:text="Payment"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/_14ssp" />
+
+        <Button
+            android:id="@+id/payment_btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_weight="1"
+            android:background="@android:color/darker_gray"
+            android:text="Cancel"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/_14ssp" />
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/payment_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/payment_ll_buttons"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="@dimen/_10sdp"
+        android:layout_marginRight="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:scrollbars="none" />
+</RelativeLayout>
+

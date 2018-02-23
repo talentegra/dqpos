@@ -604,7 +604,8 @@ public class Orders extends AppCompatActivity {
 
                 @Override
                 public void deleteViewOnClick(View v, int position) {
-                    deleteOrder(v.getTag().toString());
+                    String aIDs[] = v.getTag().toString().split("\\|");
+                    deleteOrder(aIDs[0], aIDs[1]);
                     getOrders(sTableId, currentOrderID);
                 }
             });
@@ -792,20 +793,22 @@ public class Orders extends AppCompatActivity {
     }
 
 
-    private static void deleteOrder(String sOrderId) {
+    private static void deleteOrder(String sOrderId, String sProductId) {
         //Open the database
         String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
         SQLiteDatabase myDataBase = SQLiteDatabase.openDatabase(myPath, null,
                 SQLiteDatabase.OPEN_READWRITE);
         try {
-            String deleteOrderSql = "DELETE FROM order_items WHERE order_id=" + sOrderId + "";
+            String deleteOrderSql = "DELETE FROM order_items WHERE order_id=" + sOrderId + " " +
+                    "AND product_id = " + sProductId + "";
             myDataBase.execSQL(deleteOrderSql);
 
             String query = "SELECT * FROM order_items WHERE order_id = " + sOrderId + "";
             Cursor cursor = myDataBase.rawQuery(query, null);
             try {
-                if (cursor != null && cursor.moveToFirst()) {
-                    String deleteOrderItemsSql = "DELETE FROM order WHERE order_id=" + sOrderId + "";
+                if (cursor != null && cursor.getCount() == 0) {
+                    String deleteOrderItemsSql = "DELETE FROM orders WHERE order_id=" + sOrderId + " " +
+                            "AND table_id = " + sTableId + "";
                     myDataBase.execSQL(deleteOrderItemsSql);
                 }
             } catch (Exception e) {

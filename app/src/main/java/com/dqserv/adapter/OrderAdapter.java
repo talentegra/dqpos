@@ -65,7 +65,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder
         holder.tvPrice.setText(oOrder.getSalePrice());
         holder.tvQty.setText(oOrder.getQuantity());
         holder.tvtotal.setText(oOrder.getSubTotal());
-        holder.ivDelete.setTag(oOrder.getOrderId());
+        holder.ivDelete.setTag(oOrder.getOrderId() + "|" + oOrder.getProductId());
     }
 
     @Override

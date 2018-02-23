@@ -29,6 +29,7 @@
     <string name="pos">POS</string>
     <string name="order">Orders</string>
     <string name="bill">Bill</string>
+    <string name="payment">Payment</string>
     <string name="add_cart">Add To Cart</string>
 
 </resources>

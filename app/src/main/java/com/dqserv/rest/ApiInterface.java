@@ -32,4 +32,8 @@ public interface ApiInterface {
     @POST("get_orders")
     Call<BillObject> getOrders(@Field("auth_token") String authToken);
 
+    @FormUrlEncoded
+    @POST("get_order_by_id")
+    Call<PaymentObject> getOrderById(@Field("auth_token") String authToken,
+                               @Field("order_sale_id") String orderID);
 }

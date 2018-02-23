@@ -58,6 +58,9 @@
             android:name=".BillActivity"
             android:label="@string/bill"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".PaymentActivity"
+            android:label="@string/payment" />
     </application>
 
 </manifest>

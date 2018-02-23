@@ -19,6 +19,9 @@ public class BillObject {
 
         }
 
+        @SerializedName("order_sale_id")
+        private String orderSaleId;
+
         @SerializedName("date")
         private String date;
 
@@ -61,6 +64,14 @@ public class BillObject {
 
         public void setTotalItems(String totalItems) {
             this.totalItems = totalItems;
+        }
+
+        public void setOrderSaleId(String orderSaleId) {
+            this.orderSaleId = orderSaleId;
+        }
+
+        public String getOrderSaleId() {
+            return orderSaleId;
         }
     }
 

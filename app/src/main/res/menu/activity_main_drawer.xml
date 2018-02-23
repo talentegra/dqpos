@@ -6,37 +6,41 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_pos"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/bookmark_outline"
             android:title="POS" />
         <item
             android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Orders" />
+            android:icon="@drawable/cloud_print"
+            android:title="Orders"
+            android:visible="false" />
         <item
             android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/cloud_print"
             android:title="Bill" />
+
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:title="Tools"
+            android:visible="false" />
+
     </group>
 
     <item android:title="Settings">
         <menu>
+
             <item
                 android:id="@+id/nav_products"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/food"
                 android:title="Products" />
             <item
                 android:id="@+id/nav_categories"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/food_croissant"
                 android:title="Categories" />
 
             <item
                 android:id="@+id/nav_tables"
-                android:icon="@drawable/ic_menu_send"
-                android:visible="false"
+                android:icon="@drawable/table"
                 android:title="Tables" />
         </menu>
     </item>
