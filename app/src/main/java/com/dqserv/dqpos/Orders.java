@@ -181,10 +181,10 @@ public class Orders extends AppCompatActivity {
                         for (int aIndex = 0; aIndex < resultOrders.size(); aIndex++) {
                             objOrder = new JSONObject();
                             try {
-                                objOrder.put("total", total);
-                                objOrder.put("grand_total", total);
+                                objOrder.put("total", String.valueOf(total));
+                                objOrder.put("grand_total", String.valueOf(total));
                                 objOrder.put("table_name", sTableName);
-                                objOrder.put("total_items", quantity);
+                                objOrder.put("total_items", String.valueOf(quantity));
                                 objOrder.put("date", currentdateTimeInString());
                                 objOrder.put("product_id", resultOrders.get(aIndex).getProductId());
                                 objOrder.put("quantity", resultOrders.get(aIndex).getQuantity());
@@ -264,33 +264,38 @@ public class Orders extends AppCompatActivity {
         btnOrderCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    LayoutInflater inflater = (LayoutInflater)
-                            getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    View layout = inflater.inflate(R.layout.layout_popup,
-                            (ViewGroup) findViewById(R.id.popup_cancel_order));
-                    final PopupWindow pw = new PopupWindow(layout, (int) mContext.getResources().getDimension(R.dimen._200sdp),
-                            (int) mContext.getResources().getDimension(R.dimen._180sdp), true);
-                    pw.showAtLocation(layout, Gravity.CENTER, 0, 0);
-                    Button close = (Button) layout.findViewById(R.id.close_popup);
-                    close.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            pw.dismiss();
-                        }
-                    });
-                    Button accept = (Button) layout.findViewById(R.id.accept_popup);
-                    accept.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            deleteAllOrders();
-                            unregisterControls();
-                            pw.dismiss();
-                            getOrders(sTableId, currentOrderID);
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (!sTableId.equalsIgnoreCase("")) {
+                    try {
+                        LayoutInflater inflater = (LayoutInflater)
+                                getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        View layout = inflater.inflate(R.layout.layout_popup,
+                                (ViewGroup) findViewById(R.id.popup_cancel_order));
+                        final PopupWindow pw = new PopupWindow(layout, (int) mContext.getResources().getDimension(R.dimen._200sdp),
+                                (int) mContext.getResources().getDimension(R.dimen._180sdp), true);
+                        pw.showAtLocation(layout, Gravity.CENTER, 0, 0);
+                        Button close = (Button) layout.findViewById(R.id.close_popup);
+                        close.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                pw.dismiss();
+                            }
+                        });
+                        Button accept = (Button) layout.findViewById(R.id.accept_popup);
+                        accept.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                deleteAllOrders();
+                                unregisterControls();
+                                pw.dismiss();
+                                getOrders(sTableId, currentOrderID);
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    finish();
+                    startActivity(new Intent(getApplicationContext(), POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 }
             }
         });
@@ -917,7 +922,7 @@ public class Orders extends AppCompatActivity {
                         "" + resultOrders.get(oIndex).getQuantity() + ", " +
                         "'" + resultOrders.get(oIndex).getSalePrice() + "', " +
                         "" + (Integer.parseInt(resultOrders.get(oIndex).getSalePrice()) * Integer.parseInt(resultOrders.get(oIndex).getQuantity())) + ", " +
-                        "'" + resultOrders.get(oIndex).getProductId()  + "_" + sTableId + "');";
+                        "'" + resultOrders.get(oIndex).getProductId() + "_" + sTableId + "');";
                 myDataBase.execSQL(insertItemsSQL);
             } catch (Exception ex) {
                 Log.e("Error", "Problem in Adding Product." + ex.getMessage());
