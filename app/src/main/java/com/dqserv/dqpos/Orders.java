@@ -184,6 +184,7 @@ public class Orders extends AppCompatActivity {
                                 objOrder.put("total", total);
                                 objOrder.put("grand_total", total);
                                 objOrder.put("table_name", sTableName);
+                                objOrder.put("total_items", quantity);
                                 objOrder.put("date", currentdateTimeInString());
                                 objOrder.put("product_id", resultOrders.get(aIndex).getProductId());
                                 objOrder.put("quantity", resultOrders.get(aIndex).getQuantity());
@@ -194,7 +195,6 @@ public class Orders extends AppCompatActivity {
                                 objOrder.put("product_code", resultOrders.get(aIndex).getProductCode());
                                 objOrder.put("product_name", resultOrders.get(aIndex).getProductName());
                                 objOrder.put("sale_price", resultOrders.get(aIndex).getSalePrice());
-
                             } catch (JSONException e) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
@@ -219,6 +219,7 @@ public class Orders extends AppCompatActivity {
 
                             @Override
                             public void onFailure(Call<ResponseOrderObject> call, Throwable t) {
+                                mProgressBar.setVisibility(View.GONE);
                                 Toast.makeText(getApplicationContext(), "Somthing went wrong, please try again...", Toast.LENGTH_SHORT).show();
                             }
                         });
