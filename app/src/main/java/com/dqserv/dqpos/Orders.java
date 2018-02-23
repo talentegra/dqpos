@@ -284,10 +284,13 @@ public class Orders extends AppCompatActivity {
                         accept.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                Toast.makeText(getApplicationContext(), "Cancel your order.", Toast.LENGTH_SHORT).show();
                                 deleteAllOrders();
                                 unregisterControls();
-                                pw.dismiss();
                                 getOrders(sTableId, currentOrderID);
+                                pw.dismiss();
+                                finish();
+                                startActivity(new Intent(getApplicationContext(), POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             }
                         });
                     } catch (Exception e) {

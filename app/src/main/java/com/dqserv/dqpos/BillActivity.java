@@ -68,9 +68,12 @@ public class BillActivity extends AppCompatActivity implements NavigationView.On
                         billAdapter = new BillAdapter(results, new CustomItemClickListener() {
                             @Override
                             public void onItemClick(View v, int position) {
+                                String aBillData[] = v.getTag().toString().split("\\|");
                                 startActivity(new Intent(getApplicationContext(),
                                         PaymentActivity.class)
-                                        .putExtra("order_sale_id", v.getTag().toString())
+                                        .putExtra("order_sale_id", aBillData[0])
+                                        .putExtra("total_items", aBillData[1])
+                                        .putExtra("grand_total", aBillData[2])
                                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             }
 

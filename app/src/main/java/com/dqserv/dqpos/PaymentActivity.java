@@ -1,5 +1,6 @@
 package com.dqserv.dqpos;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,7 +8,9 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.dqserv.ConnectivityReceiver;
 import com.dqserv.adapter.PaymentAdapter;
@@ -30,6 +33,7 @@ public class PaymentActivity extends AppCompatActivity {
     PaymentAdapter paymentAdapter;
     RelativeLayout mProgressBar;
     RecyclerView rv;
+    Button btnPayment, btnCancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,8 @@ public class PaymentActivity extends AppCompatActivity {
         setContentView(R.layout.activity_payment);
         mProgressBar = (RelativeLayout) findViewById(R.id.payment_rl_progress);
         rv = (RecyclerView) findViewById(R.id.payment_recycler_view);
+        btnPayment = (Button) findViewById(R.id.payment_btn_payment);
+        btnCancel = (Button) findViewById(R.id.payment_btn_cancel);
 
         results = new ArrayList<>();
 
@@ -77,6 +83,60 @@ public class PaymentActivity extends AppCompatActivity {
                 }
             });
         }
+
+        btnPayment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Dialog paymentDialog = new Dialog(PaymentActivity.this, R.style.AppTheme);
+                paymentDialog.setContentView(R.layout.layout_payment_popup);
+
+                TextView tvTotalItems = (TextView) paymentDialog
+                        .findViewById(R.id.popup_payment_tv_total_items);
+                TextView tvPayble = (TextView) paymentDialog
+                        .findViewById(R.id.popup_payment_tv_total_payable);
+                TextView tvPaying = (TextView) paymentDialog
+                        .findViewById(R.id.popup_payment_tv_total_paying);
+                TextView tvBalance = (TextView) paymentDialog
+                        .findViewById(R.id.popup_payment_tv_balance);
+
+                Button btnClose = (Button) paymentDialog
+                        .findViewById(R.id.popup_payment_btn_close);
+
+                Button btnSubmit = (Button) paymentDialog
+                        .findViewById(R.id.popup_payment_btn_submit);
+
+
+                tvTotalItems.setText(getIntent().getStringExtra("total_items").toString().equalsIgnoreCase("null")
+                        ? "0" : getIntent().getStringExtra("total_items"));
+                tvPayble.setText(getIntent().getStringExtra("grand_total").toString().equalsIgnoreCase("null")
+                        ? "0" : getIntent().getStringExtra("grand_total"));
+
+                btnClose.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        paymentDialog.dismiss();
+                    }
+                });
+
+                btnSubmit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                });
+
+                paymentDialog.show();
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+                startActivity(new Intent(getApplicationContext(), BillActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
+        });
     }
 
     //get Tables
