@@ -28,4 +28,8 @@ public interface ApiInterface {
                                 @Field("table_id") String sTableId,
                                 @Field("data") JSONArray data);
 
+    @FormUrlEncoded
+    @POST("get_orders")
+    Call<BillObject> getOrders(@Field("auth_token") String authToken);
+
 }

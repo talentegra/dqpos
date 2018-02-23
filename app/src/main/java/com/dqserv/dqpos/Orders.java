@@ -1,8 +1,10 @@
 package com.dqserv.dqpos;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -10,6 +12,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -168,55 +171,91 @@ public class Orders extends AppCompatActivity {
         btnOrderComplete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ConnectivityReceiver.isConnected()) {
-                    mProgressBar.setVisibility(View.VISIBLE);
-                    ApiInterface apiService =
-                            ApiClient.getClient().create(ApiInterface.class);
-                    JSONObject objOrder = null;
-                    JSONArray jsonArray = new JSONArray();
-                    for (int aIndex = 0; aIndex < resultOrders.size(); aIndex++) {
-                        objOrder = new JSONObject();
-                        try {
-                            objOrder.put("total", total);
-                            objOrder.put("grand_total", total);
-                            objOrder.put("table_name", sTableName);
-                            objOrder.put("date", currentdateTimeInString());
-                            objOrder.put("product_id", resultOrders.get(aIndex).getProductId());
-                            objOrder.put("quantity", resultOrders.get(aIndex).getQuantity());
-                            objOrder.put("unit_price", resultOrders.get(aIndex).getSalePrice());
-                            objOrder.put("net_unit_price", resultOrders.get(aIndex).getSalePrice());
-                            objOrder.put("real_unit_price", resultOrders.get(aIndex).getSalePrice());
-                            objOrder.put("subtotal", resultOrders.get(aIndex).getSubTotal());
-                            objOrder.put("product_code", resultOrders.get(aIndex).getProductCode());
-                            objOrder.put("product_name", resultOrders.get(aIndex).getProductName());
-                            objOrder.put("sale_price", resultOrders.get(aIndex).getSalePrice());
+                if (resultOrders.size() > 0) {
+                    if (ConnectivityReceiver.isConnected()) {
+                        mProgressBar.setVisibility(View.VISIBLE);
+                        ApiInterface apiService =
+                                ApiClient.getClient().create(ApiInterface.class);
+                        JSONObject objOrder = null;
+                        JSONArray jsonArray = new JSONArray();
+                        for (int aIndex = 0; aIndex < resultOrders.size(); aIndex++) {
+                            objOrder = new JSONObject();
+                            try {
+                                objOrder.put("total", total);
+                                objOrder.put("grand_total", total);
+                                objOrder.put("table_name", sTableName);
+                                objOrder.put("date", currentdateTimeInString());
+                                objOrder.put("product_id", resultOrders.get(aIndex).getProductId());
+                                objOrder.put("quantity", resultOrders.get(aIndex).getQuantity());
+                                objOrder.put("unit_price", resultOrders.get(aIndex).getSalePrice());
+                                objOrder.put("net_unit_price", resultOrders.get(aIndex).getSalePrice());
+                                objOrder.put("real_unit_price", resultOrders.get(aIndex).getSalePrice());
+                                objOrder.put("subtotal", resultOrders.get(aIndex).getSubTotal());
+                                objOrder.put("product_code", resultOrders.get(aIndex).getProductCode());
+                                objOrder.put("product_name", resultOrders.get(aIndex).getProductName());
+                                objOrder.put("sale_price", resultOrders.get(aIndex).getSalePrice());
 
-                        } catch (JSONException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                            } catch (JSONException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                            jsonArray.put(objOrder);
                         }
-                        jsonArray.put(objOrder);
+                        Call<ResponseOrderObject> call = apiService.addOrders(Constants.AUTH_TOKEN, sTableId,
+                                jsonArray);
+                        call.enqueue(new Callback<ResponseOrderObject>() {
+                            @Override
+                            public void onResponse(Call<ResponseOrderObject> call, Response<ResponseOrderObject> response) {
+                                mProgressBar.setVisibility(View.GONE);
+                                Toast.makeText(getApplicationContext(), "Succes your order.", Toast.LENGTH_SHORT).show();
+                                saveOrderPrintTable(resultOrders);
+                                saveOrderPrintItemsTable(resultOrders);
+                                deleteAllOrders();
+                                unregisterControls();
+                                getOrders(sTableId, currentOrderID);
+                                finish();
+                                startActivity(new Intent(getApplicationContext(), POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseOrderObject> call, Throwable t) {
+                                Toast.makeText(getApplicationContext(), "Somthing went wrong, please try again...", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Succes your order.", Toast.LENGTH_SHORT).show();
+                        saveOrderPrintTable(resultOrders);
+                        saveOrderPrintItemsTable(resultOrders);
+                        deleteAllOrders();
+                        unregisterControls();
+                        getOrders(sTableId, currentOrderID);
+                        finish();
+                        startActivity(new Intent(getApplicationContext(), POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                     }
-                    Call<ResponseOrderObject> call = apiService.addOrders(Constants.AUTH_TOKEN, sTableId,
-                            jsonArray);
-                    call.enqueue(new Callback<ResponseOrderObject>() {
-                        @Override
-                        public void onResponse(Call<ResponseOrderObject> call, Response<ResponseOrderObject> response) {
-                            mProgressBar.setVisibility(View.GONE);
-                            deleteAllOrders();
-                            unregisterControls();
-                            getOrders(sTableId, currentOrderID);
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseOrderObject> call, Throwable t) {
-                            Log.e("Response", "Error");
-                        }
-                    });
                 } else {
-                    deleteOrderInformationData();
-                    unregisterControls();
-                    getOrders(sTableId, currentOrderID);
+                    try {
+                        LayoutInflater inflater = (LayoutInflater)
+                                getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        View layout = inflater.inflate(R.layout.layout_popup,
+                                (ViewGroup) findViewById(R.id.popup_cancel_order));
+                        final PopupWindow pw = new PopupWindow(layout, (int) mContext.getResources().getDimension(R.dimen._200sdp),
+                                (int) mContext.getResources().getDimension(R.dimen._180sdp), true);
+                        pw.showAtLocation(layout, Gravity.CENTER, 0, 0);
+                        TextView msg = (TextView) layout.findViewById(R.id.message_popup);
+                        msg.setText("No Orders!");
+                        Button close = (Button) layout.findViewById(R.id.close_popup);
+                        close.setVisibility(View.GONE);
+                        Button accept = (Button) layout.findViewById(R.id.accept_popup);
+                        accept.setText("Ok");
+                        accept.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                pw.dismiss();
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -232,8 +271,6 @@ public class Orders extends AppCompatActivity {
                     final PopupWindow pw = new PopupWindow(layout, (int) mContext.getResources().getDimension(R.dimen._200sdp),
                             (int) mContext.getResources().getDimension(R.dimen._180sdp), true);
                     pw.showAtLocation(layout, Gravity.CENTER, 0, 0);
-                    pw.setFocusable(false);
-                    pw.setOutsideTouchable(false);
                     Button close = (Button) layout.findViewById(R.id.close_popup);
                     close.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -801,24 +838,6 @@ public class Orders extends AppCompatActivity {
     }
 
 
-    private static void deleteOrderInformationData() {
-        String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
-        SQLiteDatabase myDataBase = SQLiteDatabase.openDatabase(myPath, null,
-                SQLiteDatabase.OPEN_READWRITE);
-        try {
-            if (resultOrders.size() > 0) {
-                String deleteOrderSql = "DELETE FROM order_items WHERE order_id=" + resultOrders.get(0).getOrderId() + "";
-                myDataBase.execSQL(deleteOrderSql);
-            }
-        } catch (Exception ex) {
-            Log.e("Error", "Problem in Adding Product." + ex.getMessage());
-            ex.printStackTrace();
-        }
-        myDataBase.close();
-        Log.e("Success", "Tables Successfully Added.");
-    }
-
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -856,6 +875,58 @@ public class Orders extends AppCompatActivity {
         }
         return currentDate;
     }
+
+    private void saveOrderPrintTable(List<OrderObject.Orders> items) {
+        String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
+        SQLiteDatabase myDataBase = SQLiteDatabase.openDatabase(myPath, null,
+                SQLiteDatabase.OPEN_READWRITE);
+        try {
+            String insertSQL = "INSERT OR REPLACE INTO order_print \n" +
+                    "(order_id, order_date, table_id, grand_total, total_items, status)\n" +
+                    "VALUES \n" +
+                    "(" + items.get(0).getOrderId() + ", " +
+                    "'" + currentdateTimeInString() + "', " +
+                    "" + sTableId + ", " +
+                    "'" + total + "', " +
+                    "" + quantity + ", " +
+                    "" + 1 + ");";
+            myDataBase.execSQL(insertSQL);
+        } catch (Exception ex) {
+            Log.e("Error", "Problem in Adding Product." + ex.getMessage());
+            ex.printStackTrace();
+        }
+        myDataBase.close();
+        Log.e("Success", "Tables Successfully Added.");
+    }
+
+    private void saveOrderPrintItemsTable(List<OrderObject.Orders> items) {
+        //Open the database
+        String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
+        SQLiteDatabase myDataBase = SQLiteDatabase.openDatabase(myPath, null,
+                SQLiteDatabase.OPEN_READWRITE);
+        for (int oIndex = 0; oIndex < items.size(); oIndex++) {
+            try {
+                String insertItemsSQL = "INSERT OR REPLACE INTO order_print_items \n" +
+                        "(order_id, product_id, product_code, product_name, quantity, sale_price, subtotal, product_id_table_id)\n" +
+                        "VALUES \n" +
+                        "(" + resultOrders.get(oIndex).getOrderId() + ", " +
+                        "'" + resultOrders.get(oIndex).getProductId() + "', " +
+                        "'" + resultOrders.get(oIndex).getProductCode() + "', " +
+                        "'" + resultOrders.get(oIndex).getProductName() + "', " +
+                        "" + resultOrders.get(oIndex).getQuantity() + ", " +
+                        "'" + resultOrders.get(oIndex).getSalePrice() + "', " +
+                        "" + (Integer.parseInt(resultOrders.get(oIndex).getSalePrice()) * Integer.parseInt(resultOrders.get(oIndex).getQuantity())) + ", " +
+                        "'" + resultOrders.get(oIndex).getProductId()  + "_" + sTableId + "');";
+                myDataBase.execSQL(insertItemsSQL);
+            } catch (Exception ex) {
+                Log.e("Error", "Problem in Adding Product." + ex.getMessage());
+                ex.printStackTrace();
+            }
+        }
+        myDataBase.close();
+        Log.e("Success", "Tables Successfully Added.");
+    }
+
 
     @Override
     public void onBackPressed() {

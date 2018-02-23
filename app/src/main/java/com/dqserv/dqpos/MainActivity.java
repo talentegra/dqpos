@@ -126,7 +126,9 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(getApplicationContext(), "Sync Products", Toast.LENGTH_SHORT).show();
             }
         } else if (id == R.id.nav_slideshow) {
-
+            if (!MainActivity.class.getSimpleName().equalsIgnoreCase("BillActivity")) {
+                startActivity(new Intent(this, BillActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
         } else if (id == R.id.nav_manage) {
             if (!MainActivity.class.getSimpleName().equalsIgnoreCase("Categories")) {
                 startActivity(new Intent(this, Categories.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
