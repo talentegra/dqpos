@@ -15,8 +15,20 @@ public class PaymentObject {
 
     public static class Orders {
 
+        public Orders() {
+        }
+
+        @SerializedName("order_sale_id")
+        private String orderSaleId;
+
+        @SerializedName("order_sale_item_id")
+        private String orderSaleItemId;
+
         @SerializedName("product_id")
         private String productId;
+
+        @SerializedName("product_code")
+        private String productCode;
 
         @SerializedName("product_name")
         private String productName;
@@ -68,6 +80,30 @@ public class PaymentObject {
 
         public void setSubtotal(String subtotal) {
             this.subtotal = subtotal;
+        }
+
+        public void setProductCode(String productCode) {
+            this.productCode = productCode;
+        }
+
+        public String getProductCode() {
+            return productCode;
+        }
+
+        public void setOrderSaleId(String orderSaleId) {
+            this.orderSaleId = orderSaleId;
+        }
+
+        public void setOrderSaleItemId(String orderSaleItemId) {
+            this.orderSaleItemId = orderSaleItemId;
+        }
+
+        public String getOrderSaleId() {
+            return orderSaleId;
+        }
+
+        public String getOrderSaleItemId() {
+            return orderSaleItemId;
         }
     }
 

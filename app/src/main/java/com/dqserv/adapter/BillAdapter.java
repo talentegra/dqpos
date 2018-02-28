@@ -59,7 +59,8 @@ public class BillAdapter extends RecyclerView.Adapter<BillAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         BillObject.Orders oBill = billList.get(position);
-        holder.itemView.setTag(oBill.getOrderSaleId() + "|" + oBill.getTotalItems() + "|" + oBill.getGrandTotal());
+        holder.itemView.setTag(oBill.getOrderSaleId() + "|" + oBill.getTotalItems()
+                + "|" + oBill.getGrandTotal() + "|" + oBill.getTableName());
         String displayValue = "";
         try {
             // Get date from string

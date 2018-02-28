@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/popup_cancel_order"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#80000000"
     android:gravity="center_vertical"
-    android:orientation="vertical"
     android:padding="@dimen/_10sdp">
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -387,6 +385,35 @@
 
         </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/popup_payment_rl_progress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:background="#FFFFFF"
+        android:padding="@dimen/_10sdp"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/popup_payment_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateTint="@color/colorPrimary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/popup_payment_progress"
+            android:ellipsize="end"
+            android:lines="2"
+            android:gravity="center_vertical"
+            android:text="Print Bill, Please Wait..."
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/_16ssp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
 
 
