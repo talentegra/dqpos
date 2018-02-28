@@ -58,7 +58,7 @@ public class ProductByCategoryAdapter extends RecyclerView.Adapter<ProductByCate
     public void onBindViewHolder(MyViewHolder holder, int position) {
         ProductObject.Products oProduct = productsList.get(position);
         holder.btnProduct.setText(oProduct.getProductName() + "\n"
-                + oProduct.getProductCost() + " " + mContext.getString(R.string.rs_symbol));
+                + mContext.getString(R.string.rs_symbol) + " " + oProduct.getProductCost());
         holder.itemView.setTag(oProduct.getProductId());
     }
 
