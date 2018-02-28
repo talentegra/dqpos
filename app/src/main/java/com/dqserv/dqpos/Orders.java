@@ -357,7 +357,7 @@ public class Orders extends AppCompatActivity {
                     resultProductsFromCategory.clear();
                     getProductsFromLocalByCategoryId(resultCategories.get(getArguments().getInt(ARG_SECTION_NUMBER)).getCategoryId());
                     if (resultProductsFromCategory.size() > 0) {
-                        productByCategoryAdapter = new ProductByCategoryAdapter(resultProductsFromCategory,
+                        productByCategoryAdapter = new ProductByCategoryAdapter(mContext, resultProductsFromCategory,
                                 new CustomItemClickListener() {
                                     @Override
                                     public void onItemClick(View v, int position) {
@@ -404,7 +404,7 @@ public class Orders extends AppCompatActivity {
             if (getArguments().getInt(ARG_SECTION_NUMBER) == tabLayout.getSelectedTabPosition()) {
                 resultProductsFromCategory.clear();
                 getProductsFromLocalByCategoryId(resultCategories.get(getArguments().getInt(ARG_SECTION_NUMBER)).getCategoryId());
-                productByCategoryAdapter = new ProductByCategoryAdapter(resultProductsFromCategory,
+                productByCategoryAdapter = new ProductByCategoryAdapter(mContext, resultProductsFromCategory,
                         new CustomItemClickListener() {
                             @Override
                             public void onItemClick(View v, int position) {

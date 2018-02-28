@@ -213,6 +213,7 @@
                     android:layout_weight="1"
                     android:background="@color/colorPrimary"
                     android:text="1"
+                    android:tag="1"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/_14ssp" />
 
@@ -224,6 +225,7 @@
                     android:layout_weight="1"
                     android:background="@color/colorPrimary"
                     android:text="2"
+                    android:tag="2"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/_14ssp" />
 
@@ -235,6 +237,7 @@
                     android:layout_weight="1"
                     android:background="@color/colorPrimary"
                     android:text="5"
+                    android:tag="5"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/_14ssp" />
 
@@ -246,6 +249,7 @@
                     android:layout_weight="1"
                     android:background="@color/colorPrimary"
                     android:text="10"
+                    android:tag="10"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/_14ssp" />
 
@@ -255,6 +259,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="@dimen/_2sdp"
                     android:layout_weight="1"
+                    android:tag="20"
                     android:background="@color/colorPrimary"
                     android:text="20"
                     android:textColor="@android:color/white"
@@ -277,6 +282,7 @@
                     android:layout_weight="1"
                     android:background="@color/colorPrimary"
                     android:text="50"
+                    android:tag="50"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/_14ssp" />
 
@@ -288,6 +294,7 @@
                     android:layout_weight="1"
                     android:background="@color/colorPrimary"
                     android:text="100"
+                    android:tag="100"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/_14ssp" />
 
@@ -299,6 +306,7 @@
                     android:layout_weight="1"
                     android:background="@color/colorPrimary"
                     android:text="200"
+                    android:tag="200"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/_14ssp" />
 
@@ -310,6 +318,7 @@
                     android:layout_weight="1"
                     android:background="@color/colorPrimary"
                     android:text="500"
+                    android:tag="500"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/_14ssp" />
 
@@ -321,6 +330,7 @@
                     android:layout_weight="1"
                     android:background="@color/colorPrimary"
                     android:text="2000"
+                    android:tag="2000"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/_14ssp" />
 

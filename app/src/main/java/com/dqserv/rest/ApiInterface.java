@@ -25,8 +25,8 @@ public interface ApiInterface {
     @FormUrlEncoded
     @POST("post_orders")
     Call<ResponseOrderObject> addOrders(@Field("auth_token") String authToken,
-                                @Field("table_id") String sTableId,
-                                @Field("data") JSONArray data);
+                                        @Field("table_id") String sTableId,
+                                        @Field("data") JSONArray data);
 
     @FormUrlEncoded
     @POST("get_orders")
@@ -35,5 +35,11 @@ public interface ApiInterface {
     @FormUrlEncoded
     @POST("get_order_by_id")
     Call<PaymentObject> getOrderById(@Field("auth_token") String authToken,
-                               @Field("order_sale_id") String orderID);
+                                     @Field("order_sale_id") String orderID);
+
+    @FormUrlEncoded
+    @POST("post_sales")
+    Call<SaleObject> addSalesData(@Field("auth_token") String authToken,
+                                  @Field("order_sale_id") String orderID,
+                                  @Field("data") JSONArray data);
 }

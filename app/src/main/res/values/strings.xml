@@ -31,5 +31,6 @@
     <string name="bill">Bill</string>
     <string name="payment">Payment</string>
     <string name="add_cart">Add To Cart</string>
+    <string name="rs_symbol">\u20B9</string>
 
 </resources>

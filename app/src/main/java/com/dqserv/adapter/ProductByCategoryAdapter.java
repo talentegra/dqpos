@@ -1,5 +1,6 @@
 package com.dqserv.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ public class ProductByCategoryAdapter extends RecyclerView.Adapter<ProductByCate
 
     private List<ProductObject.Products> productsList;
     CustomItemClickListener listener;
+    Context mContext;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public Button btnProduct;
@@ -32,7 +34,8 @@ public class ProductByCategoryAdapter extends RecyclerView.Adapter<ProductByCate
     }
 
 
-    public ProductByCategoryAdapter(List<ProductObject.Products> productsList, CustomItemClickListener listener) {
+    public ProductByCategoryAdapter(Context mContext, List<ProductObject.Products> productsList, CustomItemClickListener listener) {
+        this.mContext = mContext;
         this.productsList = productsList;
         this.listener = listener;
     }
@@ -54,7 +57,8 @@ public class ProductByCategoryAdapter extends RecyclerView.Adapter<ProductByCate
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         ProductObject.Products oProduct = productsList.get(position);
-        holder.btnProduct.setText(oProduct.getProductName() + "\n" + oProduct.getProductCost());
+        holder.btnProduct.setText(oProduct.getProductName() + "\n"
+                + oProduct.getProductCost() + " " + mContext.getString(R.string.rs_symbol));
         holder.itemView.setTag(oProduct.getProductId());
     }
 
