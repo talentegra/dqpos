@@ -28,8 +28,8 @@ public class ProductObject {
         @SerializedName("product_name")
         private String productName;
 
-        @SerializedName("product_cost")
-        private String productCost;
+        @SerializedName("sale_price")
+        private String salePrice;
 
         @SerializedName("category_id")
         private String categoryId;
@@ -42,8 +42,8 @@ public class ProductObject {
             return productCode;
         }
 
-        public String getProductCost() {
-            return productCost;
+        public String getSalePrice() {
+            return salePrice;
         }
 
         public String getProductName() {
@@ -62,8 +62,8 @@ public class ProductObject {
             this.productName = productName;
         }
 
-        public void setProductCost(String productCost) {
-            this.productCost = productCost;
+        public void setSalePrice(String salePrice) {
+            this.salePrice = salePrice;
         }
 
         public void setCategoryId(String categoryId) {

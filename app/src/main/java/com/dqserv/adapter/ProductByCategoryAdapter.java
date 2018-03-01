@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.dqserv.dqpos.R;
 import com.dqserv.rest.ProductObject;
@@ -58,7 +57,7 @@ public class ProductByCategoryAdapter extends RecyclerView.Adapter<ProductByCate
     public void onBindViewHolder(MyViewHolder holder, int position) {
         ProductObject.Products oProduct = productsList.get(position);
         holder.btnProduct.setText(oProduct.getProductName() + "\n"
-                + mContext.getString(R.string.rs_symbol) + " " + oProduct.getProductCost());
+                + mContext.getString(R.string.rs_symbol) + " " + oProduct.getSalePrice());
         holder.itemView.setTag(oProduct.getProductId());
     }
 

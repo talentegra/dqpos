@@ -169,7 +169,7 @@ public class SplashActivity extends AppCompatActivity {
                         "(" + items.get(productIndex).getProductId() + ", " +
                         "'" + items.get(productIndex).getProductCode() + "', " +
                         "'" + items.get(productIndex).getProductName() + "', " +
-                        "'" + items.get(productIndex).getProductCost() + "', " +
+                        "'" + items.get(productIndex).getSalePrice() + "', " +
                         "" + items.get(productIndex).getCategoryId() + "," +
                         "" + 1 + ");";
 

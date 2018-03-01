@@ -1,5 +1,6 @@
 package com.dqserv.dqpos;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -57,6 +58,7 @@ public class Products extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    static Context mContext;
     static List<ProductObject.Products> results;
 
     @Override
@@ -64,6 +66,7 @@ public class Products extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_products);
 
+        mContext = Products.this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
@@ -173,7 +176,7 @@ public class Products extends AppCompatActivity {
                             results.clear();
                             fetchResults(response);
                             if (results.size() > 0) {
-                                productAdapter[0] = new ProductAdapter(results);
+                                productAdapter[0] = new ProductAdapter(mContext, results);
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
                                         LinearLayoutManager.VERTICAL, false);
                                 rv.setLayoutManager(linearLayoutManager);
@@ -192,7 +195,7 @@ public class Products extends AppCompatActivity {
                     results.clear();
                     getProductsFromLocal();
                     if (results.size() > 0) {
-                        productAdapter[0] = new ProductAdapter(results);
+                        productAdapter[0] = new ProductAdapter(mContext, results);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
                                 LinearLayoutManager.VERTICAL, false);
                         rv.setLayoutManager(linearLayoutManager);
@@ -216,7 +219,7 @@ public class Products extends AppCompatActivity {
                                     results.clear();
                                     fetchResults(response);
                                     if (results.size() > 0) {
-                                        productAdapter[0] = new ProductAdapter(results);
+                                        productAdapter[0] = new ProductAdapter(mContext, results);
                                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
                                                 LinearLayoutManager.VERTICAL, false);
                                         rv.setLayoutManager(linearLayoutManager);
@@ -340,7 +343,7 @@ public class Products extends AppCompatActivity {
                         "(" + items.get(productIndex).getProductId() + ", " +
                         "'" + items.get(productIndex).getProductCode() + "', " +
                         "'" + items.get(productIndex).getProductName() + "', " +
-                        "'" + items.get(productIndex).getProductCost() + "', " +
+                        "'" + items.get(productIndex).getSalePrice() + "', " +
                         "" + items.get(productIndex).getCategoryId() + "," +
                         "" + 1 + ");";
 
@@ -370,7 +373,7 @@ public class Products extends AppCompatActivity {
                     newProduct.setProductId(cursor.getString(cursor.getColumnIndex("product_id")));
                     newProduct.setProductCode(cursor.getString(cursor.getColumnIndex("product_code")));
                     newProduct.setProductName(cursor.getString(cursor.getColumnIndex("product_name")));
-                    newProduct.setProductCost(cursor.getString(cursor.getColumnIndex("sale_price")));
+                    newProduct.setSalePrice(cursor.getString(cursor.getColumnIndex("sale_price")));
                     newProduct.setCategoryId(cursor.getString(cursor.getColumnIndex("category_id")));
 
                     results.add(newProduct);

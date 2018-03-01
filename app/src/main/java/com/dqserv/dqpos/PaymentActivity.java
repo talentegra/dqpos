@@ -24,6 +24,7 @@ import com.dqserv.config.Constants;
 import com.dqserv.connection.DBConstants;
 import com.dqserv.rest.ApiClient;
 import com.dqserv.rest.ApiInterface;
+import com.dqserv.rest.BillProductObject;
 import com.dqserv.rest.PaymentObject;
 import com.dqserv.rest.SaleObject;
 import com.dqserv.widget.CustomItemClickListener;
@@ -47,7 +48,7 @@ import retrofit2.Response;
 public class PaymentActivity extends AppCompatActivity {
 
     List<PaymentObject.Orders> results;
-    HashMap<String, PaymentObject.Orders> billproducts = new HashMap<String, PaymentObject.Orders>();
+    HashMap<String, BillProductObject> billproducts = new HashMap<String, BillProductObject>();
 
     PaymentAdapter paymentAdapter;
     RelativeLayout mProgressBar;
@@ -242,7 +243,8 @@ public class PaymentActivity extends AppCompatActivity {
                 btnSubmit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (Float.parseFloat(tvBalance.getText().toString()) <= 0.0) {
+                        if (Float.parseFloat(tvBalance.getText().toString()) < 0.0
+                                || Float.parseFloat(tvPaying.getText().toString()) == 0.0) {
                             Toast.makeText(getApplicationContext(), "Please pay fill amount", Toast.LENGTH_SHORT).show();
                         } else {
                             if (ConnectivityReceiver.isConnected()) {
@@ -273,11 +275,11 @@ public class PaymentActivity extends AppCompatActivity {
                                         e.printStackTrace();
                                     }
                                     jsonArray.put(objOrder);
-                                    PaymentObject.Orders billProduct = new PaymentObject.Orders();
+                                    BillProductObject billProduct = new BillProductObject();
                                     billProduct.setProductName(results.get(aIndex).getProductName());
-                                    billProduct.setSubtotal(results.get(aIndex).getSubtotal());
-                                    billProduct.setUnitPrice(results.get(aIndex).getUnitPrice());
-                                    billProduct.setQuantity(results.get(aIndex).getQuantity());
+                                    billProduct.setAmount(Double.parseDouble(results.get(aIndex).getSubtotal()));
+                                    billProduct.setPrice(Double.parseDouble(results.get(aIndex).getUnitPrice()));
+                                    billProduct.setQuantity(Double.parseDouble(results.get(aIndex).getQuantity()));
 
                                     billproducts.put(String.valueOf(aIndex), billProduct);
                                 }
@@ -548,7 +550,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
 
-    private void printBill(HashMap<String, PaymentObject.Orders> billproducts) {
+    private void printBill(HashMap<String, BillProductObject> billproducts) {
         try {
             PrinterController printerController = PrinterController.getInstance();
 
@@ -627,19 +629,19 @@ public class PaymentActivity extends AppCompatActivity {
                 format1.setMinimumFractionDigits(2);
                 for (Map.Entry entry : billproducts.entrySet()) {
                     String key = entry.getKey().toString();
-                    PaymentObject.Orders billProduct = (PaymentObject.Orders) entry.getValue();
-                    total += Float.parseFloat(billProduct.getSubtotal());
-                    totalqty += Float.parseFloat(billProduct.getQuantity());
+                    BillProductObject billProduct = (BillProductObject) entry.getValue();
+                    total += billProduct.getAmount();
+                    totalqty += billProduct.getQuantity();
                     printerController.PrinterController_Print(print(count + "  " + billProduct.getProductName()));
                     printerController.PrinterController_Linefeed();
 
                     String space1 = addspace(0, (("Sno Name" + space).length()));
-                    String space2 = addspace(0, (("Qty" + space).length() - -(billProduct.getQuantity()).length()));
-                    String space3 = addspace(0, (("Price" + space).length() - -(billProduct.getUnitPrice()).length()));
-                    String space4 = addspace(0, (("Amount" + space).length() - -(billProduct.getSubtotal()).length()));
+                    String space2 = addspace(0, (("Qty" + space).length() - -(format1.format(billProduct.getQuantity())).length()));
+                    String space3 = addspace(0, (("Price" + space).length() - -(format1.format(billProduct.getPrice())).length()));
+                    String space4 = addspace(0, (("Amount" + space).length() - -(format1.format(billProduct.getAmount())).length()));
 
 
-                    printerController.PrinterController_Print(print(space1 + format1.format(billProduct.getQuantity()) + " " + format1.format(billProduct.getUnitPrice()) + " " + format1.format(billProduct.getSubtotal())));
+                    printerController.PrinterController_Print(print(space1 + format1.format(billProduct.getQuantity()) + " " + format1.format(billProduct.getPrice()) + " " + format1.format(billProduct.getAmount())));
                     printerController.PrinterController_Linefeed();
                     count += 1;
                 }

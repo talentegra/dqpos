@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity
                     newProduct.setProductId(cursor.getString(cursor.getColumnIndex("product_id")));
                     newProduct.setProductCode(cursor.getString(cursor.getColumnIndex("product_code")));
                     newProduct.setProductName(cursor.getString(cursor.getColumnIndex("product_name")));
-                    newProduct.setProductCost(cursor.getString(cursor.getColumnIndex("sale_price")));
+                    newProduct.setSalePrice(cursor.getString(cursor.getColumnIndex("sale_price")));
                     newProduct.setCategoryId(cursor.getString(cursor.getColumnIndex("category_id")));
 
                     resultProducts.add(newProduct);

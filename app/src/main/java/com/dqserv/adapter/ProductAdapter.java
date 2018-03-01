@@ -1,5 +1,6 @@
 package com.dqserv.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import java.util.List;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHolder> {
 
     private List<ProductObject.Products> productsList;
+    Context mContext;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView tvProductCode, tvProductName, tvProductPrice;
@@ -31,7 +33,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
     }
 
 
-    public ProductAdapter(List<ProductObject.Products> productsList) {
+    public ProductAdapter(Context mContext, List<ProductObject.Products> productsList) {
+        this.mContext = mContext;
         this.productsList = productsList;
     }
 
@@ -48,7 +51,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
         ProductObject.Products oProduct = productsList.get(position);
         holder.tvProductCode.setText("Product Code: " + oProduct.getProductCode());
         holder.tvProductName.setText("Product Name: " + oProduct.getProductName());
-        holder.tvProductPrice.setText("Product Price: " + oProduct.getProductCost());
+        holder.tvProductPrice.setText("Product Price: " + mContext.getString(R.string.rs_symbol) + " " + oProduct.getSalePrice());
     }
 
     @Override
