@@ -295,7 +295,7 @@ public class PaymentActivity extends AppCompatActivity {
                                         saveSalesPrintTable(results);
                                         saveSalesPrintItemsTable(results);
                                         deleteAllOrders();
-                                        //printBill(billproducts);
+                                        printBill(billproducts);
                                         finish();
                                         startActivity(new Intent(getApplicationContext(), BillActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                                     }
@@ -628,15 +628,15 @@ public class PaymentActivity extends AppCompatActivity {
                 for (Map.Entry entry : billproducts.entrySet()) {
                     String key = entry.getKey().toString();
                     PaymentObject.Orders billProduct = (PaymentObject.Orders) entry.getValue();
-                    total += Integer.parseInt(billProduct.getSubtotal());
-                    totalqty += Integer.parseInt(billProduct.getQuantity());
+                    total += Float.parseFloat(billProduct.getSubtotal());
+                    totalqty += Float.parseFloat(billProduct.getQuantity());
                     printerController.PrinterController_Print(print(count + "  " + billProduct.getProductName()));
                     printerController.PrinterController_Linefeed();
 
                     String space1 = addspace(0, (("Sno Name" + space).length()));
-                    String space2 = addspace(0, (("Qty" + space).length() - -(format1.format(billProduct.getQuantity())).length()));
-                    String space3 = addspace(0, (("Price" + space).length() - -(format1.format(billProduct.getUnitPrice())).length()));
-                    String space4 = addspace(0, (("Amount" + space).length() - -(format1.format(billProduct.getSubtotal())).length()));
+                    String space2 = addspace(0, (("Qty" + space).length() - -(billProduct.getQuantity()).length()));
+                    String space3 = addspace(0, (("Price" + space).length() - -(billProduct.getUnitPrice()).length()));
+                    String space4 = addspace(0, (("Amount" + space).length() - -(billProduct.getSubtotal()).length()));
 
 
                     printerController.PrinterController_Print(print(space1 + format1.format(billProduct.getQuantity()) + " " + format1.format(billProduct.getUnitPrice()) + " " + format1.format(billProduct.getSubtotal())));
