@@ -8,24 +8,21 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.dqserv.ConnectivityReceiver;
 import com.dqserv.adapter.BillAdapter;
-import com.dqserv.adapter.TableAdapter;
 import com.dqserv.config.Constants;
 import com.dqserv.rest.ApiClient;
 import com.dqserv.rest.ApiInterface;
 import com.dqserv.rest.BillObject;
-import com.dqserv.rest.OrderObject;
-import com.dqserv.rest.TableObject;
 import com.dqserv.widget.CustomItemClickListener;
 
 import java.util.ArrayList;
@@ -40,6 +37,7 @@ public class BillActivity extends AppCompatActivity implements NavigationView.On
     List<BillObject.Orders> results;
     BillAdapter billAdapter;
     RelativeLayout mProgressBar;
+    LinearLayout mOfflineView;
     RecyclerView rv;
 
     @Override
@@ -50,11 +48,14 @@ public class BillActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
 
         mProgressBar = (RelativeLayout) findViewById(R.id.bill_rl_progress);
+        mOfflineView = (LinearLayout) findViewById(R.id.bill_rl_offline);
         rv = (RecyclerView) findViewById(R.id.bill_recycler_view);
 
         results = new ArrayList<>();
 
         if (ConnectivityReceiver.isConnected()) {
+            mOfflineView.setVisibility(View.GONE);
+            rv.setVisibility(View.VISIBLE);
             mProgressBar.setVisibility(View.VISIBLE);
             ApiInterface apiService =
                     ApiClient.getClient().create(ApiInterface.class);
@@ -98,6 +99,9 @@ public class BillActivity extends AppCompatActivity implements NavigationView.On
                     mProgressBar.setVisibility(View.GONE);
                 }
             });
+        } else {
+            rv.setVisibility(View.GONE);
+            mOfflineView.setVisibility(View.VISIBLE);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -108,6 +112,62 @@ public class BillActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mOfflineView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ConnectivityReceiver.isConnected()) {
+                    mOfflineView.setVisibility(View.GONE);
+                    rv.setVisibility(View.VISIBLE);
+                    mProgressBar.setVisibility(View.VISIBLE);
+                    ApiInterface apiService =
+                            ApiClient.getClient().create(ApiInterface.class);
+                    Call<BillObject> call = apiService.getOrders(Constants.AUTH_TOKEN);
+                    call.enqueue(new Callback<BillObject>() {
+                        @Override
+                        public void onResponse(Call<BillObject> call, Response<BillObject> response) {
+                            results.clear();
+                            results = fetchResults(response);
+                            if (results.size() > 0) {
+                                billAdapter = new BillAdapter(results, new CustomItemClickListener() {
+                                    @Override
+                                    public void onItemClick(View v, int position) {
+                                        String aBillData[] = v.getTag().toString().split("\\|");
+                                        finish();
+                                        startActivity(new Intent(getApplicationContext(),
+                                                PaymentActivity.class)
+                                                .putExtra("order_sale_id", aBillData[0])
+                                                .putExtra("total_items", aBillData[1])
+                                                .putExtra("grand_total", aBillData[2])
+                                                .putExtra("table_name", aBillData[3])
+                                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                                    }
+
+                                    @Override
+                                    public void deleteViewOnClick(View v, int position) {
+
+                                    }
+                                });
+                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(
+                                        getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+                                rv.setLayoutManager(linearLayoutManager);
+                                rv.setItemAnimator(new DefaultItemAnimator());
+                                rv.setAdapter(billAdapter);
+                            }
+                            mProgressBar.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onFailure(Call<BillObject> call, Throwable t) {
+                            mProgressBar.setVisibility(View.GONE);
+                        }
+                    });
+                } else {
+                    rv.setVisibility(View.GONE);
+                    mOfflineView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     //get Tables

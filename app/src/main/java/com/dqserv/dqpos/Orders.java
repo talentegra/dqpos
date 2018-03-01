@@ -707,6 +707,8 @@ public class Orders extends AppCompatActivity {
                     if (cursorOrder != null && cursorOrder.moveToFirst()) {
                         lastInsertedOrderId = cursorOrder.getLong(0);
                         currentOrderID = lastInsertedOrderId;
+                    } else {
+                        currentOrderID = 0;
                     }
                 } catch (Exception e) {
                     Log.d("LocalResponse", "Error while trying to get posts from database");
@@ -921,14 +923,14 @@ public class Orders extends AppCompatActivity {
                 String insertItemsSQL = "INSERT OR REPLACE INTO order_print_items \n" +
                         "(order_id, product_id, product_code, product_name, quantity, sale_price, subtotal, product_id_table_id)\n" +
                         "VALUES \n" +
-                        "(" + resultOrders.get(oIndex).getOrderId() + ", " +
-                        "'" + resultOrders.get(oIndex).getProductId() + "', " +
-                        "'" + resultOrders.get(oIndex).getProductCode() + "', " +
-                        "'" + resultOrders.get(oIndex).getProductName() + "', " +
-                        "" + resultOrders.get(oIndex).getQuantity() + ", " +
-                        "'" + resultOrders.get(oIndex).getSalePrice() + "', " +
-                        "" + (Integer.parseInt(resultOrders.get(oIndex).getSalePrice()) * Integer.parseInt(resultOrders.get(oIndex).getQuantity())) + ", " +
-                        "'" + resultOrders.get(oIndex).getProductId() + "_" + sTableId + "');";
+                        "(" + items.get(oIndex).getOrderId() + ", " +
+                        "'" + items.get(oIndex).getProductId() + "', " +
+                        "'" + items.get(oIndex).getProductCode() + "', " +
+                        "'" + items.get(oIndex).getProductName() + "', " +
+                        "" + items.get(oIndex).getQuantity() + ", " +
+                        "'" + items.get(oIndex).getSalePrice() + "', " +
+                        "" + (Integer.parseInt(items.get(oIndex).getSalePrice()) * Integer.parseInt(items.get(oIndex).getQuantity())) + ", " +
+                        "'" + items.get(oIndex).getProductId() + "_" + sTableId + "');";
                 myDataBase.execSQL(insertItemsSQL);
             } catch (Exception ex) {
                 Log.e("Error", "Problem in Adding Product." + ex.getMessage());

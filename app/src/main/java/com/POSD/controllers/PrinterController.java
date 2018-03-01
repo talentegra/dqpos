@@ -1,7 +1,6 @@
 package com.POSD.controllers;
 
 
-import android_serialport_api.SerialPort;
 import com.POSD.util.MachineVersion;
 import com.POSD.util.bs;
 import com.imagepay.utils.RandomUtils;
@@ -13,6 +12,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import android_serialport_api.SerialPort;
 
 public class PrinterController {
     private static final byte[] Font_Bold = new byte[]{(byte) 27, (byte) 33, (byte) 8};
@@ -49,7 +50,6 @@ public class PrinterController {
     int mun1;
     private boolean pintimage = true;
     String version = MachineVersion.getMachineVersion().substring(0, 7);
-
 
 
     static {
@@ -99,7 +99,10 @@ public class PrinterController {
             this.mInputStream = this.mSerialPort.getInputStream();
             //new ReadThread().start();
             return 0;
-        } catch (Exception e) {
+        }  catch (IOException ex) {
+            ex.printStackTrace();
+            return -1;
+        } catch (InterruptedException e) {
             e.printStackTrace();
             return -1;
         }
@@ -208,7 +211,7 @@ public class PrinterController {
             String str = new String(bytes);
             System.out.println(str);
             int couts = 0;
-            int j=0;
+            int j = 0;
             if (this.language == 0) {
                 String[] strs = new String[str.length()];
                 for (i = 0; i < str.length(); i++) {
