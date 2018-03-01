@@ -2,6 +2,7 @@ package com.dqserv.dqpos;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
@@ -131,16 +132,31 @@ public class Orders extends AppCompatActivity {
         btnOrderComplete = (Button) findViewById(R.id.orders_btn_order_complete);
         btnOrderCancel = (Button) findViewById(R.id.orders_btn_order_cancel);
 
-        AppBarLayout.LayoutParams rlOrdersParams = (AppBarLayout.LayoutParams)
-                rlOrders.getLayoutParams();
-        rlOrdersParams.width = displayMetrics.widthPixels;
-        rlOrdersParams.height = ((displayMetrics.heightPixels - (tabLayoutHeight * 2)) * 40) / 100;
+        int orientation = this.getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            AppBarLayout.LayoutParams rlOrdersParams = (AppBarLayout.LayoutParams)
+                    rlOrders.getLayoutParams();
+            rlOrdersParams.width = displayMetrics.widthPixels;
+            rlOrdersParams.height = ((displayMetrics.heightPixels - (tabLayoutHeight * 2)) * 40) / 100;
 
-        rlPagerProducts = (FrameLayout) findViewById(R.id.orders_rl_pager_products);
-        CoordinatorLayout.LayoutParams rlPagerProductsParams = (CoordinatorLayout.LayoutParams)
-                rlPagerProducts.getLayoutParams();
-        rlPagerProductsParams.width = displayMetrics.widthPixels;
-        rlPagerProductsParams.height = ((displayMetrics.heightPixels - (tabLayoutHeight * 2)) * 50) / 100;
+            rlPagerProducts = (FrameLayout) findViewById(R.id.orders_rl_pager_products);
+            CoordinatorLayout.LayoutParams rlPagerProductsParams = (CoordinatorLayout.LayoutParams)
+                    rlPagerProducts.getLayoutParams();
+            rlPagerProductsParams.width = displayMetrics.widthPixels;
+            rlPagerProductsParams.height = ((displayMetrics.heightPixels - (tabLayoutHeight * 2)) * 60) / 100;
+        } else {
+            AppBarLayout.LayoutParams rlOrdersParams = (AppBarLayout.LayoutParams)
+                    rlOrders.getLayoutParams();
+            rlOrdersParams.width = displayMetrics.widthPixels;
+            rlOrdersParams.height = ((displayMetrics.heightPixels - (tabLayoutHeight * 2)) * 60) / 100;
+
+            rlPagerProducts = (FrameLayout) findViewById(R.id.orders_rl_pager_products);
+            CoordinatorLayout.LayoutParams rlPagerProductsParams = (CoordinatorLayout.LayoutParams)
+                    rlPagerProducts.getLayoutParams();
+            rlPagerProductsParams.width = displayMetrics.widthPixels;
+            rlPagerProductsParams.height = ((displayMetrics.heightPixels - (tabLayoutHeight * 2)) * 40) / 100;
+        }
+
 
         FrameLayout.LayoutParams orderCompleteParams = (FrameLayout.LayoutParams)
                 btnOrderComplete.getLayoutParams();

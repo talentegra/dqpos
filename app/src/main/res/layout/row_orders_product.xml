@@ -6,7 +6,7 @@
     <Button
         android:id="@+id/row_orders_product_btn_product"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_60sdp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/box_background_for_button"
         android:ellipsize="end"
@@ -14,6 +14,8 @@
         android:focusableInTouchMode="false"
         android:clickable="false"
         android:gravity="center"
+        android:paddingTop="@dimen/_5sdp"
+        android:paddingBottom="@dimen/_5sdp"
         android:lines="2"
         android:textColor="@android:color/white"
         android:textSize="@dimen/_10ssp" />
