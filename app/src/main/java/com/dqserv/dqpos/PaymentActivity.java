@@ -297,7 +297,7 @@ public class PaymentActivity extends AppCompatActivity {
                                         saveSalesPrintTable(results);
                                         saveSalesPrintItemsTable(results);
                                         deleteAllOrders();
-                                        printBill(billproducts);
+                                        //printBill(billproducts);
                                         finish();
                                         startActivity(new Intent(getApplicationContext(), BillActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                                     }

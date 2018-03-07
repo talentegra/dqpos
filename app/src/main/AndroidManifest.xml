@@ -51,6 +51,10 @@
             android:label="@string/pos"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".OrdersList"
+            android:label="@string/orders_list"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".Orders"
             android:label="@string/order"
             android:theme="@style/AppTheme.NoActionBar" />

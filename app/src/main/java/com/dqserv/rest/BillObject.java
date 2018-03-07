@@ -28,6 +28,9 @@ public class BillObject {
         @SerializedName("table_name")
         private String tableName;
 
+        @SerializedName("table_id")
+        private String tableId;
+
         @SerializedName("grand_total")
         private String grandTotal;
 
@@ -72,6 +75,14 @@ public class BillObject {
 
         public String getOrderSaleId() {
             return orderSaleId;
+        }
+
+        public void setTableId(String tableId) {
+            this.tableId = tableId;
+        }
+
+        public String getTableId() {
+            return tableId;
         }
     }
 

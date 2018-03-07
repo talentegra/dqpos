@@ -19,10 +19,9 @@
             android:title="Bill" />
 
         <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools"
-            android:visible="false" />
+            android:id="@+id/nav_orders_list"
+            android:icon="@drawable/order_list"
+            android:title="Orders List" />
 
     </group>
 

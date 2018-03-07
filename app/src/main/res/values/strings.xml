@@ -27,6 +27,7 @@
 
     <string name="sync_latest_products">Sync Latest Products</string>
     <string name="pos">POS</string>
+    <string name="orders_list">Orders List</string>
     <string name="order">Orders</string>
     <string name="bill">Bill</string>
     <string name="payment">Payment</string>

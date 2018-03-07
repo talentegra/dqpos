@@ -29,9 +29,6 @@ import com.dqserv.rest.BillObject;
 import com.dqserv.rest.TableObject;
 import com.dqserv.widget.CustomItemClickListener;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,25 +36,25 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class POS extends AppCompatActivity
+public class OrdersList extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     List<TableObject.Tables> results;
+    List<Integer> onlineTableIds;
     TableAdapter tableAdapter;
     RelativeLayout mProgressBar;
     RecyclerView rv;
-    List<Integer> onlineTableIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pos);
+        setContentView(R.layout.activity_orders_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mProgressBar = (RelativeLayout) findViewById(R.id.tables_rl_progress);
-        rv = (RecyclerView) findViewById(R.id.pos_recycler_view);
+        mProgressBar = (RelativeLayout) findViewById(R.id.orders_list_rl_progress);
+        rv = (RecyclerView) findViewById(R.id.orders_list_recycler_view);
 
         results = new ArrayList<>();
         onlineTableIds = new ArrayList<>();
@@ -79,10 +76,6 @@ public class POS extends AppCompatActivity
                             @Override
                             public void onItemClick(View v, int position) {
                                 String[] aTableValues = v.getTag().toString().split("\\|");
-                                startActivity(new Intent(getApplicationContext(), Orders.class)
-                                        .putExtra("param_table_id", aTableValues[0])
-                                        .putExtra("param_table_name", aTableValues[1])
-                                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             }
 
                             @Override
@@ -111,10 +104,7 @@ public class POS extends AppCompatActivity
                     @Override
                     public void onItemClick(View v, int position) {
                         String[] aTableValues = v.getTag().toString().split("\\|");
-                        startActivity(new Intent(getApplicationContext(), Orders.class)
-                                .putExtra("param_table_id", aTableValues[0])
-                                .putExtra("param_table_name", aTableValues[1])
-                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
                     }
 
                     @Override
@@ -179,32 +169,32 @@ public class POS extends AppCompatActivity
         int id = item.getItemId();
         if (id == R.id.nav_pos) {
             // Handle the camera action
-            if (!POS.class.getSimpleName().equalsIgnoreCase("POS")) {
-                startActivity(new Intent(this, POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            if (!OrdersList.class.getSimpleName().equalsIgnoreCase("POS")) {
+                startActivity(new Intent(this, OrdersList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_gallery) {
-            if (!POS.class.getSimpleName().equalsIgnoreCase("Orders")) {
+            if (!OrdersList.class.getSimpleName().equalsIgnoreCase("Orders")) {
                 startActivity(new Intent(this, Orders.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_slideshow) {
-            if (!POS.class.getSimpleName().equalsIgnoreCase("BillActivity")) {
+            if (!OrdersList.class.getSimpleName().equalsIgnoreCase("BillActivity")) {
                 startActivity(new Intent(this, BillActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_products) {
-            if (!POS.class.getSimpleName().equalsIgnoreCase("Products")) {
+            if (!OrdersList.class.getSimpleName().equalsIgnoreCase("Products")) {
                 startActivity(new Intent(this, Products.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_categories) {
-            if (!POS.class.getSimpleName().equalsIgnoreCase("Categories")) {
+            if (!OrdersList.class.getSimpleName().equalsIgnoreCase("Categories")) {
                 startActivity(new Intent(this, Categories.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_tables) {
-            if (!POS.class.getSimpleName().equalsIgnoreCase("Tables")) {
+            if (!OrdersList.class.getSimpleName().equalsIgnoreCase("Tables")) {
                 startActivity(new Intent(this, Tables.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
-        }else if (id == R.id.nav_orders_list) {
-            if (!POS.class.getSimpleName().equalsIgnoreCase("OrdersList")) {
-                startActivity(new Intent(this, OrdersList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        } else if (id == R.id.nav_orders_list) {
+            if (!OrdersList.class.getSimpleName().equalsIgnoreCase("OrdersList")) {
+                startActivity(new Intent(this, Products.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         }
 

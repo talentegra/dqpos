@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dqserv.dqpos.R;
@@ -19,20 +20,25 @@ import java.util.List;
 public class TableAdapter extends RecyclerView.Adapter<TableAdapter.MyViewHolder> {
 
     private List<TableObject.Tables> tablesList;
+    List<Integer> onlineTables;
     CustomItemClickListener listener;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView tvTableName;
+        public ImageView ivTable;
 
         public MyViewHolder(View view) {
             super(view);
             tvTableName = (TextView) view.findViewById(R.id.row_table_tv_name);
+            ivTable = (ImageView) view.findViewById(R.id.row_table_iv_image);
         }
     }
 
 
-    public TableAdapter(List<TableObject.Tables> tablesList, CustomItemClickListener listener) {
+    public TableAdapter(List<TableObject.Tables> tablesList, List<Integer> onlineTables,
+                        CustomItemClickListener listener) {
         this.tablesList = tablesList;
+        this.onlineTables = onlineTables;
         this.listener = listener;
     }
 
@@ -55,6 +61,11 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.MyViewHolder
         TableObject.Tables oTable = tablesList.get(position);
         holder.itemView.setTag(oTable.getTableId() + "|" + oTable.getTableName());
         holder.tvTableName.setText(oTable.getTableName());
+        if (onlineTables.contains(Integer.parseInt(oTable.getTableId()))) {
+            holder.ivTable.setImageResource(R.drawable.ic_table_online);
+        } else {
+            holder.ivTable.setImageResource(R.drawable.ic_table);
+        }
     }
 
     @Override
