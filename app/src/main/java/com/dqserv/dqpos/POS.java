@@ -166,7 +166,8 @@ public class POS extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            startActivity(new Intent(getApplicationContext(), SettingActivity.class).
+                    setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         }
 
         return super.onOptionsItemSelected(item);
@@ -202,7 +203,7 @@ public class POS extends AppCompatActivity
             if (!POS.class.getSimpleName().equalsIgnoreCase("Tables")) {
                 startActivity(new Intent(this, Tables.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
-        }else if (id == R.id.nav_orders_list) {
+        } else if (id == R.id.nav_orders_list) {
             if (!POS.class.getSimpleName().equalsIgnoreCase("OrdersList")) {
                 startActivity(new Intent(this, OrdersList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
