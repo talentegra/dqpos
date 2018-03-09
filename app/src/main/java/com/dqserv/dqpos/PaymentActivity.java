@@ -297,7 +297,7 @@ public class PaymentActivity extends AppCompatActivity {
                                         saveSalesPrintTable(results);
                                         saveSalesPrintItemsTable(results);
                                         deleteAllOrders();
-                                        //printBill(billproducts);
+                                        printBill(billproducts);
                                         finish();
                                         startActivity(new Intent(getApplicationContext(), BillActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                                     }
@@ -555,135 +555,133 @@ public class PaymentActivity extends AppCompatActivity {
             PrinterController printerController = PrinterController.getInstance();
 
             // connect printer
-            int flag = printerController.PrinterController_Open();
+            printerController.PrinterController_Open();
 
-            if (flag != -1) {
-                int centerpoint = 0;
+            int centerpoint = 0;
 
-                PrinterController.getInstance().PrinterController_PrinterLanguage(1);
+            PrinterController.getInstance().PrinterController_PrinterLanguage(1);
+            printerController.PrinterController_Linefeed();
+
+            if (companyName.trim().length() != 0) {
+                centerpoint = getCenterPoint(companyName.trim());
+                printerController.PrinterController_Print(print(addspace(0, centerpoint) + companyName));
                 printerController.PrinterController_Linefeed();
-
-                if (companyName.trim().length() != 0) {
-                    centerpoint = getCenterPoint(companyName.trim());
-                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + companyName));
-                    printerController.PrinterController_Linefeed();
-                }
-                if (addressLine1.trim().length() != 0) {
-                    centerpoint = getCenterPoint(addressLine1.trim());
-                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + addressLine1));
-                    printerController.PrinterController_Linefeed();
-                }
-                if (addressLine2.trim().length() != 0) {
-                    centerpoint = getCenterPoint(addressLine2.trim());
-                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + addressLine2));
-                    printerController.PrinterController_Linefeed();
-                }
-                if (addressLine3.trim().length() != 0) {
-                    centerpoint = getCenterPoint(addressLine3.trim());
-                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + addressLine3));
-                    printerController.PrinterController_Linefeed();
-                }
-                if (addressLine4.trim().length() != 0) {
-                    centerpoint = getCenterPoint(addressLine4.trim());
-                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + addressLine4));
-                    printerController.PrinterController_Linefeed();
-                }
-                if (addressLine5.trim().length() != 0) {
-                    centerpoint = getCenterPoint(addressLine5.trim());
-                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + addressLine5));
-                    printerController.PrinterController_Linefeed();
-                }
-                if (phonenumbers.trim().length() != 0) {
-                    centerpoint = getCenterPoint(phonenumbers.trim());
-                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + phonenumbers));
-                    printerController.PrinterController_Linefeed();
-                }
-                if (GSTNumber.trim().length() != 0) {
-                    centerpoint = getCenterPoint(GSTNumber.trim());
-                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + GSTNumber));
-                    printerController.PrinterController_Linefeed();
-                }
-
-                printerController.PrinterController_Print(print(getdashline()));
-                printerController.PrinterController_Linefeed();
-                //Bill Numbers
-                String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm a").format(Calendar.getInstance().getTime());
-                printerController.PrinterController_Print(print("Date Time: " + timeStamp));
-                printerController.PrinterController_Linefeed();
-                printerController.PrinterController_Print(print("Bill No: " + (int) billcount));
-                printerController.PrinterController_Linefeed();
-
-                printerController.PrinterController_Print(print(getdashline()));
-                printerController.PrinterController_Linefeed();
-
-                String space = "  ";
-                printerController.PrinterController_Print(print("Sno " + "Name" + space + "Qty" + space + "Price" + space + "Amount" + space));
-                printerController.PrinterController_Linefeed();
-                printerController.PrinterController_Print(print(getdashline()));
-                printerController.PrinterController_Linefeed();
-
-                double total = 0;
-                double totalqty = 0;
-                int count = 1;
-                DecimalFormat format1 = new DecimalFormat("#.##");
-                format1.setMinimumFractionDigits(2);
-                for (Map.Entry entry : billproducts.entrySet()) {
-                    String key = entry.getKey().toString();
-                    BillProductObject billProduct = (BillProductObject) entry.getValue();
-                    total += billProduct.getAmount();
-                    totalqty += billProduct.getQuantity();
-                    printerController.PrinterController_Print(print(count + "  " + billProduct.getProductName()));
-                    printerController.PrinterController_Linefeed();
-
-                    String space1 = addspace(0, (("Sno Name" + space).length()));
-                    String space2 = addspace(0, (("Qty" + space).length() - -(format1.format(billProduct.getQuantity())).length()));
-                    String space3 = addspace(0, (("Price" + space).length() - -(format1.format(billProduct.getPrice())).length()));
-                    String space4 = addspace(0, (("Amount" + space).length() - -(format1.format(billProduct.getAmount())).length()));
-
-
-                    printerController.PrinterController_Print(print(space1 + format1.format(billProduct.getQuantity()) + " " + format1.format(billProduct.getPrice()) + " " + format1.format(billProduct.getAmount())));
-                    printerController.PrinterController_Linefeed();
-                    count += 1;
-                }
-
-                double sgst = 2.5;
-                double cgst = 2.5;
-
-                double sgstamount = total * (2.5 / 100);
-                double cgstamount = total * (2.5 / 100);
-
-                printerController.PrinterController_Print(print(getdashline()));
-                printerController.PrinterController_Linefeed();
-
-
-                printerController.PrinterController_Print(print("CGST(2.5%) " + format1.format(cgstamount)));
-                printerController.PrinterController_Linefeed();
-                printerController.PrinterController_Print(print("SGST(2.5%) " + format1.format(sgstamount)));
-                printerController.PrinterController_Linefeed();
-
-                printerController.PrinterController_Print(print(getdashline()));
-                printerController.PrinterController_Linefeed();
-
-                printerController.PrinterController_Print(print("Total Qty " + totalqty));
-                printerController.PrinterController_Print(print(addspace(("Total Qty " + totalqty).length(), getRightPoint("Total Amount")) + format1.format(total + sgstamount + cgstamount)));
-                printerController.PrinterController_Linefeed();
-                printerController.PrinterController_Print(print(getdashline()));
-                if (companyName.trim().length() != 0) {
-                    centerpoint = getCenterPoint(thankyou.trim());
-                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + thankyou));
-                    printerController.PrinterController_Linefeed();
-                }
-                printerController.PrinterController_Linefeed();
-
-
-                billcount += 1;
-
-                results.clear();
-                billproducts.clear();
-
-                //Printer cloase
-                printerController.PrinterController_Close();
             }
+            if (addressLine1.trim().length() != 0) {
+                centerpoint = getCenterPoint(addressLine1.trim());
+                printerController.PrinterController_Print(print(addspace(0, centerpoint) + addressLine1));
+                printerController.PrinterController_Linefeed();
+            }
+            if (addressLine2.trim().length() != 0) {
+                centerpoint = getCenterPoint(addressLine2.trim());
+                printerController.PrinterController_Print(print(addspace(0, centerpoint) + addressLine2));
+                printerController.PrinterController_Linefeed();
+            }
+            if (addressLine3.trim().length() != 0) {
+                centerpoint = getCenterPoint(addressLine3.trim());
+                printerController.PrinterController_Print(print(addspace(0, centerpoint) + addressLine3));
+                printerController.PrinterController_Linefeed();
+            }
+            if (addressLine4.trim().length() != 0) {
+                centerpoint = getCenterPoint(addressLine4.trim());
+                printerController.PrinterController_Print(print(addspace(0, centerpoint) + addressLine4));
+                printerController.PrinterController_Linefeed();
+            }
+            if (addressLine5.trim().length() != 0) {
+                centerpoint = getCenterPoint(addressLine5.trim());
+                printerController.PrinterController_Print(print(addspace(0, centerpoint) + addressLine5));
+                printerController.PrinterController_Linefeed();
+            }
+            if (phonenumbers.trim().length() != 0) {
+                centerpoint = getCenterPoint(phonenumbers.trim());
+                printerController.PrinterController_Print(print(addspace(0, centerpoint) + phonenumbers));
+                printerController.PrinterController_Linefeed();
+            }
+            if (GSTNumber.trim().length() != 0) {
+                centerpoint = getCenterPoint(GSTNumber.trim());
+                printerController.PrinterController_Print(print(addspace(0, centerpoint) + GSTNumber));
+                printerController.PrinterController_Linefeed();
+            }
+
+            printerController.PrinterController_Print(print(getdashline()));
+            printerController.PrinterController_Linefeed();
+            //Bill Numbers
+            String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm a").format(Calendar.getInstance().getTime());
+            printerController.PrinterController_Print(print("Date Time: " + timeStamp));
+            printerController.PrinterController_Linefeed();
+            printerController.PrinterController_Print(print("Bill No: " + (int) billcount));
+            printerController.PrinterController_Linefeed();
+
+            printerController.PrinterController_Print(print(getdashline()));
+            printerController.PrinterController_Linefeed();
+
+            String space = "  ";
+            printerController.PrinterController_Print(print("Sno " + "Name" + space + "Qty" + space + "Price" + space + "Amount" + space));
+            printerController.PrinterController_Linefeed();
+            printerController.PrinterController_Print(print(getdashline()));
+            printerController.PrinterController_Linefeed();
+
+            double total = 0;
+            double totalqty = 0;
+            int count = 1;
+            DecimalFormat format1 = new DecimalFormat("#.##");
+            format1.setMinimumFractionDigits(2);
+            for (Map.Entry entry : billproducts.entrySet()) {
+                String key = entry.getKey().toString();
+                BillProductObject billProduct = (BillProductObject) entry.getValue();
+                total += billProduct.getAmount();
+                totalqty += billProduct.getQuantity();
+                printerController.PrinterController_Print(print(count + "  " + billProduct.getProductName()));
+                printerController.PrinterController_Linefeed();
+
+                String space1 = addspace(0, (("Sno Name" + space).length()));
+                String space2 = addspace(0, (("Qty" + space).length() - -(format1.format(billProduct.getQuantity())).length()));
+                String space3 = addspace(0, (("Price" + space).length() - -(format1.format(billProduct.getPrice())).length()));
+                String space4 = addspace(0, (("Amount" + space).length() - -(format1.format(billProduct.getAmount())).length()));
+
+
+                printerController.PrinterController_Print(print(space1 + format1.format(billProduct.getQuantity()) + " " + format1.format(billProduct.getPrice()) + " " + format1.format(billProduct.getAmount())));
+                printerController.PrinterController_Linefeed();
+                count += 1;
+            }
+
+            double sgst = 2.5;
+            double cgst = 2.5;
+
+            double sgstamount = total * (2.5 / 100);
+            double cgstamount = total * (2.5 / 100);
+
+            printerController.PrinterController_Print(print(getdashline()));
+            printerController.PrinterController_Linefeed();
+
+
+            printerController.PrinterController_Print(print("CGST(2.5%) " + format1.format(cgstamount)));
+            printerController.PrinterController_Linefeed();
+            printerController.PrinterController_Print(print("SGST(2.5%) " + format1.format(sgstamount)));
+            printerController.PrinterController_Linefeed();
+
+            printerController.PrinterController_Print(print(getdashline()));
+            printerController.PrinterController_Linefeed();
+
+            printerController.PrinterController_Print(print("Total Qty " + totalqty));
+            printerController.PrinterController_Print(print(addspace(("Total Qty " + totalqty).length(), getRightPoint("Total Amount")) + format1.format(total + sgstamount + cgstamount)));
+            printerController.PrinterController_Linefeed();
+            printerController.PrinterController_Print(print(getdashline()));
+            if (companyName.trim().length() != 0) {
+                centerpoint = getCenterPoint(thankyou.trim());
+                printerController.PrinterController_Print(print(addspace(0, centerpoint) + thankyou));
+                printerController.PrinterController_Linefeed();
+            }
+            printerController.PrinterController_Linefeed();
+
+
+            billcount += 1;
+
+            results.clear();
+            billproducts.clear();
+
+            //Printer cloase
+            printerController.PrinterController_Close();
         } catch (Exception ex) {
             ex.printStackTrace();
             Toast.makeText(getApplicationContext(),
