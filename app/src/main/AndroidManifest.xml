@@ -64,7 +64,12 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".PaymentActivity"
-            android:label="@string/payment" />
+            android:label="@string/payment"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".SettingActivity"
+            android:label="@string/setting"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

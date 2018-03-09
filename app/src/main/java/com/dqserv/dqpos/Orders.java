@@ -132,31 +132,16 @@ public class Orders extends AppCompatActivity {
         btnOrderComplete = (Button) findViewById(R.id.orders_btn_order_complete);
         btnOrderCancel = (Button) findViewById(R.id.orders_btn_order_cancel);
 
-        int orientation = this.getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            AppBarLayout.LayoutParams rlOrdersParams = (AppBarLayout.LayoutParams)
-                    rlOrders.getLayoutParams();
-            rlOrdersParams.width = displayMetrics.widthPixels;
-            rlOrdersParams.height = ((displayMetrics.heightPixels - (tabLayoutHeight * 2)) * 40) / 100;
+        AppBarLayout.LayoutParams rlOrdersParams = (AppBarLayout.LayoutParams)
+                rlOrders.getLayoutParams();
+        rlOrdersParams.width = displayMetrics.widthPixels;
+        rlOrdersParams.height = ((displayMetrics.heightPixels - (tabLayoutHeight * 2)) * 40) / 100;
 
-            rlPagerProducts = (FrameLayout) findViewById(R.id.orders_rl_pager_products);
-            CoordinatorLayout.LayoutParams rlPagerProductsParams = (CoordinatorLayout.LayoutParams)
-                    rlPagerProducts.getLayoutParams();
-            rlPagerProductsParams.width = displayMetrics.widthPixels;
-            rlPagerProductsParams.height = ((displayMetrics.heightPixels - (tabLayoutHeight * 2)) * 60) / 100;
-        } else {
-            AppBarLayout.LayoutParams rlOrdersParams = (AppBarLayout.LayoutParams)
-                    rlOrders.getLayoutParams();
-            rlOrdersParams.width = displayMetrics.widthPixels;
-            rlOrdersParams.height = ((displayMetrics.heightPixels - (tabLayoutHeight * 2)) * 60) / 100;
-
-            rlPagerProducts = (FrameLayout) findViewById(R.id.orders_rl_pager_products);
-            CoordinatorLayout.LayoutParams rlPagerProductsParams = (CoordinatorLayout.LayoutParams)
-                    rlPagerProducts.getLayoutParams();
-            rlPagerProductsParams.width = displayMetrics.widthPixels;
-            rlPagerProductsParams.height = ((displayMetrics.heightPixels - (tabLayoutHeight * 2)) * 40) / 100;
-        }
-
+        rlPagerProducts = (FrameLayout) findViewById(R.id.orders_rl_pager_products);
+        CoordinatorLayout.LayoutParams rlPagerProductsParams = (CoordinatorLayout.LayoutParams)
+                rlPagerProducts.getLayoutParams();
+        rlPagerProductsParams.width = displayMetrics.widthPixels;
+        rlPagerProductsParams.height = ((displayMetrics.heightPixels - (tabLayoutHeight * 2)) * 60) / 100;
 
         FrameLayout.LayoutParams orderCompleteParams = (FrameLayout.LayoutParams)
                 btnOrderComplete.getLayoutParams();
@@ -170,6 +155,8 @@ public class Orders extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(sTableName);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -326,26 +313,17 @@ public class Orders extends AppCompatActivity {
         currentOrderID = 0;
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_products, menu);
-        return true;
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == android.R.id.home) {
+            unregisterControls();
+            finish();
+            startActivity(new Intent(getApplicationContext(), POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -962,5 +940,7 @@ public class Orders extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         unregisterControls();
+        finish();
+        startActivity(new Intent(getApplicationContext(), POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
     }
 }

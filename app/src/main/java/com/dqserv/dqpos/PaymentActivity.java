@@ -9,7 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -72,6 +74,12 @@ public class PaymentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         mProgressBar = (RelativeLayout) findViewById(R.id.payment_rl_progress);
         mOfflineView = (LinearLayout) findViewById(R.id.payment_rl_offline);
         llButtons = (LinearLayout) findViewById(R.id.payment_ll_buttons);
@@ -430,6 +438,20 @@ public class PaymentActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            finish();
+            startActivity(new Intent(getApplicationContext(), BillActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     //get Tables
     private List<PaymentObject.Orders> fetchResults(Response<PaymentObject> response) {
         PaymentObject paymentObj = response.body();
@@ -681,7 +703,7 @@ public class PaymentActivity extends AppCompatActivity {
             billproducts.clear();
 
             //Printer cloase
-            printerController.PrinterController_Close();
+            //printerController.PrinterController_Close();
         } catch (Exception ex) {
             ex.printStackTrace();
             Toast.makeText(getApplicationContext(),
