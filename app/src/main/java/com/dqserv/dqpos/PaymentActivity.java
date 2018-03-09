@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.GlobalApplication;
 import com.POSD.controllers.PrinterController;
 import com.dqserv.ConnectivityReceiver;
 import com.dqserv.adapter.PaymentAdapter;
@@ -667,26 +668,34 @@ public class PaymentActivity extends AppCompatActivity {
                 count += 1;
             }
 
-            double sgst = 2.5;
-            double cgst = 2.5;
+            double sgst = GlobalApplication.sgstPref.getFloat("sgst", 2.5f);
+            double cgst = GlobalApplication.cgstPref.getFloat("cgst", 2.5f);
 
-            double sgstamount = total * (2.5 / 100);
-            double cgstamount = total * (2.5 / 100);
+            double sgstamount = total * (sgst / 100);
+            double cgstamount = total * (cgst / 100);
 
-            printerController.PrinterController_Print(print(getdashline()));
-            printerController.PrinterController_Linefeed();
+            if (GlobalApplication.taxPref.getString("tax_val", "t").equalsIgnoreCase("t")) {
 
+                printerController.PrinterController_Print(print(getdashline()));
+                printerController.PrinterController_Linefeed();
 
-            printerController.PrinterController_Print(print("CGST(2.5%) " + format1.format(cgstamount)));
-            printerController.PrinterController_Linefeed();
-            printerController.PrinterController_Print(print("SGST(2.5%) " + format1.format(sgstamount)));
-            printerController.PrinterController_Linefeed();
+                printerController.PrinterController_Print(print("CGST(2.5%) " + format1.format(cgstamount)));
+                printerController.PrinterController_Linefeed();
+                printerController.PrinterController_Print(print("SGST(2.5%) " + format1.format(sgstamount)));
+                printerController.PrinterController_Linefeed();
+            }
 
             printerController.PrinterController_Print(print(getdashline()));
             printerController.PrinterController_Linefeed();
 
             printerController.PrinterController_Print(print("Total Qty " + totalqty));
-            printerController.PrinterController_Print(print(addspace(("Total Qty " + totalqty).length(), getRightPoint("Total Amount")) + format1.format(total + sgstamount + cgstamount)));
+            if (GlobalApplication.taxPref.getString("tax_val", "t").equalsIgnoreCase("t")) {
+                printerController.PrinterController_Print(print(addspace(("Total Qty " + totalqty).length(),
+                        getRightPoint("Total Amount")) + format1.format(total + sgstamount + cgstamount)));
+            } else {
+                printerController.PrinterController_Print(print(addspace(("Total Qty " + totalqty).length(),
+                        getRightPoint("Total Amount")) + format1.format(total)));
+            }
             printerController.PrinterController_Linefeed();
             printerController.PrinterController_Print(print(getdashline()));
             if (companyName.trim().length() != 0) {

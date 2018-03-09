@@ -203,7 +203,8 @@ public class BillActivity extends AppCompatActivity implements NavigationView.On
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            startActivity(new Intent(getApplicationContext(), SettingActivity.class).
+                    setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         }
 
         return super.onOptionsItemSelected(item);
