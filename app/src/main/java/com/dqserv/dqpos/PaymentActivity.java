@@ -59,7 +59,6 @@ public class PaymentActivity extends AppCompatActivity {
     RecyclerView rv;
     Button btnPayment, btnCancel;
 
-    double billcount = 1;
     public String companyName = "DigitalQ Information Services";
     public String addressLine1 = "#G2,C-Block";
     public String addressLine2 = "Hansavandhana Apartment";
@@ -632,7 +631,7 @@ public class PaymentActivity extends AppCompatActivity {
             String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm a").format(Calendar.getInstance().getTime());
             printerController.PrinterController_Print(print("Date Time: " + timeStamp));
             printerController.PrinterController_Linefeed();
-            printerController.PrinterController_Print(print("Bill No: " + (int) billcount));
+            printerController.PrinterController_Print(print("Bill No: " + getIntent().getStringExtra("order_sale_id")));
             printerController.PrinterController_Linefeed();
 
             printerController.PrinterController_Print(print(getdashline()));
@@ -705,9 +704,6 @@ public class PaymentActivity extends AppCompatActivity {
             }
             printerController.PrinterController_Linefeed();
 
-
-            billcount += 1;
-
             results.clear();
             billproducts.clear();
 
@@ -754,6 +750,4 @@ public class PaymentActivity extends AppCompatActivity {
         int x = ((int) maxline) - ((int) actline);
         return x;
     }
-
-
 }
