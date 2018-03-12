@@ -14,8 +14,8 @@
         android:focusableInTouchMode="false"
         android:clickable="false"
         android:gravity="center"
-        android:paddingTop="@dimen/_5sdp"
-        android:paddingBottom="@dimen/_5sdp"
+        android:paddingTop="@dimen/_10sdp"
+        android:paddingBottom="@dimen/_10sdp"
         android:lines="2"
         android:textColor="@android:color/white"
         android:textSize="@dimen/_10ssp" />

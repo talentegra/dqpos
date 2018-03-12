@@ -99,6 +99,25 @@ public class Orders extends AppCompatActivity {
     static RelativeLayout mProgressBar;
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (getIntent() != null) {
+            sTableId = getIntent().hasExtra("param_table_id") ?
+                    getIntent().getStringExtra("param_table_id") : "";
+            sTableName = getIntent().hasExtra("param_table_name") ?
+                    getIntent().getStringExtra("param_table_name") : "";
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            loadCategories(ConnectivityReceiver.isConnected());
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_orders);
@@ -132,24 +151,27 @@ public class Orders extends AppCompatActivity {
         btnOrderComplete = (Button) findViewById(R.id.orders_btn_order_complete);
         btnOrderCancel = (Button) findViewById(R.id.orders_btn_order_cancel);
 
-        AppBarLayout.LayoutParams rlOrdersParams = (AppBarLayout.LayoutParams)
-                rlOrders.getLayoutParams();
-        rlOrdersParams.width = displayMetrics.widthPixels;
-        rlOrdersParams.height = ((displayMetrics.heightPixels - (tabLayoutHeight * 2)) * 40) / 100;
+        int orientation = this.getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            AppBarLayout.LayoutParams rlOrdersParams = (AppBarLayout.LayoutParams)
+                    rlOrders.getLayoutParams();
+            rlOrdersParams.width = displayMetrics.widthPixels;
+            rlOrdersParams.height = ((displayMetrics.heightPixels - (tabLayoutHeight * 2)) * 40) / 100;
 
-        rlPagerProducts = (FrameLayout) findViewById(R.id.orders_rl_pager_products);
-        CoordinatorLayout.LayoutParams rlPagerProductsParams = (CoordinatorLayout.LayoutParams)
-                rlPagerProducts.getLayoutParams();
-        rlPagerProductsParams.width = displayMetrics.widthPixels;
-        rlPagerProductsParams.height = ((displayMetrics.heightPixels - (tabLayoutHeight * 2)) * 60) / 100;
+            rlPagerProducts = (FrameLayout) findViewById(R.id.orders_rl_pager_products);
+            CoordinatorLayout.LayoutParams rlPagerProductsParams = (CoordinatorLayout.LayoutParams)
+                    rlPagerProducts.getLayoutParams();
+            rlPagerProductsParams.width = displayMetrics.widthPixels;
+            rlPagerProductsParams.height = ((displayMetrics.heightPixels - (tabLayoutHeight * 2)) * 60) / 100;
 
-        FrameLayout.LayoutParams orderCompleteParams = (FrameLayout.LayoutParams)
-                btnOrderComplete.getLayoutParams();
-        orderCompleteParams.width = displayMetrics.widthPixels / 2;
+            FrameLayout.LayoutParams orderCompleteParams = (FrameLayout.LayoutParams)
+                    btnOrderComplete.getLayoutParams();
+            orderCompleteParams.width = displayMetrics.widthPixels / 2;
 
-        FrameLayout.LayoutParams orderCancelParams = (FrameLayout.LayoutParams)
-                btnOrderCancel.getLayoutParams();
-        orderCancelParams.width = displayMetrics.widthPixels / 2;
+            FrameLayout.LayoutParams orderCancelParams = (FrameLayout.LayoutParams)
+                    btnOrderCancel.getLayoutParams();
+            orderCancelParams.width = displayMetrics.widthPixels / 2;
+        }
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
