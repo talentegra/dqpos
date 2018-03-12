@@ -20,7 +20,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.dqserv.ConnectivityReceiver;
-import com.dqserv.adapter.TableAdapter;
+import com.dqserv.adapter.OrdersListTableAdapter;
 import com.dqserv.config.Constants;
 import com.dqserv.connection.DBConstants;
 import com.dqserv.rest.ApiClient;
@@ -41,7 +41,7 @@ public class OrdersList extends AppCompatActivity
 
     List<TableObject.Tables> results;
     List<Integer> onlineTableIds;
-    TableAdapter tableAdapter;
+    OrdersListTableAdapter tableAdapter;
     RelativeLayout mProgressBar;
     RecyclerView rv;
 
@@ -59,65 +59,6 @@ public class OrdersList extends AppCompatActivity
         results = new ArrayList<>();
         onlineTableIds = new ArrayList<>();
         getOnlineTablesFromLocal();
-
-        if (ConnectivityReceiver.isConnected()) {
-            mProgressBar.setVisibility(View.VISIBLE);
-            ApiInterface apiService =
-                    ApiClient.getClient().create(ApiInterface.class);
-            Call<TableObject> call = apiService.getTables
-                    (Constants.AUTH_TOKEN);
-            call.enqueue(new Callback<TableObject>() {
-                @Override
-                public void onResponse(Call<TableObject> call, Response<TableObject> response) {
-                    results.clear();
-                    fetchResults(response);
-                    if (results.size() > 0) {
-                        tableAdapter = new TableAdapter(results, onlineTableIds, new CustomItemClickListener() {
-                            @Override
-                            public void onItemClick(View v, int position) {
-                                String[] aTableValues = v.getTag().toString().split("\\|");
-                            }
-
-                            @Override
-                            public void deleteViewOnClick(View v, int position) {
-
-                            }
-                        });
-                        GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 3);
-                        rv.setLayoutManager(gridLayoutManager);
-                        rv.setItemAnimator(new DefaultItemAnimator());
-                        rv.setAdapter(tableAdapter);
-                    }
-                    mProgressBar.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onFailure(Call<TableObject> call, Throwable t) {
-                    mProgressBar.setVisibility(View.GONE);
-                }
-            });
-        } else {
-            results.clear();
-            getTablesFromLocal();
-            if (results.size() > 0) {
-                tableAdapter = new TableAdapter(results, onlineTableIds, new CustomItemClickListener() {
-                    @Override
-                    public void onItemClick(View v, int position) {
-                        String[] aTableValues = v.getTag().toString().split("\\|");
-
-                    }
-
-                    @Override
-                    public void deleteViewOnClick(View v, int position) {
-
-                    }
-                });
-                GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 3);
-                rv.setLayoutManager(gridLayoutManager);
-                rv.setItemAnimator(new DefaultItemAnimator());
-                rv.setAdapter(tableAdapter);
-            }
-        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -204,19 +145,21 @@ public class OrdersList extends AppCompatActivity
     }
 
     //get Tables
-    private void fetchResults(Response<TableObject> response) {
+    private void fetchResults(Response<TableObject> response, List<Integer> selectedOnlineTables) {
         TableObject tableObj = response.body();
-        saveTables(tableObj.getTables());
+        saveTables(tableObj.getTables(), selectedOnlineTables);
     }
 
-    private void saveTables(List<TableObject.Tables> items) {
+    private void saveTables(List<TableObject.Tables> items, List<Integer> selectedOnlineTables) {
         //Open the database
         String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
         SQLiteDatabase myDataBase = SQLiteDatabase.openDatabase(myPath, null,
                 SQLiteDatabase.OPEN_READWRITE);
         for (int tableIndex = 0; tableIndex < items.size(); tableIndex++) {
             try {
-                results.add(items.get(tableIndex));
+                if (selectedOnlineTables.contains(Integer.parseInt(items.get(tableIndex).getTableId()))) {
+                    results.add(items.get(tableIndex));
+                }
                 String insertSQL = "INSERT OR REPLACE INTO tables \n" +
                         "(table_id, table_name)\n" +
                         "VALUES \n" +
@@ -234,7 +177,7 @@ public class OrdersList extends AppCompatActivity
         Log.e("Success", "Tables Successfully Added.");
     }
 
-    public void getTablesFromLocal() {
+    public void getTablesFromLocal(List<Integer> selectedOnlineTables) {
         String POSTS_SELECT_QUERY = String.format("SELECT * FROM tables");
 
         //Open the database
@@ -248,8 +191,9 @@ public class OrdersList extends AppCompatActivity
                     TableObject.Tables newTable = new TableObject.Tables();
                     newTable.setTableId(cursor.getString(cursor.getColumnIndex("table_id")));
                     newTable.setTableName(cursor.getString(cursor.getColumnIndex("table_name")));
-
-                    results.add(newTable);
+                    if (selectedOnlineTables.contains(Integer.parseInt(cursor.getString(cursor.getColumnIndex("table_id"))))) {
+                        results.add(newTable);
+                    }
                 } while (cursor.moveToNext());
             }
         } catch (Exception e) {
@@ -316,6 +260,7 @@ public class OrdersList extends AppCompatActivity
                             }
                         }
                     }
+                    getOnlineTables(onlineTableIds);
                 }
 
                 @Override
@@ -363,6 +308,68 @@ public class OrdersList extends AppCompatActivity
                         cursorSecond.close();
                     }
                 }
+            }
+            getOnlineTables(onlineTableIds);
+        }
+    }
+
+    private void getOnlineTables(final List<Integer> selectedTableIds) {
+        if (ConnectivityReceiver.isConnected()) {
+            mProgressBar.setVisibility(View.VISIBLE);
+            ApiInterface apiService =
+                    ApiClient.getClient().create(ApiInterface.class);
+            Call<TableObject> call = apiService.getTables
+                    (Constants.AUTH_TOKEN);
+            call.enqueue(new Callback<TableObject>() {
+                @Override
+                public void onResponse(Call<TableObject> call, Response<TableObject> response) {
+                    results.clear();
+                    fetchResults(response, selectedTableIds);
+                    if (results.size() > 0) {
+                        tableAdapter = new OrdersListTableAdapter(results, new CustomItemClickListener() {
+                            @Override
+                            public void onItemClick(View v, int position) {
+                                String[] aTableValues = v.getTag().toString().split("\\|");
+                            }
+
+                            @Override
+                            public void deleteViewOnClick(View v, int position) {
+
+                            }
+                        });
+                        GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 3);
+                        rv.setLayoutManager(gridLayoutManager);
+                        rv.setItemAnimator(new DefaultItemAnimator());
+                        rv.setAdapter(tableAdapter);
+                    }
+                    mProgressBar.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onFailure(Call<TableObject> call, Throwable t) {
+                    mProgressBar.setVisibility(View.GONE);
+                }
+            });
+        } else {
+            results.clear();
+            getTablesFromLocal(selectedTableIds);
+            if (results.size() > 0) {
+                tableAdapter = new OrdersListTableAdapter(results, new CustomItemClickListener() {
+                    @Override
+                    public void onItemClick(View v, int position) {
+                        String[] aTableValues = v.getTag().toString().split("\\|");
+
+                    }
+
+                    @Override
+                    public void deleteViewOnClick(View v, int position) {
+
+                    }
+                });
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 3);
+                rv.setLayoutManager(gridLayoutManager);
+                rv.setItemAnimator(new DefaultItemAnimator());
+                rv.setAdapter(tableAdapter);
             }
         }
     }
