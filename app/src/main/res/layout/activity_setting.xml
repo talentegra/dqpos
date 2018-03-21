@@ -11,7 +11,8 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -28,66 +29,67 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:background="@drawable/box_background"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_30sdp"
-                    android:background="@color/colorPrimary"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="@dimen/_10sdp"
-                    android:text="Tax Setting"
-                    android:textColor="@android:color/white"
-                    android:textSize="@dimen/_16ssp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/_5sdp">
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@drawable/box_background"
+                    android:orientation="vertical">
 
-                    <RadioGroup
-                        android:id="@+id/radiogroup"
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/_30sdp"
-                        android:orientation="horizontal">
+                        android:background="@color/colorPrimary"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="@dimen/_10sdp"
+                        android:text="Tax Setting"
+                        android:textColor="@android:color/white"
+                        android:textSize="@dimen/_16ssp" />
 
-                        <RadioButton
-                            android:id="@+id/radio_tax"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:buttonTint="@color/colorPrimary"
-                            android:checked="true"
-                            android:tag="t"
-                            android:text="Tax"
-                            android:textSize="@dimen/_14ssp" />
-
-                        <RadioButton
-                            android:id="@+id/radio_no_tax"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:buttonTint="@color/colorPrimary"
-                            android:tag="nt"
-                            android:text="No Tax"
-                            android:textSize="@dimen/_14ssp" />
-
-                    </RadioGroup>
-
-                    <ScrollView
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/_5sdp">
+
+                        <RadioGroup
+                            android:id="@+id/radiogroup"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_30sdp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/radio_tax"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:buttonTint="@color/colorPrimary"
+                                android:checked="true"
+                                android:tag="t"
+                                android:text="Tax"
+                                android:textSize="@dimen/_14ssp" />
+
+                            <RadioButton
+                                android:id="@+id/radio_no_tax"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:buttonTint="@color/colorPrimary"
+                                android:tag="nt"
+                                android:text="No Tax"
+                                android:textSize="@dimen/_14ssp" />
+
+                        </RadioGroup>
+
 
                         <LinearLayout
                             android:id="@+id/setting_tax_layout"
@@ -149,23 +151,142 @@
                                     android:textSize="@dimen/_14ssp" />
                             </LinearLayout>
                         </LinearLayout>
-                    </ScrollView>
 
-                    <Button
-                        android:id="@+id/setting_change_tax"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/_40sdp"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:layout_marginTop="@dimen/_10sdp"
-                        android:background="@color/colorPrimary"
-                        android:text="Change Tax"
-                        android:textColor="@android:color/white"
-                        android:textSize="@dimen/_14ssp" />
+                        <Button
+                            android:id="@+id/setting_change_tax"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_40sdp"
+                            android:layout_marginBottom="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:background="@color/colorPrimary"
+                            android:text="Change Tax"
+                            android:textColor="@android:color/white"
+                            android:textSize="@dimen/_14ssp" />
+                    </LinearLayout>
+
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@drawable/box_background"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_30sdp"
+                        android:background="@color/colorPrimary"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="@dimen/_10sdp"
+                        android:text="WIFI Printer Configuration"
+                        android:textColor="@android:color/white"
+                        android:textSize="@dimen/_16ssp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/_5sdp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="IP Address"
+                                android:textColor="@android:color/black"
+                                android:textSize="@dimen/_14ssp" />
+
+                            <EditText
+                                android:id="@+id/setting_wifi_config_ip"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/_40sdp"
+                                android:layout_marginTop="@dimen/_5sdp"
+                                android:imeOptions="actionNext"
+                                android:inputType="numberDecimal"
+                                android:lines="1"
+                                android:text="192.168.1.1"
+                                android:textSize="@dimen/_14ssp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/setting_wifi_config_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:orientation="horizontal"
+                            android:visibility="visible">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="@dimen/_5sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Name"
+                                    android:textColor="@android:color/black"
+                                    android:textSize="@dimen/_14ssp" />
+
+                                <EditText
+                                    android:id="@+id/setting_wifi_config_name"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="@dimen/_40sdp"
+                                    android:layout_marginTop="@dimen/_5sdp"
+                                    android:imeOptions="actionNext"
+                                    android:inputType="text"
+                                    android:lines="1"
+                                    android:text="dqpos"
+                                    android:textSize="@dimen/_14ssp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_5sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Port"
+                                    android:textColor="@android:color/black"
+                                    android:textSize="@dimen/_14ssp" />
+
+                                <EditText
+                                    android:id="@+id/setting_wifi_config_port"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="@dimen/_40sdp"
+                                    android:layout_marginTop="@dimen/_5sdp"
+                                    android:imeOptions="actionDone"
+                                    android:inputType="number"
+                                    android:lines="1"
+                                    android:text="80"
+                                    android:textSize="@dimen/_14ssp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <Button
+                            android:id="@+id/setting_change_wifi_config"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_40sdp"
+                            android:layout_marginBottom="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:background="@color/colorPrimary"
+                            android:text="Change WiFi Configuration"
+                            android:textColor="@android:color/white"
+                            android:textSize="@dimen/_14ssp" />
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
-
-        </LinearLayout>
-
+        </ScrollView>
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

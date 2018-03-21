@@ -19,8 +19,8 @@ public class SettingActivity extends AppCompatActivity {
 
     RadioGroup radioGroup;
     RadioButton radioButton, radioTax, radioNoTax;
-    EditText etCGST, etSGST;
-    Button btnchangeTax;
+    EditText etCGST, etSGST, etName, etIP, etPort;
+    Button btnchangeTax, btnChangeWifiConfig;
     LinearLayout llTaxLayout;
 
     @Override
@@ -39,8 +39,11 @@ public class SettingActivity extends AppCompatActivity {
         llTaxLayout = (LinearLayout) findViewById(R.id.setting_tax_layout);
         etCGST = (EditText) findViewById(R.id.setting_cgst);
         etSGST = (EditText) findViewById(R.id.setting_sgst);
+        etName = (EditText) findViewById(R.id.setting_wifi_config_name);
+        etIP = (EditText) findViewById(R.id.setting_wifi_config_ip);
+        etPort = (EditText) findViewById(R.id.setting_wifi_config_port);
         btnchangeTax = (Button) findViewById(R.id.setting_change_tax);
-
+        btnChangeWifiConfig = (Button) findViewById(R.id.setting_change_wifi_config);
 
         if (GlobalApplication.taxPref.getString("tax_val", "t").
                 equalsIgnoreCase("t")) {
@@ -55,6 +58,10 @@ public class SettingActivity extends AppCompatActivity {
 
         etCGST.setText(String.valueOf(GlobalApplication.cgstPref.getFloat("cgst", 2.5f)));
         etSGST.setText(String.valueOf(GlobalApplication.sgstPref.getFloat("sgst", 2.5f)));
+
+        etName.setText(GlobalApplication.wifiNamePref.getString("wifi_name", "dqpos"));
+        etIP.setText(GlobalApplication.wifiIpPref.getString("wifi_ip", "192.168.1.1"));
+        etPort.setText(String.valueOf(GlobalApplication.wifiPortPref.getInt("wifi_port", 80)));
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -89,6 +96,26 @@ public class SettingActivity extends AppCompatActivity {
                     Toast.makeText(SettingActivity.this, "Successfully change Tax Value",
                             Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        btnChangeWifiConfig.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences.Editor editorName = GlobalApplication.wifiNamePref.edit();
+                editorName.putString("wifi_name", etName.getText().toString());
+                editorName.commit();
+
+                SharedPreferences.Editor editorIP = GlobalApplication.wifiIpPref.edit();
+                editorIP.putString("wifi_ip", etIP.getText().toString());
+                editorIP.commit();
+
+                SharedPreferences.Editor editorPort = GlobalApplication.wifiPortPref.edit();
+                editorPort.putInt("wifi_port", Integer.parseInt(etPort.getText().toString()));
+                editorPort.commit();
+
+                Toast.makeText(SettingActivity.this, "Successfully change Wifi Configuration",
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }

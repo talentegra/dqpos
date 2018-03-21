@@ -5,15 +5,15 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -26,7 +26,6 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +37,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.GlobalApplication;
 import com.dqserv.ConnectivityReceiver;
 import com.dqserv.adapter.OrderAdapter;
 import com.dqserv.adapter.ProductByCategoryAdapter;
@@ -50,6 +50,8 @@ import com.dqserv.rest.OrderObject;
 import com.dqserv.rest.ProductObject;
 import com.dqserv.rest.ResponseOrderObject;
 import com.dqserv.widget.CustomItemClickListener;
+import com.mocoo.hang.rtprinter.driver.Contants;
+import com.mocoo.hang.rtprinter.driver.HsWifiPrintDriver;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -95,8 +97,10 @@ public class Orders extends AppCompatActivity {
     static int total = 0;
     static int quantity = 0;
     static long currentOrderID = 0;
-    static Button btnOrderComplete, btnOrderCancel;
+    static Button btnOrderComplete, btnOrderCancel, btnOrderConfirm;
     static RelativeLayout mProgressBar;
+
+    HsWifiPrintDriver hsWifiPrintDriver;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -121,6 +125,9 @@ public class Orders extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_orders);
+
+        ConnStateHandler connStateHandler = new ConnStateHandler();
+        hsWifiPrintDriver.getInstance().setHandler(connStateHandler);
 
         mContext = Orders.this;
         total = 0;
@@ -150,6 +157,7 @@ public class Orders extends AppCompatActivity {
         tvTotal = (TextView) findViewById(R.id.orders_tv_total);
         btnOrderComplete = (Button) findViewById(R.id.orders_btn_order_complete);
         btnOrderCancel = (Button) findViewById(R.id.orders_btn_order_cancel);
+        btnOrderConfirm = (Button) findViewById(R.id.orders_btn_order_confirm);
 
         int orientation = this.getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -324,6 +332,18 @@ public class Orders extends AppCompatActivity {
                 } else {
                     finish();
                     startActivity(new Intent(getApplicationContext(), POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                }
+            }
+        });
+
+        btnOrderConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (hsWifiPrintDriver.IsNoConnection()) {
+                    Toast.makeText(getApplicationContext(), "Connect you wifi printer.", Toast.LENGTH_SHORT).show();
+                } else {
+                    hsWifiPrintDriver.printString("dqpos Order Bill1");
+                    hsWifiPrintDriver.WIFI_Write("dqpos Order Bill2");
                 }
             }
         });
@@ -964,5 +984,47 @@ public class Orders extends AppCompatActivity {
         unregisterControls();
         finish();
         startActivity(new Intent(getApplicationContext(), POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+    }
+
+    private class ConnStateHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Bundle data = msg.getData();
+            switch (data.getInt("flag")) {
+                /*The FLAG_STATE_CHANGE indicat that connection state will change when the Handler received message*/
+                case Contants.FLAG_STATE_CHANGE:
+                    /*This Case indicate the current connection state that include four state and you can find a state from the Contants Class
+                    UNCONNECTED、
+                    CONNECTED_BY_BLUETOOTH、
+                    CONNECTED_BY_USB、
+                    CONNECTED_BY_WIFI	)*/
+                    int state = data.getInt("state");
+                    //As for receiving state , you can write corresponding Code in here
+                    break;
+                   /*The FLAG_FAIL_CONNECT indicat that connection is Failed when the Handler received message*/
+
+                case Contants.FLAG_FAIL_CONNECT:
+                    //As for receiving state , you can write corresponding Code in here
+                    break;
+                    /*The FLAG_FAIL_CONNECT indicat that connection is Successful when the Handler received message*/
+
+                case Contants.FLAG_SUCCESS_CONNECT:
+                    //As for receiving state , you can write corresponding Code in here
+                    connectWifi(GlobalApplication.wifiIpPref.getString("wifi_ip", "192.168.1.1"),
+                            GlobalApplication.wifiPortPref.getInt("wifi_port", 80));
+                    break;
+            }
+        }
+    }
+
+    private void connectWifi(final String ip, final int port) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                hsWifiPrintDriver = HsWifiPrintDriver.getInstance();
+                hsWifiPrintDriver.WIFISocket(ip, port);
+            }
+        }).start();
     }
 }

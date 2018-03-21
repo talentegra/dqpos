@@ -260,16 +260,16 @@
         android:id="@+id/orders_rl_pager_products"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/white"
         android:paddingLeft="@dimen/_10sdp"
         android:paddingRight="@dimen/_10sdp"
-        android:background="@android:color/white"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.v4.view.ViewPager
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="@dimen/_40sdp"/>
+            android:paddingBottom="@dimen/_40sdp" />
 
     </FrameLayout>
 
@@ -285,18 +285,29 @@
             android:id="@+id/orders_btn_order_complete"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="center|left"
+            android:layout_gravity="left"
             android:background="@android:color/transparent"
             android:text="Complete Order"
             android:textColor="@android:color/white"
             android:textSize="@dimen/_14ssp" />
 
+        <Button
+            android:id="@+id/orders_btn_order_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginLeft="@dimen/_35sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:background="@android:color/transparent"
+            android:text="Confirm Order"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/_14ssp" />
 
         <Button
             android:id="@+id/orders_btn_order_cancel"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="center|right"
+            android:layout_gravity="right"
             android:background="@android:color/transparent"
             android:text="Cancel"
             android:textColor="@android:color/white"
