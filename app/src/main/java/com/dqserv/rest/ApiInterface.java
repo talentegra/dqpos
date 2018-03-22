@@ -15,6 +15,10 @@ public interface ApiInterface {
     Call<ProductObject> getProducts(@Field("auth_token") String authToken);
 
     @FormUrlEncoded
+    @POST("get_printers")
+    Call<PrinterObject> getPrinters(@Field("auth_token") String authToken);
+
+    @FormUrlEncoded
     @POST("get_tables")
     Call<TableObject> getTables(@Field("auth_token") String authToken);
 

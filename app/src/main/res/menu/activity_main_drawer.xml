@@ -42,6 +42,11 @@
                 android:id="@+id/nav_tables"
                 android:icon="@drawable/table"
                 android:title="Tables" />
+
+            <item
+                android:id="@+id/nav_printers"
+                android:icon="@drawable/printer"
+                android:title="Printers" />
         </menu>
     </item>
 

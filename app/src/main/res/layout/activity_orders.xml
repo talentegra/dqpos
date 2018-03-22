@@ -281,39 +281,53 @@
         android:layout_gravity="bottom"
         android:background="@color/colorPrimary">
 
-        <Button
-            android:id="@+id/orders_btn_order_complete"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="left"
-            android:background="@android:color/transparent"
-            android:text="Complete Order"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/_14ssp" />
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/orders_btn_order_confirm"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_marginLeft="@dimen/_35sdp"
-            android:layout_marginRight="@dimen/_10sdp"
-            android:background="@android:color/transparent"
-            android:text="Confirm Order"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/_14ssp" />
+            <Button
+                android:id="@+id/orders_btn_order_complete"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:text="Complete Order"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/_14ssp" />
 
-        <Button
-            android:id="@+id/orders_btn_order_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="right"
-            android:background="@android:color/transparent"
-            android:text="Cancel"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/_14ssp" />
+            <RelativeLayout
+                android:layout_width="@dimen/_1sdp"
+                android:layout_height="match_parent"
+                android:background="@android:color/white" />
+
+            <Button
+                android:id="@+id/orders_btn_order_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:text="Confirm Order"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/_14ssp" />
+
+            <RelativeLayout
+                android:layout_width="@dimen/_1sdp"
+                android:layout_height="match_parent"
+                android:background="@android:color/white" />
 
 
+            <Button
+                android:id="@+id/orders_btn_order_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:text="Cancel"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/_14ssp" />
+
+        </LinearLayout>
     </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>

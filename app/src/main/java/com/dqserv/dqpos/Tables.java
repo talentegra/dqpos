@@ -1,5 +1,6 @@
 package com.dqserv.dqpos;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -50,6 +51,8 @@ public class Tables extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
 
@@ -96,6 +99,11 @@ public class Tables extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
+        if (id == android.R.id.home) {
+            finish();
+            startActivity(new Intent(getApplicationContext(), MainActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -128,19 +136,19 @@ public class Tables extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-          //  View rootView = inflater.inflate(R.layout.fragment_tables, container, false);
-          //  TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-          //  textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            //  View rootView = inflater.inflate(R.layout.fragment_tables, container, false);
+            //  TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+            //  textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 
-            View rootView=null;
+            View rootView = null;
             final EditText editTextTabName, editTextTabCode;
 
-            if(getArguments().getInt(ARG_SECTION_NUMBER) ==1) {
+            if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) {
 
 
             }
 
-            if(getArguments().getInt(ARG_SECTION_NUMBER) ==2) {
+            if (getArguments().getInt(ARG_SECTION_NUMBER) == 2) {
 
                 rootView = inflater.inflate(R.layout.fragment_add_table, container, false);
                 editTextTabCode = (EditText) rootView.findViewById(R.id.editTextTabCode);
@@ -171,11 +179,11 @@ public class Tables extends AppCompatActivity {
 
                             myDataBase.close();
                             Toast.makeText(v.getContext(),
-                                    "Table "+tab_name+" Successfully Added ", Toast.LENGTH_SHORT).show();
+                                    "Table " + tab_name + " Successfully Added ", Toast.LENGTH_SHORT).show();
 
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             Toast.makeText(v.getContext(),
-                                    "Problem in Adding Table "+ex.getMessage(), Toast.LENGTH_SHORT).show();
+                                    "Problem in Adding Table " + ex.getMessage(), Toast.LENGTH_SHORT).show();
                             ex.printStackTrace();
                         }
 
@@ -187,13 +195,10 @@ public class Tables extends AppCompatActivity {
                 return rootView;
 
 
+            }
+            if (getArguments().getInt(ARG_SECTION_NUMBER) == 3) {
 
             }
-            if(getArguments().getInt(ARG_SECTION_NUMBER) ==3) {
-
-            }
-
-
 
 
             return rootView;

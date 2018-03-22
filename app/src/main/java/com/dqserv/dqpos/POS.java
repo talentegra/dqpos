@@ -207,6 +207,10 @@ public class POS extends AppCompatActivity
             if (!POS.class.getSimpleName().equalsIgnoreCase("OrdersList")) {
                 startActivity(new Intent(this, OrdersList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
+        } else if (id == R.id.nav_printers) {
+            if (!POS.class.getSimpleName().equalsIgnoreCase("PrintersActivity")) {
+                startActivity(new Intent(this, PrintersActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

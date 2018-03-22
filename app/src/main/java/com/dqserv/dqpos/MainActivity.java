@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity
             if (!MainActivity.class.getSimpleName().equalsIgnoreCase("BillActivity")) {
                 startActivity(new Intent(this, BillActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
-        }  else if (id == R.id.nav_products) {
+        } else if (id == R.id.nav_products) {
             if (!MainActivity.class.getSimpleName().equalsIgnoreCase("Products")) {
                 startActivity(new Intent(this, Products.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
@@ -136,6 +136,10 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_orders_list) {
             if (!MainActivity.class.getSimpleName().equalsIgnoreCase("OrdersList")) {
                 startActivity(new Intent(this, OrdersList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
+        } else if (id == R.id.nav_printers) {
+            if (!MainActivity.class.getSimpleName().equalsIgnoreCase("PrintersActivity")) {
+                startActivity(new Intent(this, PrintersActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         }
 

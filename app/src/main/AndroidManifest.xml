@@ -71,6 +71,10 @@
             android:name=".SettingActivity"
             android:label="@string/setting"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".PrintersActivity"
+            android:label="@string/printers"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

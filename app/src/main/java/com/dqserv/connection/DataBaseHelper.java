@@ -55,9 +55,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_SALE_ID = "sale_id";
     public static final String COLUMN_SALE_DATE = "sale_date";
     public static final String COLUMN_SALE_ITEM_ID = "sale_item_id";
-
+    public static final String PRINTER_TABLE_NAME = "printers";
+    public static final String COLUMN_PRINTER_ID = "printer_id";
+    public static final String COLUMN_PRINTER_TITLE = "title";
+    public static final String COLUMN_PRINTER_TYPE = "printer_type";
+    public static final String COLUMN_PRINTER_PROFILE = "profile";
+    public static final String COLUMN_PRINTER_CHAT_PER_LINE = "char_per_line";
+    public static final String COLUMN_PRINTER_PATH = "path";
+    public static final String COLUMN_PRINTER_IP = "ip_address";
+    public static final String COLUMN_PRINTER_PORT = "port";
 
     private final Context myContext;
+
 
     /**
      * Constructor
@@ -170,6 +179,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.execSQL("create table " + ORD_PRINT_ITEMS_TABLE_NAME + " ( " + COLUMN_ORD_ITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_ORD_ID + " INTEGER," + COLUMN_PROD_ID + " INTEGER," + COLUMN_PROD_CODE + " VARCHAR, " + COLUMN_PROD_NAME + " VARCHAR," + COLUMN_ITEM_QTY + " INTEGER, " + COLUMN_PROD_PRICE + " REAL," + COLUMN_SUB_TOTAL + " REAL, " + COLUMN_PROD_ID + "_" + COLUMN_TAB_ID + " TEXT UNIQUE);");
         db.execSQL("create table " + SALE_TABLE_NAME + " ( " + COLUMN_SALE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_SALE_DATE + " TEXT, " + COLUMN_TAB_ID + " INTEGER UNIQUE," + COLUMN_ORD_TOTAL + " REAL, " + COLUMN_ORD_TOT_ITEMS + " INTEGER," + COLUMN_STATUS + " INTEGER);");
         db.execSQL("create table " + SALE_ITEMS_TABLE_NAME + " ( " + COLUMN_SALE_ITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_SALE_ID + " INTEGER," + COLUMN_PROD_ID + " INTEGER," + COLUMN_PROD_CODE + " VARCHAR, " + COLUMN_PROD_NAME + " VARCHAR," + COLUMN_ITEM_QTY + " INTEGER, " + COLUMN_PROD_PRICE + " REAL," + COLUMN_SUB_TOTAL + " REAL, " + COLUMN_PROD_ID + "_" + COLUMN_TAB_ID + " TEXT UNIQUE);");
+        db.execSQL("create table " + PRINTER_TABLE_NAME + " ( " + COLUMN_PRINTER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_PRINTER_TITLE + " TEXT, " + COLUMN_PRINTER_TYPE + " TEXT, " + COLUMN_PRINTER_PROFILE + " TEXT, " + COLUMN_PRINTER_CHAT_PER_LINE + " TEXT," + COLUMN_PRINTER_PATH + " TEXT," + COLUMN_PRINTER_IP + " TEXT," + COLUMN_PRINTER_PORT + " INTEGER);");
     }
 
     @Override

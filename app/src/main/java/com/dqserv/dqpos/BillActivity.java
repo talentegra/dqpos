@@ -228,7 +228,7 @@ public class BillActivity extends AppCompatActivity implements NavigationView.On
             if (!BillActivity.class.getSimpleName().equalsIgnoreCase("BillActivity")) {
                 startActivity(new Intent(this, BillActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
-        }  else if (id == R.id.nav_products) {
+        } else if (id == R.id.nav_products) {
             if (!BillActivity.class.getSimpleName().equalsIgnoreCase("Products")) {
                 startActivity(new Intent(this, Products.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
@@ -243,6 +243,10 @@ public class BillActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_orders_list) {
             if (!BillActivity.class.getSimpleName().equalsIgnoreCase("OrdersList")) {
                 startActivity(new Intent(this, OrdersList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
+        } else if (id == R.id.nav_printers) {
+            if (!BillActivity.class.getSimpleName().equalsIgnoreCase("PrintersActivity")) {
+                startActivity(new Intent(this, PrintersActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         }
 

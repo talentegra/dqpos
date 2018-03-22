@@ -171,14 +171,6 @@ public class Orders extends AppCompatActivity {
                     rlPagerProducts.getLayoutParams();
             rlPagerProductsParams.width = displayMetrics.widthPixels;
             rlPagerProductsParams.height = ((displayMetrics.heightPixels - (tabLayoutHeight * 2)) * 60) / 100;
-
-            FrameLayout.LayoutParams orderCompleteParams = (FrameLayout.LayoutParams)
-                    btnOrderComplete.getLayoutParams();
-            orderCompleteParams.width = displayMetrics.widthPixels / 2;
-
-            FrameLayout.LayoutParams orderCancelParams = (FrameLayout.LayoutParams)
-                    btnOrderCancel.getLayoutParams();
-            orderCancelParams.width = displayMetrics.widthPixels / 2;
         }
 
 

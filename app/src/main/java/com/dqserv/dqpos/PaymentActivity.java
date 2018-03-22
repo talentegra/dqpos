@@ -62,7 +62,7 @@ public class PaymentActivity extends AppCompatActivity {
     LinearLayout mOfflineView, llButtons;
     RecyclerView rv;
     Button btnPayment, btnCancel;
-    String sPaymentMode = "";
+    String sPaymentMode = "Cash";
 
     public String companyName = "DigitalQ Information Services";
     public String addressLine1 = "#G2,C-Block";

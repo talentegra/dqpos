@@ -1,5 +1,6 @@
 package com.dqserv.dqpos;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -50,7 +51,8 @@ public class Categories extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         //getJSON("http://teswaiter.dqserv.com/api/get_categories");
 
         // Create the adapter that will return a fragment for each of the three
@@ -96,6 +98,12 @@ public class Categories extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
+        if (id == android.R.id.home) {
+            finish();
+            startActivity(new Intent(getApplicationContext(), MainActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        }
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -128,18 +136,18 @@ public class Categories extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-          //  View rootView = inflater.inflate(R.layout.fragment_categories, container, false);
-           // TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+            //  View rootView = inflater.inflate(R.layout.fragment_categories, container, false);
+            // TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-              View rootView=null;
-              final EditText editTextCatName, editTextCatCode;
+            View rootView = null;
+            final EditText editTextCatName, editTextCatCode;
 
-            if(getArguments().getInt(ARG_SECTION_NUMBER) ==1) {
+            if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) {
 
 
             }
 
-            if(getArguments().getInt(ARG_SECTION_NUMBER) ==2) {
+            if (getArguments().getInt(ARG_SECTION_NUMBER) == 2) {
 
                 rootView = inflater.inflate(R.layout.fragment_add_category, container, false);
                 editTextCatCode = (EditText) rootView.findViewById(R.id.editTextCatCode);
@@ -170,11 +178,11 @@ public class Categories extends AppCompatActivity {
 
                             myDataBase.close();
                             Toast.makeText(v.getContext(),
-                                    "Category "+cat_name+" Successfully Added ", Toast.LENGTH_SHORT).show();
+                                    "Category " + cat_name + " Successfully Added ", Toast.LENGTH_SHORT).show();
 
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             Toast.makeText(v.getContext(),
-                                    "Problem in Adding Category "+ex.getMessage(), Toast.LENGTH_SHORT).show();
+                                    "Problem in Adding Category " + ex.getMessage(), Toast.LENGTH_SHORT).show();
                             ex.printStackTrace();
                         }
 
@@ -186,14 +194,13 @@ public class Categories extends AppCompatActivity {
                 return rootView;
 
 
+            }
+            if (getArguments().getInt(ARG_SECTION_NUMBER) == 3) {
 
             }
-            if(getArguments().getInt(ARG_SECTION_NUMBER) ==3) {
-
-            }
 
 
-                return rootView;
+            return rootView;
         }
     }
 
