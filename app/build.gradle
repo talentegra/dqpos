@@ -18,7 +18,7 @@ android {
         }
         android.applicationVariants.all { variant ->
             variant.outputs.all {
-                outputFileName = "dqpos.apk"
+                outputFileName = "dqpos-printer-version.apk"
             }
         }
     }

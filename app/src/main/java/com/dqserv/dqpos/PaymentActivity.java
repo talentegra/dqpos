@@ -13,9 +13,12 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +34,7 @@ import com.dqserv.rest.BillProductObject;
 import com.dqserv.rest.PaymentObject;
 import com.dqserv.rest.SaleObject;
 import com.dqserv.widget.CustomItemClickListener;
+import com.dqserv.widget.PaymentMode;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,6 +62,7 @@ public class PaymentActivity extends AppCompatActivity {
     LinearLayout mOfflineView, llButtons;
     RecyclerView rv;
     Button btnPayment, btnCancel;
+    String sPaymentMode = "";
 
     public String companyName = "DigitalQ Information Services";
     public String addressLine1 = "#G2,C-Block";
@@ -189,6 +194,7 @@ public class PaymentActivity extends AppCompatActivity {
             public void onClick(View view) {
                 final int[] nPayning = {0};
                 final float[] nBalance = {0f};
+
                 final Dialog paymentDialog = new Dialog(PaymentActivity.this, R.style.AppTheme);
                 paymentDialog.setContentView(R.layout.layout_payment_popup);
 
@@ -202,6 +208,8 @@ public class PaymentActivity extends AppCompatActivity {
                         .findViewById(R.id.popup_payment_tv_total_paying);
                 final TextView tvBalance = (TextView) paymentDialog
                         .findViewById(R.id.popup_payment_tv_balance);
+                final Spinner spinnerPaymentMode = (Spinner) paymentDialog
+                        .findViewById(R.id.payment_popup_spinner_payment_mode);
 
                 Button btnClose = (Button) paymentDialog
                         .findViewById(R.id.popup_payment_btn_close);
@@ -231,10 +239,38 @@ public class PaymentActivity extends AppCompatActivity {
                 Button btn2000Rs = (Button) paymentDialog
                         .findViewById(R.id.popup_payment_btn_two_thousand_rs);
 
+                //load payment mode
+                ArrayList<PaymentMode> paymentList = new ArrayList<PaymentMode>();
+                paymentList.add(new PaymentMode("Cash"));
+                paymentList.add(new PaymentMode("Credit Card"));
+                paymentList.add(new PaymentMode("Discount"));
 
-                tvTotalItems.setText(getIntent().getStringExtra("total_items").toString().equalsIgnoreCase("null")
+                ArrayAdapter<PaymentMode> myAdapter = new ArrayAdapter<PaymentMode>(
+                        PaymentActivity.this, R.layout.layout_spinner_item, paymentList);
+                spinnerPaymentMode.setAdapter(myAdapter);
+
+
+                spinnerPaymentMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        PaymentMode oPaymentMode;
+                        if (!(spinnerPaymentMode.getSelectedItem() == null)) {
+                            oPaymentMode = (PaymentMode) spinnerPaymentMode.getSelectedItem();
+                            sPaymentMode = String.valueOf(oPaymentMode.getPaymentMode());
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+
+                tvTotalItems.setText(getIntent().getStringExtra("total_items").toString()
+                        .equalsIgnoreCase("null")
                         ? "0" : getIntent().getStringExtra("total_items"));
-                tvPayble.setText(getIntent().getStringExtra("grand_total").toString().equalsIgnoreCase("null")
+                tvPayble.setText(getIntent().getStringExtra("grand_total").toString()
+                        .equalsIgnoreCase("null")
                         ? "0" : getIntent().getStringExtra("grand_total"));
 
                 btnClose.setOnClickListener(new View.OnClickListener() {
@@ -632,6 +668,8 @@ public class PaymentActivity extends AppCompatActivity {
             printerController.PrinterController_Print(print("Date Time: " + timeStamp));
             printerController.PrinterController_Linefeed();
             printerController.PrinterController_Print(print("Bill No: " + getIntent().getStringExtra("order_sale_id")));
+            printerController.PrinterController_Linefeed();
+            printerController.PrinterController_Print(print("Payment Mode: " + sPaymentMode));
             printerController.PrinterController_Linefeed();
 
             printerController.PrinterController_Print(print(getdashline()));
