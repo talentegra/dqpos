@@ -214,6 +214,7 @@ public class Orders extends AppCompatActivity {
                         for (int aIndex = 0; aIndex < resultOrders.size(); aIndex++) {
                             objOrder = new JSONObject();
                             try {
+                                objOrder.put("order_sale_id", String.valueOf(resultOrders.get(aIndex).getOrderId()));
                                 objOrder.put("total", String.valueOf(total));
                                 objOrder.put("grand_total", String.valueOf(total));
                                 objOrder.put("table_name", sTableName);
@@ -339,11 +340,100 @@ public class Orders extends AppCompatActivity {
         btnOrderConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (hsWifiPrintDriver.IsNoConnection()) {
-                    Toast.makeText(getApplicationContext(), "Connect you wifi printer.", Toast.LENGTH_SHORT).show();
+                if (resultOrders.size() > 0) {
+                    if (ConnectivityReceiver.isConnected()) {
+                        mProgressBar.setVisibility(View.VISIBLE);
+                        ApiInterface apiService =
+                                ApiClient.getClient().create(ApiInterface.class);
+                        JSONObject objOrder = null;
+                        JSONArray jsonArray = new JSONArray();
+                        for (int aIndex = 0; aIndex < resultOrders.size(); aIndex++) {
+                            objOrder = new JSONObject();
+                            try {
+                                objOrder.put("order_sale_id", String.valueOf(resultOrders.get(aIndex).getOrderId()));
+                                objOrder.put("total", String.valueOf(total));
+                                objOrder.put("grand_total", String.valueOf(total));
+                                objOrder.put("table_name", sTableName);
+                                objOrder.put("total_items", String.valueOf(quantity));
+                                objOrder.put("date", currentdateTimeInString());
+                                objOrder.put("product_id", resultOrders.get(aIndex).getProductId());
+                                objOrder.put("quantity", resultOrders.get(aIndex).getQuantity());
+                                objOrder.put("unit_price", resultOrders.get(aIndex).getSalePrice());
+                                objOrder.put("net_unit_price", resultOrders.get(aIndex).getSalePrice());
+                                objOrder.put("real_unit_price", resultOrders.get(aIndex).getSalePrice());
+                                objOrder.put("subtotal", resultOrders.get(aIndex).getSubTotal());
+                                objOrder.put("product_code", resultOrders.get(aIndex).getProductCode());
+                                objOrder.put("product_name", resultOrders.get(aIndex).getProductName());
+                                objOrder.put("sale_price", resultOrders.get(aIndex).getSalePrice());
+                            } catch (JSONException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                            jsonArray.put(objOrder);
+                        }
+                        Call<ResponseOrderObject> call = apiService.addOrders(Constants.AUTH_TOKEN, sTableId,
+                                jsonArray);
+                        call.enqueue(new Callback<ResponseOrderObject>() {
+                            @Override
+                            public void onResponse(Call<ResponseOrderObject> call, Response<ResponseOrderObject> response) {
+                                mProgressBar.setVisibility(View.GONE);
+                                Toast.makeText(getApplicationContext(), "Succes your order.", Toast.LENGTH_SHORT).show();
+                                saveOrderPrintTable(resultOrders);
+                                saveOrderPrintItemsTable(resultOrders);
+                                deleteAllOrders();
+                                unregisterControls();
+                                getOrders(sTableId, currentOrderID);
+                                if (hsWifiPrintDriver.IsNoConnection()) {
+                                    Toast.makeText(getApplicationContext(),
+                                            "Connect you wifi printer.", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    hsWifiPrintDriver.printString("dqpos Order Bill1");
+                                    hsWifiPrintDriver.WIFI_Write("dqpos Order Bill2");
+                                }
+                                finish();
+                                startActivity(new Intent(getApplicationContext(), POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseOrderObject> call, Throwable t) {
+                                mProgressBar.setVisibility(View.GONE);
+                                Toast.makeText(getApplicationContext(), "Somthing went wrong, please try again...", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Succes your order.", Toast.LENGTH_SHORT).show();
+                        saveOrderPrintTable(resultOrders);
+                        saveOrderPrintItemsTable(resultOrders);
+                        deleteAllOrders();
+                        unregisterControls();
+                        getOrders(sTableId, currentOrderID);
+                        finish();
+                        startActivity(new Intent(getApplicationContext(), POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                    }
                 } else {
-                    hsWifiPrintDriver.printString("dqpos Order Bill1");
-                    hsWifiPrintDriver.WIFI_Write("dqpos Order Bill2");
+                    try {
+                        LayoutInflater inflater = (LayoutInflater)
+                                getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        View layout = inflater.inflate(R.layout.layout_popup,
+                                (ViewGroup) findViewById(R.id.popup_cancel_order));
+                        final PopupWindow pw = new PopupWindow(layout, (int) mContext.getResources().getDimension(R.dimen._200sdp),
+                                (int) mContext.getResources().getDimension(R.dimen._180sdp), true);
+                        pw.showAtLocation(layout, Gravity.CENTER, 0, 0);
+                        TextView msg = (TextView) layout.findViewById(R.id.message_popup);
+                        msg.setText("No Orders!");
+                        Button close = (Button) layout.findViewById(R.id.close_popup);
+                        close.setVisibility(View.GONE);
+                        Button accept = (Button) layout.findViewById(R.id.accept_popup);
+                        accept.setText("Ok");
+                        accept.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                pw.dismiss();
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
