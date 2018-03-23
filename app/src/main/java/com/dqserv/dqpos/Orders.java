@@ -375,13 +375,7 @@ public class Orders extends AppCompatActivity {
                                 deleteAllOrders();
                                 unregisterControls();
                                 getOrders(sTableId, currentOrderID);
-                                if (hsWifiPrintDriver.IsNoConnection()) {
-                                    Toast.makeText(getApplicationContext(),
-                                            "Connect you wifi printer.", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    hsWifiPrintDriver.printString("dqpos Order Bill1");
-                                    hsWifiPrintDriver.WIFI_Write("dqpos Order Bill2");
-                                }
+                                printOrder();
                                 finish();
                                 startActivity(new Intent(getApplicationContext(), POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             }
@@ -429,6 +423,16 @@ public class Orders extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void printOrder() {
+        if (hsWifiPrintDriver.IsNoConnection()) {
+            Toast.makeText(getApplicationContext(),
+                    "Connect you wifi printer.", Toast.LENGTH_SHORT).show();
+        } else {
+            hsWifiPrintDriver.printString("dqpos Order Bill1");
+            hsWifiPrintDriver.WIFI_Write("dqpos Order Bill2");
+        }
     }
 
     private void unregisterControls() {
