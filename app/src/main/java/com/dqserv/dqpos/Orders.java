@@ -50,8 +50,10 @@ import com.dqserv.rest.OrderObject;
 import com.dqserv.rest.ProductObject;
 import com.dqserv.rest.ResponseOrderObject;
 import com.dqserv.widget.CustomItemClickListener;
-import com.mocoo.hang.rtprinter.driver.Contants;
-import com.mocoo.hang.rtprinter.driver.HsWifiPrintDriver;
+import com.pos.printer.PrinterFunctions;
+import com.pos.printer.PrinterFunctionsLAN;
+//import com.mocoo.hang.rtprinter.driver.Contants;
+//import com.mocoo.hang.rtprinter.driver.HsWifiPrintDriver;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -100,7 +102,7 @@ public class Orders extends AppCompatActivity {
     static Button btnOrderComplete, btnOrderCancel, btnOrderConfirm;
     static RelativeLayout mProgressBar;
 
-    HsWifiPrintDriver hsWifiPrintDriver;
+  //  HsWifiPrintDriver hsWifiPrintDriver;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -126,8 +128,8 @@ public class Orders extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_orders);
 
-        ConnStateHandler connStateHandler = new ConnStateHandler();
-        hsWifiPrintDriver.getInstance().setHandler(connStateHandler);
+    //    ConnStateHandler connStateHandler = new ConnStateHandler();
+     //   hsWifiPrintDriver.getInstance().setHandler(connStateHandler);
 
         mContext = Orders.this;
         total = 0;
@@ -425,7 +427,7 @@ public class Orders extends AppCompatActivity {
         });
     }
 
-    private void printOrder() {
+   /* private void printOrder() {
         if (hsWifiPrintDriver.IsNoConnection()) {
             Toast.makeText(getApplicationContext(),
                     "Connect you wifi printer.", Toast.LENGTH_SHORT).show();
@@ -434,7 +436,38 @@ public class Orders extends AppCompatActivity {
             hsWifiPrintDriver.WIFI_Write("dqpos Order Bill2");
         }
     }
+ */
+   private void printOrder() {
+       int res=0;
+       if(WifiPrinterActivity.isLAN) {
+           PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"Welcome to DQPOS\n");
+           PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"No:23, Cholan St, Radha Nagar,\n");
+           PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"Chrompet, Chennai-44\n");
+           PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"Phone:044-22651990\n");
 
+
+
+       } else {
+
+           res=PrinterFunctions.CheckStatus(
+                   WifiPrinterActivity.portName,
+                   WifiPrinterActivity.portSettings,
+                   WifiPrinterActivity.value_StatusSpecified);
+
+            if (res==1) {
+                PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,0, 0,5,0,"Welcome to DQPOS First 1");
+            }
+           if (res==0) {
+               PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,0, 0,5,0,"Welcome to DQPOS First 0");
+           }
+           if(res==2) {
+               PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,0, 0,5,0,"Welcome to DQPOS First 2");
+           }
+
+           PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"Welcome to DQPOS Common");
+
+       }
+   }
     private void unregisterControls() {
         quantity = 0;
         total = 0;
@@ -1071,7 +1104,7 @@ public class Orders extends AppCompatActivity {
         finish();
         startActivity(new Intent(getApplicationContext(), POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
     }
-
+/*
     private class ConnStateHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -1079,23 +1112,23 @@ public class Orders extends AppCompatActivity {
             Bundle data = msg.getData();
             switch (data.getInt("flag")) {
                 /*The FLAG_STATE_CHANGE indicat that connection state will change when the Handler received message*/
-                case Contants.FLAG_STATE_CHANGE:
+    //            case Contants.FLAG_STATE_CHANGE:
                     /*This Case indicate the current connection state that include four state and you can find a state from the Contants Class
                     UNCONNECTED、
                     CONNECTED_BY_BLUETOOTH、
                     CONNECTED_BY_USB、
                     CONNECTED_BY_WIFI	)*/
-                    int state = data.getInt("state");
+      /*              int state = data.getInt("state");
                     //As for receiving state , you can write corresponding Code in here
                     break;
                    /*The FLAG_FAIL_CONNECT indicat that connection is Failed when the Handler received message*/
 
-                case Contants.FLAG_FAIL_CONNECT:
+        /*        case Contants.FLAG_FAIL_CONNECT:
                     //As for receiving state , you can write corresponding Code in here
                     break;
                     /*The FLAG_FAIL_CONNECT indicat that connection is Successful when the Handler received message*/
 
-                case Contants.FLAG_SUCCESS_CONNECT:
+          /*      case Contants.FLAG_SUCCESS_CONNECT:
                     //As for receiving state , you can write corresponding Code in here
                     connectWifi(GlobalApplication.wifiIpPref.getString("wifi_ip", "192.168.1.1"),
                             GlobalApplication.wifiPortPref.getInt("wifi_port", 80));
@@ -1113,4 +1146,7 @@ public class Orders extends AppCompatActivity {
             }
         }).start();
     }
+*/
+    //bluetooth printer
+
 }

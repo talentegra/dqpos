@@ -141,6 +141,10 @@ public class MainActivity extends AppCompatActivity
             if (!MainActivity.class.getSimpleName().equalsIgnoreCase("PrintersActivity")) {
                 startActivity(new Intent(this, PrintersActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
+        } else if (id == R.id.nav_bluetooth_printers) {
+            if (!MainActivity.class.getSimpleName().equalsIgnoreCase("WifiPrinterActivity")) {
+                startActivity(new Intent(this, WifiPrinterActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

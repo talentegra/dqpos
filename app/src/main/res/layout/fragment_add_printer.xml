@@ -12,4 +12,78 @@
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/_24ssp" />
 
-</android.support.constraint.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/textView_PortName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="#FFFFFF"
+        android:text=" "
+        android:textColor="#000000"
+        android:textSize="30px" />
+
+    <Button
+        android:id="@+id/print_test_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/spinner"
+        android:layout_centerHorizontal="true"
+        android:layout_column="1"
+        android:layout_marginTop="86dp"
+        android:layout_row="3"
+        android:text="Test Print"
+        android:visibility="visible" />
+
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <Button
+        android:id="@+id/button_PortDiscovery"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:onClick="PortDiscovery"
+        android:text="Port Discovery"
+        android:layout_weight="1"
+        android:textSize="24px" />
+
+    <Button
+        android:id="@+id/button_ClosePort"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:onClick="ClosePort"
+        android:text="Close Port"
+        android:layout_weight="1"
+        android:textSize="24px" />
+
+<Button
+android:id="@+id/button_GetStatus"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:onClick="GetStatus"
+android:text="Get Status"
+android:textSize="24px" />
+
+<Button
+android:id="@+id/button_SampleReceipt"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:onClick="SampleReceipt"
+android:text="Sample Receipt"
+android:textSize="24px" />
+
+
+
+<Button
+android:id="@+id/BtnPrint"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:text="Print"
+android:textSize="24px" />/>
+
+</LinearLayout>
+
+
+
+
+    </android.support.constraint.ConstraintLayout>

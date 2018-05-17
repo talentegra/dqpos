@@ -1,6 +1,10 @@
 package com.dqserv.dqpos;
 
 import android.app.Dialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -35,6 +39,8 @@ import com.dqserv.rest.PaymentObject;
 import com.dqserv.rest.SaleObject;
 import com.dqserv.widget.CustomItemClickListener;
 import com.dqserv.widget.PaymentMode;
+import com.pos.printer.PrinterFunctions;
+import com.pos.printer.PrinterFunctionsLAN;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +53,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -73,7 +81,7 @@ public class PaymentActivity extends AppCompatActivity {
     public String phonenumbers = "Phone: +91-(0)44-2265 1990";
     public String GSTNumber = "GST: 123456789012";
     public String thankyou = "Thank You !! Visit Again";
-
+    private static final String STANDART_SERIAL_PORT_SERVICE_ID = "00001101-0000-1000-8000-00805f9b34fb";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -342,6 +350,7 @@ public class PaymentActivity extends AppCompatActivity {
                                         saveSalesPrintItemsTable(results);
                                         deleteAllOrders();
                                         printBill(billproducts);
+                                     //   printBluetoothBill(billproducts);
                                         finish();
                                         startActivity(new Intent(getApplicationContext(), BillActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                                     }
@@ -609,6 +618,42 @@ public class PaymentActivity extends AppCompatActivity {
 
 
     private void printBill(HashMap<String, BillProductObject> billproducts) {
+        if(WifiPrinterActivity.isLAN) {
+            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,1,companyName + "\n" + addressLine1 + "\n" + addressLine2 + addressLine3 + "\n" + addressLine4 + "\n" + addressLine5 + "\n" + phonenumbers + "\n" +GSTNumber + "\n\n\n");
+            String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm a").format(Calendar.getInstance().getTime());
+            String space = "  ";
+            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,0, 0,0,2,timeStamp + "\n");
+            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,0, 0,0,0,"Bill No: " + getIntent().getStringExtra("order_sale_id") + "\n" + "Sno " + "Name" + space + "Qty" + space + "Price" + space + "Amount" + space + "\n");
+            double total = 0;
+            double totalqty = 0;
+            int count = 1;
+            DecimalFormat format1 = new DecimalFormat("#.##");
+            format1.setMinimumFractionDigits(2);
+            for (Map.Entry entry : billproducts.entrySet()) {
+                String key = entry.getKey().toString();
+                BillProductObject billProduct = (BillProductObject) entry.getValue();
+                total += billProduct.getAmount();
+                totalqty += billProduct.getQuantity();
+                PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings, 0, 0, 0, 0, 0, 0, 5, 0, count + "  " + billProduct.getProductName());
+                String space1 = addspace(0, (("Sno Name" + space).length()));
+                String space2 = addspace(0, ((space + "Qty" + space).length() - -(format1.format(billProduct.getQuantity())).length()));
+                String space3 = addspace(0, ((space + "Price" + space).length() - -(format1.format(billProduct.getPrice())).length()));
+                String space4 = addspace(0, ((space + "Amount" + space).length() - -(format1.format(billProduct.getAmount())).length()));
+                PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings, 0, 0, 0, 0, 0, 0, 0, 0, space1 + format1.format(billProduct.getQuantity()) + " " + format1.format(billProduct.getPrice()) + " " + format1.format(billProduct.getAmount()) + "\n");
+                count += 1;
+            }
+            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,0, 0,5,0,"Total Qty" + totalqty);
+            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,1, 0,5,0,"Total:" + total);
+
+            PrinterFunctionsLAN.PreformCut(WifiPrinterActivity.portName,WifiPrinterActivity.portSettings,1);
+        }
+        else {
+            PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,0, 0,5,0,companyName);
+
+        }
+    }
+
+    private void printBiller(HashMap<String, BillProductObject> billproducts) {
         try {
             PrinterController printerController = PrinterController.getInstance();
 
@@ -788,4 +833,37 @@ public class PaymentActivity extends AppCompatActivity {
         int x = ((int) maxline) - ((int) actline);
         return x;
     }
+
+
+    //bluetooth printer code
+/*
+    private void printBluetoothBill(HashMap<String, BillProductObject> billproducts) {
+
+
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        if (bluetoothAdapter == null) {
+            throw new Exception(context.getString(R.string.no_printer_avaliable));
+        }
+
+        if (!bluetoothAdapter.isEnabled()) {
+            throw new Exception(context.getString(R.string.no_bluetooth_avaliable));
+        }
+
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+        pairedDevicesList = new ArrayList<BluetoothDevice>(pairedDevices);
+
+        UUID uuid = UUID.fromString(STANDART_SERIAL_PORT_SERVICE_ID);
+
+        BluetoothSocket bluetoothSocket = null;
+        if ((bluetoothSocket == null) || (!bluetoothSocket.isConnected())) {
+            bluetoothSocket = this.device.createRfcommSocketToServiceRecord(uuid);
+            bluetoothSocket.connect();
+        }
+
+        OutputStream outputStream = bluetoothSocket.getOutputStream();
+        outputStream.write("test 213");
+
+    } */
+
 }
