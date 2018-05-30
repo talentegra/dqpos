@@ -159,6 +159,14 @@ public class OrderItemsActivity extends AppCompatActivity implements
                             results.clear();
                             results = fetchResults(response);
                             if (results.size() > 0) {
+                                for (int aIndex = 0; aIndex < results.size(); aIndex++) {
+                                    OrderItemsObject.Orders orderItemsObject = new OrderItemsObject.Orders();
+                                    orderItemsObject.setProductName(results.get(aIndex).getProductName());
+                                    orderItemsObject.setQuantity(results.get(aIndex).getQuantity());
+                                    orderItemsObject.setSubTotal(results.get(aIndex).getSubTotal());
+
+                                    orderItems.put(String.valueOf(aIndex), orderItemsObject);
+                                }
                                 orderItemsAdapter = new OrderItemsAdapter(results, new CustomItemClickListener() {
                                     @Override
                                     public void onItemClick(View v, int position) {
@@ -229,17 +237,16 @@ public class OrderItemsActivity extends AppCompatActivity implements
             DecimalFormat format1 = new DecimalFormat("#.##");
             format1.setMinimumFractionDigits(2);
             for (Map.Entry entry : orderItems.entrySet()) {
-                String key = entry.getKey().toString();
                 OrderItemsObject.Orders orderItem = (OrderItemsObject.Orders) entry.getValue();
                 PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
                         0, 0, 0, 0, 0, 0,
                         5, 0, orderItem.getProductName());
                 String space1 = addspace(0, ((space + "Qty" + space).length() - -(format1.format(orderItem.getQuantity())).length()));
-                String space2 = addspace(0, ((space + "Price" + space).length() - -(format1.format(orderItem.getSalePrice())).length()));
+                //String space2 = addspace(0, ((space + "Price" + space).length() - -(format1.format(orderItem.getSalePrice())).length()));
                 String space3 = addspace(0, ((space + "Amount" + space).length() - -(format1.format(orderItem.getSubTotal())).length()));
                 PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
                         0, 0, 0, 0, 0, 0,
-                        0, 0, space1 + " " + space2 + " " + space3 + "\n");
+                        0, 0, space1 + " " + space3 + "\n");
             }
             PrinterFunctionsLAN.PreformCut(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings, 1);
         } else {
