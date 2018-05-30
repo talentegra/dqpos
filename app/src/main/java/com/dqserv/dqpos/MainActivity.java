@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_gallery) {
             getProductsFromLocal();
             if (resultProducts.size() > 0) {
-                if (!MainActivity.class.getSimpleName().equalsIgnoreCase("Orders")) {
+                if (!MainActivity.class.getSimpleName().equalsIgnoreCase("OrdersList")) {
                     startActivity(new Intent(this, OrdersList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 }
             } else {

@@ -83,6 +83,10 @@
             android:name=".WifiPrinterActivity"
             android:label="Wifi Printers"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".OrderItemsActivity"
+            android:label="Order Items"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

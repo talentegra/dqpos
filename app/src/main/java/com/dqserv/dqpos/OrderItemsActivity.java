@@ -14,16 +14,19 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.dqserv.ConnectivityReceiver;
-import com.dqserv.adapter.BillAdapter;
+import com.dqserv.adapter.OrderItemsAdapter;
 import com.dqserv.config.Constants;
 import com.dqserv.rest.ApiClient;
 import com.dqserv.rest.ApiInterface;
-import com.dqserv.rest.BillObject;
+import com.dqserv.rest.OrderItemsObject;
 import com.dqserv.widget.CustomItemClickListener;
+import com.pos.printer.PrinterFunctions;
+import com.pos.printer.PrinterFunctionsLAN;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,24 +35,32 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class BillActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class OrderItemsActivity extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener {
 
-    List<BillObject.Orders> results;
-    BillAdapter billAdapter;
+    List<OrderItemsObject.Orders> results;
+    OrderItemsAdapter orderItemsAdapter;
     RelativeLayout mProgressBar;
     LinearLayout mOfflineView;
     RecyclerView rv;
+    String sTabeleId = "";
+    Button btnCompleteOrder, btnCancelOrder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bill);
+        setContentView(R.layout.activity_order_items);
+
+        sTabeleId = getIntent().getStringExtra("table_id");
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mProgressBar = (RelativeLayout) findViewById(R.id.bill_rl_progress);
-        mOfflineView = (LinearLayout) findViewById(R.id.bill_rl_offline);
-        rv = (RecyclerView) findViewById(R.id.bill_recycler_view);
+        btnCompleteOrder = (Button) findViewById(R.id.order_items_btn_complete_order);
+        btnCancelOrder = (Button) findViewById(R.id.order_items_btn_cancel_order);
+        mProgressBar = (RelativeLayout) findViewById(R.id.order_items_rl_progress);
+        mOfflineView = (LinearLayout) findViewById(R.id.order_items_rl_offline);
+        rv = (RecyclerView) findViewById(R.id.order_items_recycler_view);
 
         results = new ArrayList<>();
 
@@ -59,25 +70,16 @@ public class BillActivity extends AppCompatActivity implements NavigationView.On
             mProgressBar.setVisibility(View.VISIBLE);
             ApiInterface apiService =
                     ApiClient.getClient().create(ApiInterface.class);
-            Call<BillObject> call = apiService.getOrders(Constants.AUTH_TOKEN);
-            call.enqueue(new Callback<BillObject>() {
+            Call<OrderItemsObject> call = apiService.getOrderedTableItems(Constants.AUTH_TOKEN, sTabeleId);
+            call.enqueue(new Callback<OrderItemsObject>() {
                 @Override
-                public void onResponse(Call<BillObject> call, Response<BillObject> response) {
+                public void onResponse(Call<OrderItemsObject> call, Response<OrderItemsObject> response) {
                     results.clear();
                     results = fetchResults(response);
                     if (results.size() > 0) {
-                        billAdapter = new BillAdapter(results, new CustomItemClickListener() {
+                        orderItemsAdapter = new OrderItemsAdapter(results, new CustomItemClickListener() {
                             @Override
                             public void onItemClick(View v, int position) {
-                                String aBillData[] = v.getTag().toString().split("\\|");
-                                finish();
-                                startActivity(new Intent(getApplicationContext(),
-                                        PaymentActivity.class)
-                                        .putExtra("order_sale_id", aBillData[0])
-                                        .putExtra("total_items", aBillData[1])
-                                        .putExtra("grand_total", aBillData[2])
-                                        .putExtra("table_name", aBillData[3])
-                                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             }
 
                             @Override
@@ -89,13 +91,13 @@ public class BillActivity extends AppCompatActivity implements NavigationView.On
                                 getApplicationContext(), LinearLayoutManager.VERTICAL, false);
                         rv.setLayoutManager(linearLayoutManager);
                         rv.setItemAnimator(new DefaultItemAnimator());
-                        rv.setAdapter(billAdapter);
+                        rv.setAdapter(orderItemsAdapter);
                     }
                     mProgressBar.setVisibility(View.GONE);
                 }
 
                 @Override
-                public void onFailure(Call<BillObject> call, Throwable t) {
+                public void onFailure(Call<OrderItemsObject> call, Throwable t) {
                     mProgressBar.setVisibility(View.GONE);
                 }
             });
@@ -122,25 +124,16 @@ public class BillActivity extends AppCompatActivity implements NavigationView.On
                     mProgressBar.setVisibility(View.VISIBLE);
                     ApiInterface apiService =
                             ApiClient.getClient().create(ApiInterface.class);
-                    Call<BillObject> call = apiService.getOrders(Constants.AUTH_TOKEN);
-                    call.enqueue(new Callback<BillObject>() {
+                    Call<OrderItemsObject> call = apiService.getOrderedTableItems(Constants.AUTH_TOKEN, sTabeleId);
+                    call.enqueue(new Callback<OrderItemsObject>() {
                         @Override
-                        public void onResponse(Call<BillObject> call, Response<BillObject> response) {
+                        public void onResponse(Call<OrderItemsObject> call, Response<OrderItemsObject> response) {
                             results.clear();
                             results = fetchResults(response);
                             if (results.size() > 0) {
-                                billAdapter = new BillAdapter(results, new CustomItemClickListener() {
+                                orderItemsAdapter = new OrderItemsAdapter(results, new CustomItemClickListener() {
                                     @Override
                                     public void onItemClick(View v, int position) {
-                                        String aBillData[] = v.getTag().toString().split("\\|");
-                                        finish();
-                                        startActivity(new Intent(getApplicationContext(),
-                                                PaymentActivity.class)
-                                                .putExtra("order_sale_id", aBillData[0])
-                                                .putExtra("total_items", aBillData[1])
-                                                .putExtra("grand_total", aBillData[2])
-                                                .putExtra("table_name", aBillData[3])
-                                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                                     }
 
                                     @Override
@@ -152,13 +145,13 @@ public class BillActivity extends AppCompatActivity implements NavigationView.On
                                         getApplicationContext(), LinearLayoutManager.VERTICAL, false);
                                 rv.setLayoutManager(linearLayoutManager);
                                 rv.setItemAnimator(new DefaultItemAnimator());
-                                rv.setAdapter(billAdapter);
+                                rv.setAdapter(orderItemsAdapter);
                             }
                             mProgressBar.setVisibility(View.GONE);
                         }
 
                         @Override
-                        public void onFailure(Call<BillObject> call, Throwable t) {
+                        public void onFailure(Call<OrderItemsObject> call, Throwable t) {
                             mProgressBar.setVisibility(View.GONE);
                         }
                     });
@@ -168,12 +161,52 @@ public class BillActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         });
+
+        btnCompleteOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                printOrder();
+            }
+        });
+
+        btnCancelOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
     //get Tables
-    private List<BillObject.Orders> fetchResults(Response<BillObject> response) {
-        BillObject billObj = response.body();
+    private List<OrderItemsObject.Orders> fetchResults(Response<OrderItemsObject> response) {
+        OrderItemsObject billObj = response.body();
         return billObj.getOrders();
+    }
+
+
+    private void printOrder() {
+        int res=0;
+        if(WifiPrinterActivity.isLAN) {
+            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"Welcome to DQPOS\n");
+            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"No:23, Cholan St, Radha Nagar,\n");
+            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"Chrompet, Chennai-44\n");
+            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"Phone:044-22651990\n");
+        } else {
+            res= PrinterFunctions.CheckStatus(
+                    WifiPrinterActivity.portName,
+                    WifiPrinterActivity.portSettings,
+                    WifiPrinterActivity.value_StatusSpecified);
+            if (res==1) {
+                PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,0, 0,5,0,"Welcome to DQPOS First 1");
+            }
+            if (res==0) {
+                PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,0, 0,5,0,"Welcome to DQPOS First 0");
+            }
+            if(res==2) {
+                PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,0, 0,5,0,"Welcome to DQPOS First 2");
+            }
+            PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"Welcome to DQPOS Common");
+        }
     }
 
 
@@ -182,7 +215,9 @@ public class BillActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+            finish();
         } else {
+            finish();
             super.onBackPressed();
         }
     }
@@ -217,35 +252,35 @@ public class BillActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         if (id == R.id.nav_pos) {
             // Handle the camera action
-            if (!BillActivity.class.getSimpleName().equalsIgnoreCase("POS")) {
+            if (!OrderItemsActivity.class.getSimpleName().equalsIgnoreCase("POS")) {
                 startActivity(new Intent(this, POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_gallery) {
-            if (!BillActivity.class.getSimpleName().equalsIgnoreCase("OrdersList")) {
+            if (!OrderItemsActivity.class.getSimpleName().equalsIgnoreCase("OrdersList")) {
                 startActivity(new Intent(this, OrdersList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_slideshow) {
-            if (!BillActivity.class.getSimpleName().equalsIgnoreCase("BillActivity")) {
+            if (!OrderItemsActivity.class.getSimpleName().equalsIgnoreCase("BillActivity")) {
                 startActivity(new Intent(this, BillActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_products) {
-            if (!BillActivity.class.getSimpleName().equalsIgnoreCase("Products")) {
+            if (!OrderItemsActivity.class.getSimpleName().equalsIgnoreCase("Products")) {
                 startActivity(new Intent(this, Products.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_categories) {
-            if (!BillActivity.class.getSimpleName().equalsIgnoreCase("Categories")) {
+            if (!OrderItemsActivity.class.getSimpleName().equalsIgnoreCase("Categories")) {
                 startActivity(new Intent(this, Categories.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_tables) {
-            if (!BillActivity.class.getSimpleName().equalsIgnoreCase("Tables")) {
+            if (!OrderItemsActivity.class.getSimpleName().equalsIgnoreCase("Tables")) {
                 startActivity(new Intent(this, Tables.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_orders_list) {
-            if (!BillActivity.class.getSimpleName().equalsIgnoreCase("OrdersList")) {
+            if (!OrderItemsActivity.class.getSimpleName().equalsIgnoreCase("OrdersList")) {
                 startActivity(new Intent(this, OrdersList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_printers) {
-            if (!BillActivity.class.getSimpleName().equalsIgnoreCase("PrintersActivity")) {
+            if (!OrderItemsActivity.class.getSimpleName().equalsIgnoreCase("PrintersActivity")) {
                 startActivity(new Intent(this, PrintersActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         }

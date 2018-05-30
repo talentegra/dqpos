@@ -184,7 +184,7 @@ public class POS extends AppCompatActivity
                 startActivity(new Intent(this, POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_gallery) {
-            if (!POS.class.getSimpleName().equalsIgnoreCase("Orders")) {
+            if (!POS.class.getSimpleName().equalsIgnoreCase("OrdersList")) {
                 startActivity(new Intent(this, OrdersList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_slideshow) {

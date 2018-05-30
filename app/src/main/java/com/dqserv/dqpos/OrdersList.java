@@ -39,8 +39,8 @@ import retrofit2.Response;
 public class OrdersList extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    List<TableObject.Tables> results;
-    List<Integer> onlineTableIds;
+    List<TableObject.Tables> orderedTablesList;
+    //List<Integer> onlineTableIds;
     OrdersListTableAdapter tableAdapter;
     RelativeLayout mProgressBar;
     RecyclerView rv;
@@ -56,9 +56,10 @@ public class OrdersList extends AppCompatActivity
         mProgressBar = (RelativeLayout) findViewById(R.id.orders_list_rl_progress);
         rv = (RecyclerView) findViewById(R.id.orders_list_recycler_view);
 
-        results = new ArrayList<>();
-        onlineTableIds = new ArrayList<>();
-        getOnlineTablesFromLocal();
+        orderedTablesList = new ArrayList<>();
+        //onlineTableIds = new ArrayList<>();
+        //getOnlineTablesFromLocal();
+        getOnlineTables();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -114,7 +115,7 @@ public class OrdersList extends AppCompatActivity
                 startActivity(new Intent(this, OrdersList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_gallery) {
-            if (!OrdersList.class.getSimpleName().equalsIgnoreCase("Orders")) {
+            if (!OrdersList.class.getSimpleName().equalsIgnoreCase("OrdersList")) {
                 startActivity(new Intent(this, OrdersList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_slideshow) {
@@ -145,12 +146,12 @@ public class OrdersList extends AppCompatActivity
     }
 
     //get Tables
-    private void fetchResults(Response<TableObject> response, List<Integer> selectedOnlineTables) {
+    /*private void fetchResults(Response<TableObject> response, List<Integer> selectedOnlineTables) {
         TableObject tableObj = response.body();
         saveTables(tableObj.getTables(), selectedOnlineTables);
-    }
+    }*/
 
-    private void saveTables(List<TableObject.Tables> items, List<Integer> selectedOnlineTables) {
+    /*private void saveTables(List<TableObject.Tables> items, List<Integer> selectedOnlineTables) {
         //Open the database
         String myPath = DBConstants.DB_PATH + DBConstants.DB_NAME;
         SQLiteDatabase myDataBase = SQLiteDatabase.openDatabase(myPath, null,
@@ -175,9 +176,9 @@ public class OrdersList extends AppCompatActivity
         myDataBase.close();
 
         Log.e("Success", "Tables Successfully Added.");
-    }
+    }*/
 
-    public void getTablesFromLocal(List<Integer> selectedOnlineTables) {
+    /*public void getTablesFromLocal(List<Integer> selectedOnlineTables) {
         String POSTS_SELECT_QUERY = String.format("SELECT * FROM tables");
 
         //Open the database
@@ -203,9 +204,9 @@ public class OrdersList extends AppCompatActivity
                 cursor.close();
             }
         }
-    }
+    }*/
 
-    public void getOnlineTablesFromLocal() {
+    /*public void getOnlineTablesFromLocal() {
         onlineTableIds.clear();
         if (ConnectivityReceiver.isConnected()) {
             mProgressBar.setVisibility(View.VISIBLE);
@@ -311,25 +312,29 @@ public class OrdersList extends AppCompatActivity
             }
             getOnlineTables(onlineTableIds);
         }
-    }
+    }*/
 
-    private void getOnlineTables(final List<Integer> selectedTableIds) {
+    private void getOnlineTables() {
         if (ConnectivityReceiver.isConnected()) {
             mProgressBar.setVisibility(View.VISIBLE);
             ApiInterface apiService =
                     ApiClient.getClient().create(ApiInterface.class);
-            Call<TableObject> call = apiService.getTables
+            Call<TableObject> call = apiService.getOrderedTable
                     (Constants.AUTH_TOKEN);
             call.enqueue(new Callback<TableObject>() {
                 @Override
                 public void onResponse(Call<TableObject> call, Response<TableObject> response) {
-                    results.clear();
-                    fetchResults(response, selectedTableIds);
-                    if (results.size() > 0) {
-                        tableAdapter = new OrdersListTableAdapter(results, new CustomItemClickListener() {
+                    orderedTablesList.clear();
+                    TableObject oTableObj = response.body();
+                    orderedTablesList = oTableObj.getTables();
+                    if (orderedTablesList.size() > 0) {
+                        tableAdapter = new OrdersListTableAdapter(orderedTablesList, new CustomItemClickListener() {
                             @Override
                             public void onItemClick(View v, int position) {
                                 String[] aTableValues = v.getTag().toString().split("\\|");
+                                startActivity(new Intent(OrdersList.this, OrderItemsActivity.class)
+                                        .putExtra("table_id", aTableValues[0])
+                                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             }
 
                             @Override
@@ -350,27 +355,6 @@ public class OrdersList extends AppCompatActivity
                     mProgressBar.setVisibility(View.GONE);
                 }
             });
-        } else {
-            results.clear();
-            getTablesFromLocal(selectedTableIds);
-            if (results.size() > 0) {
-                tableAdapter = new OrdersListTableAdapter(results, new CustomItemClickListener() {
-                    @Override
-                    public void onItemClick(View v, int position) {
-                        String[] aTableValues = v.getTag().toString().split("\\|");
-
-                    }
-
-                    @Override
-                    public void deleteViewOnClick(View v, int position) {
-
-                    }
-                });
-                GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 3);
-                rv.setLayoutManager(gridLayoutManager);
-                rv.setItemAnimator(new DefaultItemAnimator());
-                rv.setAdapter(tableAdapter);
-            }
         }
     }
 }
