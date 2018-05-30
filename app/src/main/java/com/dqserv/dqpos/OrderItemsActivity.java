@@ -23,13 +23,22 @@ import com.dqserv.adapter.OrderItemsAdapter;
 import com.dqserv.config.Constants;
 import com.dqserv.rest.ApiClient;
 import com.dqserv.rest.ApiInterface;
+import com.dqserv.rest.BillProductObject;
 import com.dqserv.rest.OrderItemsObject;
 import com.dqserv.widget.CustomItemClickListener;
 import com.pos.printer.PrinterFunctions;
 import com.pos.printer.PrinterFunctionsLAN;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,6 +54,17 @@ public class OrderItemsActivity extends AppCompatActivity implements
     RecyclerView rv;
     String sTabeleId = "";
     Button btnCompleteOrder, btnCancelOrder;
+    HashMap<String, OrderItemsObject.Orders> orderItems = new HashMap<String, OrderItemsObject.Orders>();
+    public String companyName = "DigitalQ Information Services";
+    public String addressLine1 = "#G2,C-Block";
+    public String addressLine2 = "Hansavandhana Apartment";
+    public String addressLine3 = "Naidu Shop Street";
+    public String addressLine4 = "Radha Nagar, Chrompet";
+    public String addressLine5 = "Chennai, India - 600 044";
+    public String phonenumbers = "Phone: +91-(0)44-2265 1990";
+    public String GSTNumber = "GST: 123456789012";
+    public String thankyou = "Thank You !! Visit Again";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +97,14 @@ public class OrderItemsActivity extends AppCompatActivity implements
                     results.clear();
                     results = fetchResults(response);
                     if (results.size() > 0) {
+                        for (int aIndex = 0; aIndex < results.size(); aIndex++) {
+                            OrderItemsObject.Orders orderItemsObject = new OrderItemsObject.Orders();
+                            orderItemsObject.setProductName(results.get(aIndex).getProductName());
+                            orderItemsObject.setQuantity(results.get(aIndex).getQuantity());
+                            orderItemsObject.setSubTotal(results.get(aIndex).getSubTotal());
+
+                            orderItems.put(String.valueOf(aIndex), orderItemsObject);
+                        }
                         orderItemsAdapter = new OrderItemsAdapter(results, new CustomItemClickListener() {
                             @Override
                             public void onItemClick(View v, int position) {
@@ -165,7 +193,8 @@ public class OrderItemsActivity extends AppCompatActivity implements
         btnCompleteOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                printOrder();
+                printOrder(orderItems);
+                orderItems.clear();
             }
         });
 
@@ -184,28 +213,50 @@ public class OrderItemsActivity extends AppCompatActivity implements
     }
 
 
-    private void printOrder() {
-        int res=0;
-        if(WifiPrinterActivity.isLAN) {
-            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"Welcome to DQPOS\n");
-            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"No:23, Cholan St, Radha Nagar,\n");
-            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"Chrompet, Chennai-44\n");
-            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"Phone:044-22651990\n");
+    private void printOrder(HashMap<String, OrderItemsObject.Orders> orderItems) {
+        int res = 0;
+        if (WifiPrinterActivity.isLAN) {
+            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
+                    0, 0, 1, 0, 0, 0,
+                    5, 1, companyName + "\n" + addressLine1 + "\n"
+                            + addressLine2 + addressLine3 + "\n" + addressLine4 + "\n" + addressLine5
+                            + "\n" + phonenumbers + "\n" + GSTNumber + "\n\n\n");
+            String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm a").format(Calendar.getInstance().getTime());
+            String space = "  ";
+            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
+                    0, 0, 0, 0, 0, 0,
+                    0, 2, timeStamp + "\n");
+            DecimalFormat format1 = new DecimalFormat("#.##");
+            format1.setMinimumFractionDigits(2);
+            for (Map.Entry entry : orderItems.entrySet()) {
+                String key = entry.getKey().toString();
+                OrderItemsObject.Orders orderItem = (OrderItemsObject.Orders) entry.getValue();
+                PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
+                        0, 0, 0, 0, 0, 0,
+                        5, 0, orderItem.getProductName());
+                String space1 = addspace(0, ((space + "Qty" + space).length() - -(format1.format(orderItem.getQuantity())).length()));
+                String space2 = addspace(0, ((space + "Price" + space).length() - -(format1.format(orderItem.getSalePrice())).length()));
+                String space3 = addspace(0, ((space + "Amount" + space).length() - -(format1.format(orderItem.getSubTotal())).length()));
+                PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
+                        0, 0, 0, 0, 0, 0,
+                        0, 0, space1 + " " + space2 + " " + space3 + "\n");
+            }
+            PrinterFunctionsLAN.PreformCut(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings, 1);
         } else {
-            res= PrinterFunctions.CheckStatus(
+            res = PrinterFunctions.CheckStatus(
                     WifiPrinterActivity.portName,
                     WifiPrinterActivity.portSettings,
                     WifiPrinterActivity.value_StatusSpecified);
-            if (res==1) {
-                PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,0, 0,5,0,"Welcome to DQPOS First 1");
+            if (res == 1) {
+                PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings, 0, 0, 0, 0, 0, 0, 5, 0, "Welcome to DQPOS First 1");
             }
-            if (res==0) {
-                PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,0, 0,5,0,"Welcome to DQPOS First 0");
+            if (res == 0) {
+                PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings, 0, 0, 0, 0, 0, 0, 5, 0, "Welcome to DQPOS First 0");
             }
-            if(res==2) {
-                PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,0, 0,5,0,"Welcome to DQPOS First 2");
+            if (res == 2) {
+                PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings, 0, 0, 0, 0, 0, 0, 5, 0, "Welcome to DQPOS First 2");
             }
-            PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"Welcome to DQPOS Common");
+            PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings, 0, 0, 1, 0, 0, 0, 5, 0, "Welcome to DQPOS Common");
         }
     }
 
@@ -288,5 +339,28 @@ public class OrderItemsActivity extends AppCompatActivity implements
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public String addspace(int start, int end) {
+        String space = "";
+        for (int i = start; i < end; i++) {
+            space += " ";
+        }
+        return space;
+    }
+
+    public String getdashline() {
+        String line = "";
+        for (int i = 0; i < 32; i++) {
+            line += "-";
+        }
+        return line;
+    }
+
+    public int getRightPoint(String line) {
+        double maxline = 32;
+        double actline = line.length();
+        int x = ((int) maxline) - ((int) actline);
+        return x;
     }
 }

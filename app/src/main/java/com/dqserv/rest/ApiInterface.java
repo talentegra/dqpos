@@ -54,5 +54,12 @@ public interface ApiInterface {
     @FormUrlEncoded
     @POST("get_order_table_items")
     Call<OrderItemsObject> getOrderedTableItems(@Field("auth_token") String authToken,
-                                           @Field("table_id") String tableID);
+                                                @Field("table_id") String tableID);
+
+    @FormUrlEncoded
+    @POST("post_order_completed")
+    Call<OrderItemsObject> postOrderCompletedData(@Field("auth_token") String authToken,
+                                                  @Field("order_sale_id") String orderID,
+                                                  @Field("data") JSONArray data);
+
 }
