@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity
             getProductsFromLocal();
             if (resultProducts.size() > 0) {
                 if (!MainActivity.class.getSimpleName().equalsIgnoreCase("Orders")) {
-                    startActivity(new Intent(this, Orders.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                    startActivity(new Intent(this, OrdersList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 }
             } else {
                 Toast.makeText(getApplicationContext(), "Sync Products", Toast.LENGTH_SHORT).show();

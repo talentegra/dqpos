@@ -115,7 +115,7 @@ public class OrdersList extends AppCompatActivity
             }
         } else if (id == R.id.nav_gallery) {
             if (!OrdersList.class.getSimpleName().equalsIgnoreCase("Orders")) {
-                startActivity(new Intent(this, Orders.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                startActivity(new Intent(this, OrdersList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_slideshow) {
             if (!OrdersList.class.getSimpleName().equalsIgnoreCase("BillActivity")) {

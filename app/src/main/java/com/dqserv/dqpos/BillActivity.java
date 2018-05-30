@@ -222,7 +222,7 @@ public class BillActivity extends AppCompatActivity implements NavigationView.On
             }
         } else if (id == R.id.nav_gallery) {
             if (!BillActivity.class.getSimpleName().equalsIgnoreCase("Orders")) {
-                startActivity(new Intent(this, Orders.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                startActivity(new Intent(this, OrdersList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         } else if (id == R.id.nav_slideshow) {
             if (!BillActivity.class.getSimpleName().equalsIgnoreCase("BillActivity")) {
