@@ -11,6 +11,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,16 +24,16 @@ import com.dqserv.adapter.OrderItemsAdapter;
 import com.dqserv.config.Constants;
 import com.dqserv.rest.ApiClient;
 import com.dqserv.rest.ApiInterface;
-import com.dqserv.rest.BillProductObject;
 import com.dqserv.rest.OrderItemsObject;
+import com.dqserv.rest.PostOrderItemsObject;
 import com.dqserv.widget.CustomItemClickListener;
 import com.pos.printer.PrinterFunctions;
 import com.pos.printer.PrinterFunctionsLAN;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -52,7 +53,7 @@ public class OrderItemsActivity extends AppCompatActivity implements
     RelativeLayout mProgressBar;
     LinearLayout mOfflineView;
     RecyclerView rv;
-    String sTabeleId = "";
+    String sTabeleId = "", sTableName = "";
     Button btnCompleteOrder, btnCancelOrder;
     HashMap<String, OrderItemsObject.Orders> orderItems = new HashMap<String, OrderItemsObject.Orders>();
     public String companyName = "DigitalQ Information Services";
@@ -63,8 +64,7 @@ public class OrderItemsActivity extends AppCompatActivity implements
     public String addressLine5 = "Chennai, India - 600 044";
     public String phonenumbers = "Phone: +91-(0)44-2265 1990";
     public String GSTNumber = "GST: 123456789012";
-    public String thankyou = "Thank You !! Visit Again";
-
+    JSONArray jsonArray = new JSONArray();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +72,7 @@ public class OrderItemsActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_order_items);
 
         sTabeleId = getIntent().getStringExtra("table_id");
+        sTableName = getIntent().getStringExtra("table_name");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -96,8 +97,30 @@ public class OrderItemsActivity extends AppCompatActivity implements
                 public void onResponse(Call<OrderItemsObject> call, Response<OrderItemsObject> response) {
                     results.clear();
                     results = fetchResults(response);
+                    JSONObject objOrder = null;
                     if (results.size() > 0) {
                         for (int aIndex = 0; aIndex < results.size(); aIndex++) {
+                            objOrder = new JSONObject();
+                            try {
+                                objOrder.put("total", "");
+                                objOrder.put("grand_total", "");
+                                objOrder.put("table_name", sTableName);
+                                objOrder.put("total_items", results.get(aIndex).getQuantity());
+                                objOrder.put("date", currentdateTimeInString());
+                                objOrder.put("product_id", "");
+                                objOrder.put("quantity", results.get(aIndex).getQuantity());
+                                objOrder.put("unit_price", "");
+                                objOrder.put("net_unit_price", "");
+                                objOrder.put("real_unit_price", "");
+                                objOrder.put("subtotal", results.get(aIndex).getSubTotal());
+                                objOrder.put("product_code", "");
+                                objOrder.put("product_name", results.get(aIndex).getProductName());
+                                objOrder.put("sale_price", "");
+                            } catch (JSONException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                            jsonArray.put(objOrder);
                             OrderItemsObject.Orders orderItemsObject = new OrderItemsObject.Orders();
                             orderItemsObject.setProductName(results.get(aIndex).getProductName());
                             orderItemsObject.setQuantity(results.get(aIndex).getQuantity());
@@ -158,8 +181,30 @@ public class OrderItemsActivity extends AppCompatActivity implements
                         public void onResponse(Call<OrderItemsObject> call, Response<OrderItemsObject> response) {
                             results.clear();
                             results = fetchResults(response);
+                            JSONObject objOrder = null;
                             if (results.size() > 0) {
                                 for (int aIndex = 0; aIndex < results.size(); aIndex++) {
+                                    objOrder = new JSONObject();
+                                    try {
+                                        objOrder.put("total", "");
+                                        objOrder.put("grand_total", "");
+                                        objOrder.put("table_name", sTableName);
+                                        objOrder.put("total_items", results.get(aIndex).getQuantity());
+                                        objOrder.put("date", currentdateTimeInString());
+                                        objOrder.put("product_id", "");
+                                        objOrder.put("quantity", results.get(aIndex).getQuantity());
+                                        objOrder.put("unit_price", "");
+                                        objOrder.put("net_unit_price", "");
+                                        objOrder.put("real_unit_price", "");
+                                        objOrder.put("subtotal", results.get(aIndex).getSubTotal());
+                                        objOrder.put("product_code", "");
+                                        objOrder.put("product_name", results.get(aIndex).getProductName());
+                                        objOrder.put("sale_price", "");
+                                    } catch (JSONException e) {
+                                        // TODO Auto-generated catch block
+                                        e.printStackTrace();
+                                    }
+                                    jsonArray.put(objOrder);
                                     OrderItemsObject.Orders orderItemsObject = new OrderItemsObject.Orders();
                                     orderItemsObject.setProductName(results.get(aIndex).getProductName());
                                     orderItemsObject.setQuantity(results.get(aIndex).getQuantity());
@@ -201,7 +246,8 @@ public class OrderItemsActivity extends AppCompatActivity implements
         btnCompleteOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                printOrder(orderItems);
+                //printOrder(orderItems);
+                postOrderItems();
                 orderItems.clear();
             }
         });
@@ -223,31 +269,21 @@ public class OrderItemsActivity extends AppCompatActivity implements
 
     private void printOrder(HashMap<String, OrderItemsObject.Orders> orderItems) {
         int res = 0;
+        StringBuilder sbPrintData = new StringBuilder();
+        sbPrintData.append(companyName + "\n" + addressLine1 + "\n"
+                + addressLine2 + addressLine3 + "\n" + addressLine4 + "\n" + addressLine5
+                + "\n" + phonenumbers + "\n" + GSTNumber + "\n\n");
+        String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm a").format(Calendar.getInstance().getTime());
+        sbPrintData.append(timeStamp + "\n");
+        String space = "  ";
+        for (Map.Entry entry : orderItems.entrySet()) {
+            OrderItemsObject.Orders orderItem = (OrderItemsObject.Orders) entry.getValue();
+            sbPrintData.append(orderItem.getProductName() + space + orderItem.getQuantity() + space + orderItem.getSubTotal() + "\n");
+        }
         if (WifiPrinterActivity.isLAN) {
             PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
                     0, 0, 1, 0, 0, 0,
-                    5, 1, companyName + "\n" + addressLine1 + "\n"
-                            + addressLine2 + addressLine3 + "\n" + addressLine4 + "\n" + addressLine5
-                            + "\n" + phonenumbers + "\n" + GSTNumber + "\n\n\n");
-            String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm a").format(Calendar.getInstance().getTime());
-            String space = "  ";
-            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
-                    0, 0, 0, 0, 0, 0,
-                    0, 2, timeStamp + "\n");
-            DecimalFormat format1 = new DecimalFormat("#.##");
-            format1.setMinimumFractionDigits(2);
-            for (Map.Entry entry : orderItems.entrySet()) {
-                OrderItemsObject.Orders orderItem = (OrderItemsObject.Orders) entry.getValue();
-                PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
-                        0, 0, 0, 0, 0, 0,
-                        5, 0, orderItem.getProductName());
-                String space1 = addspace(0, ((space + "Qty" + space).length() - -(format1.format(orderItem.getQuantity())).length()));
-                //String space2 = addspace(0, ((space + "Price" + space).length() - -(format1.format(orderItem.getSalePrice())).length()));
-                String space3 = addspace(0, ((space + "Amount" + space).length() - -(format1.format(orderItem.getSubTotal())).length()));
-                PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
-                        0, 0, 0, 0, 0, 0,
-                        0, 0, space1 + " " + space3 + "\n");
-            }
+                    5, 1, sbPrintData.toString());
             PrinterFunctionsLAN.PreformCut(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings, 1);
         } else {
             res = PrinterFunctions.CheckStatus(
@@ -264,6 +300,29 @@ public class OrderItemsActivity extends AppCompatActivity implements
                 PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings, 0, 0, 0, 0, 0, 0, 5, 0, "Welcome to DQPOS First 2");
             }
             PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings, 0, 0, 1, 0, 0, 0, 5, 0, "Welcome to DQPOS Common");
+        }
+    }
+
+    private void postOrderItems() {
+        if (ConnectivityReceiver.isConnected()) {
+            ApiInterface apiService =
+                    ApiClient.getClient().create(ApiInterface.class);
+            Call<PostOrderItemsObject> call = apiService.postOrderCompletedData(Constants.AUTH_TOKEN,
+                    sTabeleId, jsonArray);
+            call.enqueue(new Callback<PostOrderItemsObject>() {
+                @Override
+                public void onResponse(Call<PostOrderItemsObject> call, Response<PostOrderItemsObject> response) {
+                    Log.e("Success", response.body().getStatus());
+                    finish();
+                    startActivity(new Intent(OrderItemsActivity.this, OrdersList.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                }
+
+                @Override
+                public void onFailure(Call<PostOrderItemsObject> call, Throwable t) {
+                    Log.e("Error", "Not Posted");
+                }
+            });
         }
     }
 
@@ -370,4 +429,17 @@ public class OrderItemsActivity extends AppCompatActivity implements
         int x = ((int) maxline) - ((int) actline);
         return x;
     }
+
+    public static String currentdateTimeInString() {
+        String currentDate = null;
+        try {
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            currentDate = df.format(c.getTime());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return currentDate;
+    }
+
 }

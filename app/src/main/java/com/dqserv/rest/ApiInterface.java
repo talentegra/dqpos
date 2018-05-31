@@ -58,8 +58,8 @@ public interface ApiInterface {
 
     @FormUrlEncoded
     @POST("post_order_completed")
-    Call<OrderItemsObject> postOrderCompletedData(@Field("auth_token") String authToken,
-                                                  @Field("order_sale_id") String orderID,
+    Call<PostOrderItemsObject> postOrderCompletedData(@Field("auth_token") String authToken,
+                                                  @Field("table_id") String tableID,
                                                   @Field("data") JSONArray data);
 
 }

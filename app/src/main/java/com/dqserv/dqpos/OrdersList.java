@@ -334,6 +334,7 @@ public class OrdersList extends AppCompatActivity
                                 String[] aTableValues = v.getTag().toString().split("\\|");
                                 startActivity(new Intent(OrdersList.this, OrderItemsActivity.class)
                                         .putExtra("table_id", aTableValues[0])
+                                        .putExtra("table_name", aTableValues[1])
                                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             }
 
