@@ -246,7 +246,7 @@ public class OrderItemsActivity extends AppCompatActivity implements
         btnCompleteOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //printOrder(orderItems);
+                printOrder(orderItems);
                 postOrderItems();
                 orderItems.clear();
             }
