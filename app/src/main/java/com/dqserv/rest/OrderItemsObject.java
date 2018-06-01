@@ -28,6 +28,9 @@ public class OrderItemsObject {
         @SerializedName("quantity")
         private String quantity;
 
+        @SerializedName("product_id")
+        private String productId;
+
         @SerializedName("unit_price")
         private String salePrice;
 
@@ -36,6 +39,14 @@ public class OrderItemsObject {
 
         public String getProductName() {
             return productName;
+        }
+
+        public void setProductId(String productId) {
+            this.productId = productId;
+        }
+
+        public String getProductId() {
+            return productId;
         }
 
         public void setProductName(String productName) {

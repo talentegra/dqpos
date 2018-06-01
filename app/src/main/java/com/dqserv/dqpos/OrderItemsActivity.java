@@ -113,7 +113,7 @@ public class OrderItemsActivity extends AppCompatActivity implements
                                 objOrder.put("table_name", sTableName);
                                 objOrder.put("total_items", results.get(aIndex).getQuantity());
                                 objOrder.put("date", currentdateTimeInString());
-                                objOrder.put("product_id", results.get(aIndex).getProductCode());
+                                objOrder.put("product_id", results.get(aIndex).getProductId());
                                 objOrder.put("quantity", results.get(aIndex).getQuantity());
                                 objOrder.put("unit_price", results.get(aIndex).getSalePrice());
                                 objOrder.put("net_unit_price", results.get(aIndex).getSalePrice());
