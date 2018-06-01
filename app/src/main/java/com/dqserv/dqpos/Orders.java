@@ -6,8 +6,6 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
@@ -37,7 +35,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.GlobalApplication;
 import com.dqserv.ConnectivityReceiver;
 import com.dqserv.adapter.OrderAdapter;
 import com.dqserv.adapter.ProductByCategoryAdapter;
@@ -52,21 +49,25 @@ import com.dqserv.rest.ResponseOrderObject;
 import com.dqserv.widget.CustomItemClickListener;
 import com.pos.printer.PrinterFunctions;
 import com.pos.printer.PrinterFunctionsLAN;
-//import com.mocoo.hang.rtprinter.driver.Contants;
-//import com.mocoo.hang.rtprinter.driver.HsWifiPrintDriver;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+//import com.mocoo.hang.rtprinter.driver.Contants;
+//import com.mocoo.hang.rtprinter.driver.HsWifiPrintDriver;
 
 public class Orders extends AppCompatActivity {
 
@@ -101,8 +102,15 @@ public class Orders extends AppCompatActivity {
     static long currentOrderID = 0;
     static Button btnOrderComplete, btnOrderCancel, btnOrderConfirm;
     static RelativeLayout mProgressBar;
-
-  //  HsWifiPrintDriver hsWifiPrintDriver;
+    HashMap<String, OrderObject.Orders> confirmOrderItems = new HashMap<String, OrderObject.Orders>();
+    public String companyName = "DigitalQ Information Services";
+    public String addressLine1 = "#G2,C-Block";
+    public String addressLine2 = "Hansavandhana Apartment";
+    public String addressLine3 = "Naidu Shop Street";
+    public String addressLine4 = "Radha Nagar, Chrompet";
+    public String addressLine5 = "Chennai, India - 600 044";
+    public String phonenumbers = "Phone: +91-(0)44-2265 1990";
+    public String GSTNumber = "GST: 123456789012";
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -128,8 +136,8 @@ public class Orders extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_orders);
 
-    //    ConnStateHandler connStateHandler = new ConnStateHandler();
-     //   hsWifiPrintDriver.getInstance().setHandler(connStateHandler);
+        //    ConnStateHandler connStateHandler = new ConnStateHandler();
+        //   hsWifiPrintDriver.getInstance().setHandler(connStateHandler);
 
         mContext = Orders.this;
         total = 0;
@@ -364,6 +372,13 @@ public class Orders extends AppCompatActivity {
                                 e.printStackTrace();
                             }
                             jsonArray.put(objOrder);
+
+
+                            OrderObject.Orders confirmOrderItemsObject = new OrderObject.Orders();
+                            confirmOrderItemsObject.setProductName(resultOrders.get(aIndex).getProductName());
+                            confirmOrderItemsObject.setQuantity(resultOrders.get(aIndex).getQuantity());
+
+                            confirmOrderItems.put(String.valueOf(aIndex), confirmOrderItemsObject);
                         }
                         Call<ResponseOrderObject> call = apiService.addOrders(Constants.AUTH_TOKEN, sTableId,
                                 jsonArray);
@@ -377,7 +392,7 @@ public class Orders extends AppCompatActivity {
                                 deleteAllOrders();
                                 unregisterControls();
                                 getOrders(sTableId, currentOrderID);
-                                printOrder();
+                                printOrder(confirmOrderItems, response.body().getOrderId());
                                 finish();
                                 startActivity(new Intent(getApplicationContext(), POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             }
@@ -427,47 +442,88 @@ public class Orders extends AppCompatActivity {
         });
     }
 
-   /* private void printOrder() {
-        if (hsWifiPrintDriver.IsNoConnection()) {
-            Toast.makeText(getApplicationContext(),
-                    "Connect you wifi printer.", Toast.LENGTH_SHORT).show();
-        } else {
-            hsWifiPrintDriver.printString("dqpos Order Bill1");
-            hsWifiPrintDriver.WIFI_Write("dqpos Order Bill2");
+    /* private void printOrder() {
+         if (hsWifiPrintDriver.IsNoConnection()) {
+             Toast.makeText(getApplicationContext(),
+                     "Connect you wifi printer.", Toast.LENGTH_SHORT).show();
+         } else {
+             hsWifiPrintDriver.printString("dqpos Order Bill1");
+             hsWifiPrintDriver.WIFI_Write("dqpos Order Bill2");
+         }
+     }
+  */
+    private void printOrder(HashMap<String, OrderObject.Orders> confirmItems, String sOrderNo) {
+        StringBuilder sbPrintData = new StringBuilder();
+        int centerpoint = 0;
+        if (companyName.trim().length() != 0) {
+            centerpoint = getCenterPoint(companyName.trim());
+            sbPrintData.append(addspace(0, centerpoint) + companyName + "\n");
         }
+        if (addressLine1.trim().length() != 0) {
+            centerpoint = getCenterPoint(addressLine1.trim());
+            sbPrintData.append(addspace(0, centerpoint) + addressLine1 + "\n");
+        }
+        if (addressLine2.trim().length() != 0) {
+            centerpoint = getCenterPoint(addressLine2.trim());
+            sbPrintData.append(addspace(0, centerpoint) + addressLine2 + "\n");
+        }
+        if (addressLine3.trim().length() != 0) {
+            centerpoint = getCenterPoint(addressLine3.trim());
+            sbPrintData.append(addspace(0, centerpoint) + addressLine3 + "\n");
+        }
+        if (addressLine4.trim().length() != 0) {
+            centerpoint = getCenterPoint(addressLine4.trim());
+            sbPrintData.append(addspace(0, centerpoint) + addressLine4 + "\n");
+        }
+        if (addressLine5.trim().length() != 0) {
+            centerpoint = getCenterPoint(addressLine5.trim());
+            sbPrintData.append(addspace(0, centerpoint) + addressLine5 + "\n");
+        }
+        if (phonenumbers.trim().length() != 0) {
+            centerpoint = getCenterPoint(phonenumbers.trim());
+            sbPrintData.append(addspace(0, centerpoint) + phonenumbers + "\n");
+        }
+        if (GSTNumber.trim().length() != 0) {
+            centerpoint = getCenterPoint(GSTNumber.trim());
+            sbPrintData.append(addspace(0, centerpoint) + GSTNumber + "\n");
+        }
+        sbPrintData.append(getdashline() + "\n");
+        String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm a").format(Calendar.
+                getInstance().getTime());
+        sbPrintData.append("Date Time: " + timeStamp + "\n");
+        sbPrintData.append("Order No: " + sOrderNo + "\n");
+        sbPrintData.append(getdashline() + "\n");
+
+        String space = "  ";
+        sbPrintData.append("Sno " + "Name" + space + "Qty" + space + "\n");
+        sbPrintData.append(getdashline() + "\n");
+
+        int count = 1;
+        DecimalFormat format1 = new DecimalFormat("#.##");
+        format1.setMinimumFractionDigits(2);
+        for (Map.Entry entry : confirmItems.entrySet()) {
+            OrderObject.Orders orderItem = (OrderObject.Orders) entry.getValue();
+            sbPrintData.append(count + "  " + orderItem.getProductName() + "\n");
+            String space1 = addspace(0, (("Sno Name" + space).length()));
+            sbPrintData.append(space1 + (format1.format(Double.
+                    parseDouble(orderItem.getQuantity()))) + "\n");
+            count += 1;
+        }
+        Log.e("Check", sbPrintData.toString());
+        if (WifiPrinterActivity.isLAN) {
+            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
+                    0, 0, 1, 0, 0, 0,
+                    5, 1, sbPrintData.toString());
+            PrinterFunctionsLAN.PreformCut(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
+                    1);
+        } else {
+            PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
+                    0, 0, 1, 0, 0, 0,
+                    5, 0, "Welcome to DQPOS Common");
+        }
+        confirmItems.clear();
     }
- */
-   private void printOrder() {
-       int res=0;
-       if(WifiPrinterActivity.isLAN) {
-           PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"Welcome to DQPOS\n");
-           PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"No:23, Cholan St, Radha Nagar,\n");
-           PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"Chrompet, Chennai-44\n");
-           PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"Phone:044-22651990\n");
 
-
-
-       } else {
-
-           res=PrinterFunctions.CheckStatus(
-                   WifiPrinterActivity.portName,
-                   WifiPrinterActivity.portSettings,
-                   WifiPrinterActivity.value_StatusSpecified);
-
-            if (res==1) {
-                PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,0, 0,5,0,"Welcome to DQPOS First 1");
-            }
-           if (res==0) {
-               PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,0, 0,5,0,"Welcome to DQPOS First 0");
-           }
-           if(res==2) {
-               PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,0, 0,5,0,"Welcome to DQPOS First 2");
-           }
-
-           PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,1,0,0, 0,5,0,"Welcome to DQPOS Common");
-
-       }
-   }
     private void unregisterControls() {
         quantity = 0;
         total = 0;
@@ -1104,7 +1160,8 @@ public class Orders extends AppCompatActivity {
         finish();
         startActivity(new Intent(getApplicationContext(), POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
     }
-/*
+
+    /*
     private class ConnStateHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -1146,7 +1203,38 @@ public class Orders extends AppCompatActivity {
             }
         }).start();
     }
-*/
+    */
     //bluetooth printer
+
+    public int getCenterPoint(String line) {
+        double maxline = 32;
+        int center = (int) (maxline / 2);
+        int centerlength = (int) (line.length() / 2);
+        int x = center - centerlength;
+        return x;
+    }
+
+    public String addspace(int start, int end) {
+        String space = "";
+        for (int i = start; i < end; i++) {
+            space += " ";
+        }
+        return space;
+    }
+
+    public String getdashline() {
+        String line = "";
+        for (int i = 0; i < 32; i++) {
+            line += "-";
+        }
+        return line;
+    }
+
+    public int getRightPoint(String line) {
+        double maxline = 32;
+        double actline = line.length();
+        int x = ((int) maxline) - ((int) actline);
+        return x;
+    }
 
 }

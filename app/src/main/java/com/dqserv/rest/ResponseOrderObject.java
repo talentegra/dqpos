@@ -15,6 +15,9 @@ public class ResponseOrderObject {
     @SerializedName("data")
     private String data;
 
+    @SerializedName("order_id")
+    private String orderId;
+
     @SerializedName("status")
     private String status;
 
@@ -52,5 +55,13 @@ public class ResponseOrderObject {
 
     public void setStatusMessage(String statusMessage) {
         this.statusMessage = statusMessage;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 }
