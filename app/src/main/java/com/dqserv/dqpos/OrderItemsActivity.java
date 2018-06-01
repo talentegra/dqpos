@@ -347,16 +347,15 @@ public class OrderItemsActivity extends AppCompatActivity implements
             sbPrintData.append("SGST(2.5%) " + format1.format(sgstamount) + "\n");
         }
         sbPrintData.append(getdashline() + "\n");
-        sbPrintData.append("Total Qty " + totalqty);
+        sbPrintData.append("Total Qty " + totalqty + "\n");
 
         if (GlobalApplication.taxPref.getString("tax_val", "t").equalsIgnoreCase("t")) {
-            sbPrintData.append(addspace(("Total Qty " + totalqty).length(),
-                    getRightPoint(" Total Amount")) + format1.format(total + sgstamount +
+            sbPrintData.append("Total Amount " + format1.format(total + sgstamount +
                     cgstamount) + "\n");
         } else {
-            sbPrintData.append(addspace(("Total Qty " + totalqty).length(),
-                    getRightPoint(" Total Amount")) + format1.format(total) + "\n");
+            sbPrintData.append("Total Amount " + format1.format(total) + "\n");
         }
+
         sbPrintData.append(getdashline() + "\n");
 
         if (companyName.trim().length() != 0) {
