@@ -8,7 +8,7 @@ public class ApiClient {
 
     //http://teswaiter.dqserv.com
     //http://chefwaiter.dqserv.com
-    public static final String BASE_URL = "http://chefwaiter.dqserv.com/Api/";
+    public static final String BASE_URL = "http://teswaiter.dqserv.com/Api/";
     private static Retrofit retrofit = null;
 
 
