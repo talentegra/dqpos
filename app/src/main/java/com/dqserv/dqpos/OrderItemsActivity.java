@@ -12,12 +12,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.Printer;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.GlobalApplication;
 import com.dqserv.ConnectivityReceiver;
@@ -64,10 +66,10 @@ public class OrderItemsActivity extends AppCompatActivity implements
     public String addressLine2 = "Hansavandhana Apartment";
     public String addressLine3 = "Naidu Shop Street";
     public String addressLine4 = "Radha Nagar, Chrompet";
-    public String addressLine5 = "Chennai, India - 600 044";
-    public String phonenumbers = "Phone: +91-(0)44-2265 1990";
-    public String GSTNumber = "GST: 123456789012";
-    public String thankyou = "Thank You !! Visit Again";
+    public String addressLine5 = "Chennai, India - 600 040";
+    public String phonenumbers = "Contact No: +91 044-2265 1990";
+    public String GSTNumber = "GST No: 1234567890000";
+    public String thankyou = "Thank You!!! Visit Again!!!";
     JSONArray jsonArray = new JSONArray();
 
     @Override
@@ -286,7 +288,7 @@ public class OrderItemsActivity extends AppCompatActivity implements
             centerpoint = getCenterPoint(addressLine2.trim());
             sbPrintData.append(addspace(0, centerpoint) + addressLine2 + "\n");
         }
-        if (addressLine3.trim().length() != 0) {
+    /*    if (addressLine3.trim().length() != 0) {
             centerpoint = getCenterPoint(addressLine3.trim());
             sbPrintData.append(addspace(0, centerpoint) + addressLine3 + "\n");
         }
@@ -294,7 +296,7 @@ public class OrderItemsActivity extends AppCompatActivity implements
             centerpoint = getCenterPoint(addressLine4.trim());
             sbPrintData.append(addspace(0, centerpoint) + addressLine4 + "\n");
         }
-        if (addressLine5.trim().length() != 0) {
+      */  if (addressLine5.trim().length() != 0) {
             centerpoint = getCenterPoint(addressLine5.trim());
             sbPrintData.append(addspace(0, centerpoint) + addressLine5 + "\n");
         }
@@ -306,15 +308,15 @@ public class OrderItemsActivity extends AppCompatActivity implements
             centerpoint = getCenterPoint(GSTNumber.trim());
             sbPrintData.append(addspace(0, centerpoint) + GSTNumber + "\n");
         }
-        sbPrintData.append(getdashline() + "\n");
+        //sbPrintData.append(getdashline() + "\n");
         String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm a").format(Calendar.getInstance().getTime());
-        sbPrintData.append("Date Time: " + timeStamp + "\n");
+        sbPrintData.append("\n\nDate Time: " + timeStamp + "\n");
         sbPrintData.append("Bill No: " + sBillNo + "\n");
         sbPrintData.append("Table Name: " + sTableName + "\n");
         sbPrintData.append(getdashline() + "\n");
 
         String space = "  ";
-        sbPrintData.append("Sno " + "Name" + space + "Qty" + space + "Price" + space + "Amount" + space + "\n");
+        sbPrintData.append("Sno " + "Name" + space + "             Qty" + space + " Price" + space + " Amount" + space + "\n");
         sbPrintData.append(getdashline() + "\n");
 
         double total = 0;
@@ -329,9 +331,9 @@ public class OrderItemsActivity extends AppCompatActivity implements
             sbPrintData.append(count + "  " + orderItem.getProductName() + "\n");
 
             String space1 = addspace(0, (("Sno Name" + space).length()));
-            sbPrintData.append(space1 + (format1.format(Double.
-                    parseDouble(orderItem.getQuantity()))) + " " + (format1.format(Double.
-                    parseDouble(orderItem.getSalePrice()))) + " " + (format1.format(Double.
+            sbPrintData.append(space1 + "           " + (format1.format(Double.
+                    parseDouble(orderItem.getQuantity()))) + "   " + (format1.format(Double.
+                    parseDouble(orderItem.getSalePrice()))) + "   " + (format1.format(Double.
                     parseDouble(orderItem.getSubTotal()))) + "\n");
             count += 1;
         }
@@ -348,7 +350,7 @@ public class OrderItemsActivity extends AppCompatActivity implements
             sbPrintData.append("SGST(2.5%) " + format1.format(sgstamount) + "\n");
         }
         sbPrintData.append(getdashline() + "\n");
-        sbPrintData.append("Total Qty " + totalqty + "\n");
+        sbPrintData.append("Total Qty " + totalqty + "\n\n");
 
         if (GlobalApplication.taxPref.getString("tax_val", "t").equalsIgnoreCase("t")) {
             sbPrintData.append("Total Amount " + format1.format(total + sgstamount +
@@ -357,20 +359,24 @@ public class OrderItemsActivity extends AppCompatActivity implements
             sbPrintData.append("Total Amount " + format1.format(total) + "\n");
         }
 
-        sbPrintData.append(getdashline() + "\n");
+        sbPrintData.append(getdashline() + "\n\n");
 
         if (companyName.trim().length() != 0) {
             centerpoint = getCenterPoint(thankyou.trim());
             sbPrintData.append(addspace(0, centerpoint) + thankyou + "\n");
         }
         sbPrintData.append("\n");
-        if (WifiPrinterActivity.isLAN) {
+        int resLAN = 0;
+        resLAN = PrinterFunctionsLAN.PortDiscovery(WifiPrinterActivity.portName,WifiPrinterActivity.portSettings);
+        if (resLAN==0) {
             PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
                     0, 0, 1, 0, 0, 0,
-                    5, 1, sbPrintData.toString());
+                    5, 0, sbPrintData.toString());
             PrinterFunctionsLAN.PreformCut(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
                     1);
         } else {
+
+            Toast.makeText(getApplicationContext(), "No Printer Available", Toast.LENGTH_SHORT).show();
             PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
                     0, 0, 1, 0, 0, 0,
                     5, 0, "Welcome to DQPOS Common");
@@ -484,7 +490,7 @@ public class OrderItemsActivity extends AppCompatActivity implements
 
 
     public int getCenterPoint(String line) {
-        double maxline = 32;
+        double maxline = 48;
         int center = (int) (maxline / 2);
         int centerlength = (int) (line.length() / 2);
         int x = center - centerlength;
@@ -501,14 +507,15 @@ public class OrderItemsActivity extends AppCompatActivity implements
 
     public String getdashline() {
         String line = "";
-        for (int i = 0; i < 32; i++) {
+        for (int i = 0; i < 48; i++) {
             line += "-";
         }
         return line;
     }
 
     public int getRightPoint(String line) {
-        double maxline = 32;
+        //double maxline = 32;
+        double maxline = 48;
         double actline = line.length();
         int x = ((int) maxline) - ((int) actline);
         return x;

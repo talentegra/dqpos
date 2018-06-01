@@ -38,6 +38,7 @@ public class WifiPrinterActivity extends AppCompatActivity {
         myeditText_PortName=(TextView)findViewById(R.id.textView_PortName);
         //--------------------------
         //PrinterFunctions.PortDiscovery(Main.portName,Main.portSettings); //******
+        //PrinterFunctionsLAN.PortDiscovery(portName,portSettings);
 
         mainBtn = (Button)findViewById(R.id.BtnPrint);
         mainBtn.setOnClickListener(new View.OnClickListener() {
