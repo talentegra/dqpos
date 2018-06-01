@@ -310,6 +310,7 @@ public class OrderItemsActivity extends AppCompatActivity implements
         String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm a").format(Calendar.getInstance().getTime());
         sbPrintData.append("Date Time: " + timeStamp + "\n");
         sbPrintData.append("Bill No: " + sBillNo + "\n");
+        sbPrintData.append("Table Name: " + sTableName + "\n");
         sbPrintData.append(getdashline() + "\n");
 
         String space = "  ";
