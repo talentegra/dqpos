@@ -492,6 +492,7 @@ public class Orders extends AppCompatActivity {
                 getInstance().getTime());
         sbPrintData.append("Date Time: " + timeStamp + "\n");
         sbPrintData.append("Order No: " + sOrderNo + "\n");
+        sbPrintData.append("Table Name: " + sTableName + "\n");
         sbPrintData.append(getdashline() + "\n");
 
         String space = "  ";
