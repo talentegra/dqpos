@@ -19,11 +19,13 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.GlobalApplication;
 import com.dqserv.ConnectivityReceiver;
 import com.dqserv.adapter.OrderItemsAdapter;
 import com.dqserv.config.Constants;
 import com.dqserv.rest.ApiClient;
 import com.dqserv.rest.ApiInterface;
+import com.dqserv.rest.BillProductObject;
 import com.dqserv.rest.OrderItemsObject;
 import com.dqserv.rest.PostOrderItemsObject;
 import com.dqserv.widget.CustomItemClickListener;
@@ -34,6 +36,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,6 +67,7 @@ public class OrderItemsActivity extends AppCompatActivity implements
     public String addressLine5 = "Chennai, India - 600 044";
     public String phonenumbers = "Phone: +91-(0)44-2265 1990";
     public String GSTNumber = "GST: 123456789012";
+    public String thankyou = "Thank You !! Visit Again";
     JSONArray jsonArray = new JSONArray();
 
     @Override
@@ -107,15 +111,15 @@ public class OrderItemsActivity extends AppCompatActivity implements
                                 objOrder.put("table_name", sTableName);
                                 objOrder.put("total_items", results.get(aIndex).getQuantity());
                                 objOrder.put("date", currentdateTimeInString());
-                                objOrder.put("product_id", "");
+                                objOrder.put("product_id", results.get(aIndex).getProductCode());
                                 objOrder.put("quantity", results.get(aIndex).getQuantity());
-                                objOrder.put("unit_price", "");
-                                objOrder.put("net_unit_price", "");
-                                objOrder.put("real_unit_price", "");
+                                objOrder.put("unit_price", results.get(aIndex).getSalePrice());
+                                objOrder.put("net_unit_price", results.get(aIndex).getSalePrice());
+                                objOrder.put("real_unit_price", results.get(aIndex).getSalePrice());
                                 objOrder.put("subtotal", results.get(aIndex).getSubTotal());
-                                objOrder.put("product_code", "");
+                                objOrder.put("product_code", results.get(aIndex).getProductCode());
                                 objOrder.put("product_name", results.get(aIndex).getProductName());
-                                objOrder.put("sale_price", "");
+                                objOrder.put("sale_price", results.get(aIndex).getSalePrice());
                             } catch (JSONException e) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
@@ -123,6 +127,7 @@ public class OrderItemsActivity extends AppCompatActivity implements
                             jsonArray.put(objOrder);
                             OrderItemsObject.Orders orderItemsObject = new OrderItemsObject.Orders();
                             orderItemsObject.setProductName(results.get(aIndex).getProductName());
+                            orderItemsObject.setSalePrice(results.get(aIndex).getSalePrice());
                             orderItemsObject.setQuantity(results.get(aIndex).getQuantity());
                             orderItemsObject.setSubTotal(results.get(aIndex).getSubTotal());
 
@@ -191,15 +196,15 @@ public class OrderItemsActivity extends AppCompatActivity implements
                                         objOrder.put("table_name", sTableName);
                                         objOrder.put("total_items", results.get(aIndex).getQuantity());
                                         objOrder.put("date", currentdateTimeInString());
-                                        objOrder.put("product_id", "");
+                                        objOrder.put("product_id", results.get(aIndex).getProductCode());
                                         objOrder.put("quantity", results.get(aIndex).getQuantity());
-                                        objOrder.put("unit_price", "");
-                                        objOrder.put("net_unit_price", "");
-                                        objOrder.put("real_unit_price", "");
+                                        objOrder.put("unit_price", results.get(aIndex).getSalePrice());
+                                        objOrder.put("net_unit_price", results.get(aIndex).getSalePrice());
+                                        objOrder.put("real_unit_price", results.get(aIndex).getSalePrice());
                                         objOrder.put("subtotal", results.get(aIndex).getSubTotal());
-                                        objOrder.put("product_code", "");
+                                        objOrder.put("product_code", results.get(aIndex).getProductCode());
                                         objOrder.put("product_name", results.get(aIndex).getProductName());
-                                        objOrder.put("sale_price", "");
+                                        objOrder.put("sale_price", results.get(aIndex).getSalePrice());
                                     } catch (JSONException e) {
                                         // TODO Auto-generated catch block
                                         e.printStackTrace();
@@ -207,6 +212,7 @@ public class OrderItemsActivity extends AppCompatActivity implements
                                     jsonArray.put(objOrder);
                                     OrderItemsObject.Orders orderItemsObject = new OrderItemsObject.Orders();
                                     orderItemsObject.setProductName(results.get(aIndex).getProductName());
+                                    orderItemsObject.setSalePrice(results.get(aIndex).getSalePrice());
                                     orderItemsObject.setQuantity(results.get(aIndex).getQuantity());
                                     orderItemsObject.setSubTotal(results.get(aIndex).getSubTotal());
 
@@ -246,9 +252,7 @@ public class OrderItemsActivity extends AppCompatActivity implements
         btnCompleteOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                printOrder(orderItems);
                 postOrderItems();
-                orderItems.clear();
             }
         });
 
@@ -267,40 +271,111 @@ public class OrderItemsActivity extends AppCompatActivity implements
     }
 
 
-    private void printOrder(HashMap<String, OrderItemsObject.Orders> orderItems) {
-        int res = 0;
+    private void printOrder(HashMap<String, OrderItemsObject.Orders> orderItems, String sBillNo) {
         StringBuilder sbPrintData = new StringBuilder();
-        sbPrintData.append(companyName + "\n" + addressLine1 + "\n"
-                + addressLine2 + addressLine3 + "\n" + addressLine4 + "\n" + addressLine5
-                + "\n" + phonenumbers + "\n" + GSTNumber + "\n\n");
+        int centerpoint = 0;
+        if (companyName.trim().length() != 0) {
+            centerpoint = getCenterPoint(companyName.trim());
+            sbPrintData.append(addspace(0, centerpoint) + companyName + "\n");
+        }
+        if (addressLine1.trim().length() != 0) {
+            centerpoint = getCenterPoint(addressLine1.trim());
+            sbPrintData.append(addspace(0, centerpoint) + addressLine1 + "\n");
+        }
+        if (addressLine2.trim().length() != 0) {
+            centerpoint = getCenterPoint(addressLine2.trim());
+            sbPrintData.append(addspace(0, centerpoint) + addressLine2 + "\n");
+        }
+        if (addressLine3.trim().length() != 0) {
+            centerpoint = getCenterPoint(addressLine3.trim());
+            sbPrintData.append(addspace(0, centerpoint) + addressLine3 + "\n");
+        }
+        if (addressLine4.trim().length() != 0) {
+            centerpoint = getCenterPoint(addressLine4.trim());
+            sbPrintData.append(addspace(0, centerpoint) + addressLine4 + "\n");
+        }
+        if (addressLine5.trim().length() != 0) {
+            centerpoint = getCenterPoint(addressLine5.trim());
+            sbPrintData.append(addspace(0, centerpoint) + addressLine5 + "\n");
+        }
+        if (phonenumbers.trim().length() != 0) {
+            centerpoint = getCenterPoint(phonenumbers.trim());
+            sbPrintData.append(addspace(0, centerpoint) + phonenumbers + "\n");
+        }
+        if (GSTNumber.trim().length() != 0) {
+            centerpoint = getCenterPoint(GSTNumber.trim());
+            sbPrintData.append(addspace(0, centerpoint) + GSTNumber + "\n");
+        }
+        sbPrintData.append(getdashline() + "\n");
         String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm a").format(Calendar.getInstance().getTime());
-        sbPrintData.append(timeStamp + "\n");
+        sbPrintData.append("Date Time: " + timeStamp + "\n");
+        sbPrintData.append("Bill No: " + sBillNo + "\n");
+        sbPrintData.append(getdashline() + "\n");
+
         String space = "  ";
+        sbPrintData.append("Sno " + "Name" + space + "Qty" + space + "Price" + space + "Amount" + space + "\n");
+        sbPrintData.append(getdashline() + "\n");
+
+        double total = 0;
+        double totalqty = 0;
+        int count = 1;
+        DecimalFormat format1 = new DecimalFormat("#.##");
+        format1.setMinimumFractionDigits(2);
         for (Map.Entry entry : orderItems.entrySet()) {
             OrderItemsObject.Orders orderItem = (OrderItemsObject.Orders) entry.getValue();
-            sbPrintData.append(orderItem.getProductName() + space + orderItem.getQuantity() + space + orderItem.getSubTotal() + "\n");
+            total += (Double.parseDouble(orderItem.getSalePrice()) * Double.parseDouble(orderItem.getQuantity()));
+            totalqty += Double.parseDouble(orderItem.getQuantity());
+            sbPrintData.append(count + "  " + orderItem.getProductName() + "\n");
+
+            String space1 = addspace(0, (("Sno Name" + space).length()));
+            sbPrintData.append(space1 + (format1.format(Double.
+                    parseDouble(orderItem.getQuantity()))) + " " + (format1.format(Double.
+                    parseDouble(orderItem.getSalePrice()))) + " " + (format1.format(Double.
+                    parseDouble(orderItem.getSubTotal()))) + "\n");
+            count += 1;
         }
+
+        double sgst = GlobalApplication.sgstPref.getFloat("sgst", 2.5f);
+        double cgst = GlobalApplication.cgstPref.getFloat("cgst", 2.5f);
+
+        double sgstamount = total * (sgst / 100);
+        double cgstamount = total * (cgst / 100);
+
+        if (GlobalApplication.taxPref.getString("tax_val", "t").equalsIgnoreCase("t")) {
+            sbPrintData.append(getdashline() + "\n");
+            sbPrintData.append("CGST(2.5%) " + format1.format(cgstamount) + "\n");
+            sbPrintData.append("SGST(2.5%) " + format1.format(sgstamount) + "\n");
+        }
+        sbPrintData.append(getdashline() + "\n");
+        sbPrintData.append("Total Qty " + totalqty);
+
+        if (GlobalApplication.taxPref.getString("tax_val", "t").equalsIgnoreCase("t")) {
+            sbPrintData.append(addspace(("Total Qty " + totalqty).length(),
+                    getRightPoint(" Total Amount")) + format1.format(total + sgstamount +
+                    cgstamount) + "\n");
+        } else {
+            sbPrintData.append(addspace(("Total Qty " + totalqty).length(),
+                    getRightPoint(" Total Amount")) + format1.format(total) + "\n");
+        }
+        sbPrintData.append(getdashline() + "\n");
+
+        if (companyName.trim().length() != 0) {
+            centerpoint = getCenterPoint(thankyou.trim());
+            sbPrintData.append(addspace(0, centerpoint) + thankyou + "\n");
+        }
+        sbPrintData.append("\n");
         if (WifiPrinterActivity.isLAN) {
             PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
                     0, 0, 1, 0, 0, 0,
                     5, 1, sbPrintData.toString());
-            PrinterFunctionsLAN.PreformCut(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings, 1);
+            PrinterFunctionsLAN.PreformCut(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
+                    1);
         } else {
-            res = PrinterFunctions.CheckStatus(
-                    WifiPrinterActivity.portName,
-                    WifiPrinterActivity.portSettings,
-                    WifiPrinterActivity.value_StatusSpecified);
-            if (res == 1) {
-                PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings, 0, 0, 0, 0, 0, 0, 5, 0, "Welcome to DQPOS First 1");
-            }
-            if (res == 0) {
-                PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings, 0, 0, 0, 0, 0, 0, 5, 0, "Welcome to DQPOS First 0");
-            }
-            if (res == 2) {
-                PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings, 0, 0, 0, 0, 0, 0, 5, 0, "Welcome to DQPOS First 2");
-            }
-            PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings, 0, 0, 1, 0, 0, 0, 5, 0, "Welcome to DQPOS Common");
+            PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
+                    0, 0, 1, 0, 0, 0,
+                    5, 0, "Welcome to DQPOS Common");
         }
+        orderItems.clear();
     }
 
     private void postOrderItems() {
@@ -312,7 +387,7 @@ public class OrderItemsActivity extends AppCompatActivity implements
             call.enqueue(new Callback<PostOrderItemsObject>() {
                 @Override
                 public void onResponse(Call<PostOrderItemsObject> call, Response<PostOrderItemsObject> response) {
-                    Log.e("Success", response.body().getStatus());
+                    printOrder(orderItems, response.body().getOrderSaleId());
                     finish();
                     startActivity(new Intent(OrderItemsActivity.this, OrdersList.class)
                             .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
@@ -405,6 +480,15 @@ public class OrderItemsActivity extends AppCompatActivity implements
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+    public int getCenterPoint(String line) {
+        double maxline = 32;
+        int center = (int) (maxline / 2);
+        int centerlength = (int) (line.length() / 2);
+        int x = center - centerlength;
+        return x;
     }
 
     public String addspace(int start, int end) {

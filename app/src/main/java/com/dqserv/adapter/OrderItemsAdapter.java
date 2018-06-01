@@ -61,7 +61,7 @@ public class OrderItemsAdapter extends RecyclerView.Adapter<OrderItemsAdapter.My
         OrderItemsObject.Orders oBill = orderItemsList.get(position);
         holder.tvTableName.setText(oBill.getProductName());
         holder.tvTotalItems.setText(oBill.getQuantity() == null ? "0" : oBill.getQuantity());
-        holder.tvGrandTotal.setText(oBill.getSubTotal() == null ? "0.0" : oBill.getSubTotal());
+        holder.tvGrandTotal.setText(oBill.getSalePrice() == null ? "0.0" : oBill.getSalePrice());
     }
 
     @Override

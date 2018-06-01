@@ -649,7 +649,6 @@ public class PaymentActivity extends AppCompatActivity {
         }
         else {
             PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0,0,0,0,0, 0,5,0,companyName);
-
         }
     }
 

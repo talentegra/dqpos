@@ -28,7 +28,7 @@ public class OrderItemsObject {
         @SerializedName("quantity")
         private String quantity;
 
-        @SerializedName("sale_price")
+        @SerializedName("unit_price")
         private String salePrice;
 
         @SerializedName("subtotal")
