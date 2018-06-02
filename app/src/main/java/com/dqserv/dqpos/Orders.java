@@ -464,7 +464,7 @@ public class Orders extends AppCompatActivity {
         }
         if (addressLine1.trim().length() != 0) {
             centerpoint = getCenterPoint(addressLine1.trim());
-          //  sbPrintData.append(addspace(0, centerpoint) + addressLine1 + "\n");
+            //  sbPrintData.append(addspace(0, centerpoint) + addressLine1 + "\n");
         }
         if (addressLine2.trim().length() != 0) {
             centerpoint = getCenterPoint(addressLine2.trim());
@@ -478,17 +478,18 @@ public class Orders extends AppCompatActivity {
             centerpoint = getCenterPoint(addressLine4.trim());
            // sbPrintData.append(addspace(0, centerpoint) + addressLine4 + "\n");
         }
-      */  if (addressLine5.trim().length() != 0) {
+      */
+        if (addressLine5.trim().length() != 0) {
             centerpoint = getCenterPoint(addressLine5.trim());
-         //   sbPrintData.append(addspace(0, centerpoint) + addressLine5 + "\n");
+            //   sbPrintData.append(addspace(0, centerpoint) + addressLine5 + "\n");
         }
         if (phonenumbers.trim().length() != 0) {
             centerpoint = getCenterPoint(phonenumbers.trim());
-           // sbPrintData.append(addspace(0, centerpoint) + phonenumbers + "\n");
+            // sbPrintData.append(addspace(0, centerpoint) + phonenumbers + "\n");
         }
         if (GSTNumber.trim().length() != 0) {
             centerpoint = getCenterPoint(GSTNumber.trim());
-           // sbPrintData.append(addspace(0, centerpoint) + GSTNumber + "\n");
+            // sbPrintData.append(addspace(0, centerpoint) + GSTNumber + "\n");
         }
 
 
@@ -508,7 +509,7 @@ public class Orders extends AppCompatActivity {
         sbPrintData.append(getdashline() + "\n");
 
         String space = "  ";
-        sbPrintData.append("Sno " + "Name" + space + "                               Qty"  + "\n");
+        sbPrintData.append("Sno " + "Name" + space + "                               Qty" + "\n");
         sbPrintData.append(getdashline() + "\n");
 
         int count = 1;
@@ -523,23 +524,25 @@ public class Orders extends AppCompatActivity {
             count += 1;
         }
         Log.e("Check", sbPrintData.toString());
-        int resLAN = 0;
-        resLAN = PrinterFunctionsLAN.PortDiscovery(WifiPrinterActivity.portName,WifiPrinterActivity.portSettings);
-        if (resLAN==0) {
-            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
-                    0, 0, 1, 0, 0, 0,
-                    5, 0, sbPrintData.toString());
-            PrinterFunctionsLAN.PreformCut(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
-                    1);
-        } else {
-            Toast.makeText(getApplicationContext(), "No Printer Available", Toast.LENGTH_SHORT).show();
-            PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
-                    0, 0, 1, 0, 0, 0,
-                    5, 0, "Welcome to DQPOS Common");
+        try {
+            int resLAN = 0;
+            resLAN = PrinterFunctionsLAN.PortDiscovery(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings);
+            if (resLAN == 0) {
+                PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
+                        0, 0, 1, 0, 0, 0,
+                        5, 0, sbPrintData.toString());
+                PrinterFunctionsLAN.PreformCut(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
+                        1);
+            } else {
+                Toast.makeText(getApplicationContext(), "No Printer Available", Toast.LENGTH_SHORT).show();
+
+            }
+
+        } catch (Exception ea) {
+            ea.printStackTrace();
         }
         confirmItems.clear();
     }
-
     private void unregisterControls() {
         quantity = 0;
         total = 0;

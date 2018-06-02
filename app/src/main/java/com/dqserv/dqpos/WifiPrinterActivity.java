@@ -1,10 +1,16 @@
 package com.dqserv.dqpos;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,7 +21,7 @@ import android.widget.TextView;
 import com.pos.printer.PrinterFunctions;
 import com.pos.printer.PrinterFunctionsLAN;
 
-public class WifiPrinterActivity extends AppCompatActivity {
+public class WifiPrinterActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     TextView myeditText_PortName;
     //--------------------------
@@ -199,4 +205,49 @@ public class WifiPrinterActivity extends AppCompatActivity {
             PrinterFunctions.PrintSampleReceipt(WifiPrinterActivity.portName,WifiPrinterActivity.portSettings);
         }
     }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+        if (id == R.id.nav_pos) {
+            // Handle the camera action
+            if (!POS.class.getSimpleName().equalsIgnoreCase("POS")) {
+                startActivity(new Intent(this, POS.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
+        } else if (id == R.id.nav_gallery) {
+            if (!POS.class.getSimpleName().equalsIgnoreCase("OrdersList")) {
+                startActivity(new Intent(this, OrdersList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
+        } else if (id == R.id.nav_slideshow) {
+            if (!POS.class.getSimpleName().equalsIgnoreCase("BillActivity")) {
+                startActivity(new Intent(this, BillActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
+        } else if (id == R.id.nav_products) {
+            if (!POS.class.getSimpleName().equalsIgnoreCase("Products")) {
+                startActivity(new Intent(this, Products.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
+        } else if (id == R.id.nav_categories) {
+            if (!POS.class.getSimpleName().equalsIgnoreCase("Categories")) {
+                startActivity(new Intent(this, Categories.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
+        } else if (id == R.id.nav_tables) {
+            if (!POS.class.getSimpleName().equalsIgnoreCase("Tables")) {
+                startActivity(new Intent(this, Tables.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
+        } else if (id == R.id.nav_orders_list) {
+            if (!POS.class.getSimpleName().equalsIgnoreCase("OrdersList")) {
+                startActivity(new Intent(this, OrdersList.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
+        } else if (id == R.id.nav_printers) {
+            if (!POS.class.getSimpleName().equalsIgnoreCase("PrintersActivity")) {
+                startActivity(new Intent(this, PrintersActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
 }

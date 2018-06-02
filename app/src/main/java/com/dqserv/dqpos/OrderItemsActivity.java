@@ -296,7 +296,8 @@ public class OrderItemsActivity extends AppCompatActivity implements
             centerpoint = getCenterPoint(addressLine4.trim());
             sbPrintData.append(addspace(0, centerpoint) + addressLine4 + "\n");
         }
-      */  if (addressLine5.trim().length() != 0) {
+      */
+        if (addressLine5.trim().length() != 0) {
             centerpoint = getCenterPoint(addressLine5.trim());
             sbPrintData.append(addspace(0, centerpoint) + addressLine5 + "\n");
         }
@@ -366,24 +367,26 @@ public class OrderItemsActivity extends AppCompatActivity implements
             sbPrintData.append(addspace(0, centerpoint) + thankyou + "\n");
         }
         sbPrintData.append("\n");
-        int resLAN = 0;
-        resLAN = PrinterFunctionsLAN.PortDiscovery(WifiPrinterActivity.portName,WifiPrinterActivity.portSettings);
-        if (resLAN==0) {
-            PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
-                    0, 0, 1, 0, 0, 0,
-                    5, 0, sbPrintData.toString());
-            PrinterFunctionsLAN.PreformCut(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
-                    1);
-        } else {
+        try {
+            int resLAN = 0;
+            resLAN = PrinterFunctionsLAN.PortDiscovery(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings);
+            if (resLAN == 0) {
+                PrinterFunctionsLAN.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
+                        0, 0, 1, 0, 0, 0,
+                        5, 0, sbPrintData.toString());
+                PrinterFunctionsLAN.PreformCut(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
+                        1);
+            } else {
 
-            Toast.makeText(getApplicationContext(), "No Printer Available", Toast.LENGTH_SHORT).show();
-            PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,
-                    0, 0, 1, 0, 0, 0,
-                    5, 0, "Welcome to DQPOS Common");
+                Toast.makeText(getApplicationContext(), "No Printer Available", Toast.LENGTH_SHORT).show();
+
+            }
+
+        } catch (Exception ea) {
+            ea.printStackTrace();
         }
         orderItems.clear();
     }
-
     private void postOrderItems() {
         if (ConnectivityReceiver.isConnected()) {
             ApiInterface apiService =
