@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.GlobalApplication;
+import com.POSD.controllers.PrinterController;
 import com.dqserv.ConnectivityReceiver;
 import com.dqserv.adapter.OrderItemsAdapter;
 import com.dqserv.config.Constants;
@@ -49,6 +50,8 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static java.lang.Double.parseDouble;
 
 public class OrderItemsActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
@@ -534,6 +537,171 @@ public class OrderItemsActivity extends AppCompatActivity implements
             e.printStackTrace();
         }
         return currentDate;
+    }
+
+
+    private void TcrPrintBill(HashMap<String, OrderItemsObject.Orders> orderItems, String sBillNo) {
+        try {
+            PrinterController printerController = PrinterController.getInstance();
+            int printerStatus = 0;
+
+            int centerpoint = 0;
+
+            // connect printer
+            printerStatus = printerController.PrinterController_Open();
+
+            if (printerStatus==0) {
+
+                PrinterController.getInstance().PrinterController_PrinterLanguage(1);
+                printerController.PrinterController_Linefeed();
+
+                if (companyName.trim().length() != 0) {
+                    centerpoint = getCenterPoint(companyName.trim());
+                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + companyName));
+                    printerController.PrinterController_Linefeed();
+                }
+                if (addressLine1.trim().length() != 0) {
+                    centerpoint = getCenterPoint(addressLine1.trim());
+                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + addressLine1));
+                    printerController.PrinterController_Linefeed();
+                }
+                if (addressLine2.trim().length() != 0) {
+                    centerpoint = getCenterPoint(addressLine2.trim());
+                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + addressLine2));
+                    printerController.PrinterController_Linefeed();
+                }
+        /*        if (addressLine3.trim().length() != 0) {
+                    centerpoint = getCenterPoint(addressLine3.trim());
+                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + addressLine3));
+                    printerController.PrinterController_Linefeed();
+                }
+                if (addressLine4.trim().length() != 0) {
+                    centerpoint = getCenterPoint(addressLine4.trim());
+                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + addressLine4));
+                    printerController.PrinterController_Linefeed();
+                }
+                if (addressLine5.trim().length() != 0) {
+                    centerpoint = getCenterPoint(addressLine5.trim());
+                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + addressLine5));
+                    printerController.PrinterController_Linefeed();
+                }
+          */      if (phonenumbers.trim().length() != 0) {
+                    centerpoint = getCenterPoint(phonenumbers.trim());
+                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + phonenumbers));
+                    printerController.PrinterController_Linefeed();
+                }
+                if (GSTNumber.trim().length() != 0) {
+                    centerpoint = getCenterPoint(GSTNumber.trim());
+                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + GSTNumber));
+                    printerController.PrinterController_Linefeed();
+                }
+
+                printerController.PrinterController_Print(print(getdashline()));
+                printerController.PrinterController_Linefeed();
+                //Bill Numbers
+                String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm a").format(Calendar.getInstance().getTime());
+                printerController.PrinterController_Print(print("Date Time: " + timeStamp));
+                printerController.PrinterController_Linefeed();
+                printerController.PrinterController_Print(print("Bill No: " + sBillNo));
+                printerController.PrinterController_Linefeed();
+
+                printerController.PrinterController_Print(print("Table Name: " + sTableName));
+                printerController.PrinterController_Linefeed();
+
+                printerController.PrinterController_Print(print(getdashline()));
+                printerController.PrinterController_Linefeed();
+
+                String space = "  ";
+                printerController.PrinterController_Print(print("Sno " + "Name" + space + "Qty" + space + "Price" + space + "Amount" + space));
+                printerController.PrinterController_Linefeed();
+                printerController.PrinterController_Print(print(getdashline()));
+                printerController.PrinterController_Linefeed();
+
+                double total = 0;
+                double totalqty = 0;
+                int count = 1;
+                DecimalFormat format1 = new DecimalFormat("#.##");
+                format1.setMinimumFractionDigits(2);
+                for (Map.Entry entry : orderItems.entrySet()) {
+                    OrderItemsObject.Orders orderItem = (OrderItemsObject.Orders) entry.getValue();
+                    total += (parseDouble(orderItem.getSalePrice()) * parseDouble(orderItem.getQuantity()));
+                    totalqty += parseDouble(orderItem.getQuantity());
+                    //total += (orderItem.getSalePrice() * orderItem.getQuantity());
+                    printerController.PrinterController_Print(print(count + "  " + orderItem.getProductName()));
+                    printerController.PrinterController_Linefeed();
+
+                    String space1 = addspace(0, (("Sno Name" + space).length()));
+                    // String space2 = addspace(0, (("Qty" + space).length() - -(format1.format(Double.parseDouble(orderItem.getQuantity()))).length()));
+                    // String space3 = addspace(0, (("Price" + space).length() - -(format1.format(orderItem.getPrice())).length()));
+                    // String space4 = addspace(0, (("Amount" + space).length() - -(format1.format(orderItem.getAmount())).length()));
+                    //printerController.PrinterController_Print(print(space1 + orderItem.getQuantity() + "  " + orderItem.getSalePrice() + "  " + orderItem.getSubTotal() + ""));
+
+                    printerController.PrinterController_Print(print(space1 + format1.format(Double.parseDouble(orderItem.getQuantity())) + " " + format1.format(Double.parseDouble(orderItem.getSalePrice())) + " " + format1.format(parseDouble(orderItem.getSubTotal()))));
+                    printerController.PrinterController_Linefeed();
+                    count += 1;
+                }
+
+                double sgst = GlobalApplication.sgstPref.getFloat("sgst", 2.5f);
+                double cgst = GlobalApplication.cgstPref.getFloat("cgst", 2.5f);
+
+                double sgstamount = total * (sgst / 100);
+                double cgstamount = total * (cgst / 100);
+
+                if (GlobalApplication.taxPref.getString("tax_val", "t").equalsIgnoreCase("t")) {
+
+                    printerController.PrinterController_Print(print(getdashline()));
+                    printerController.PrinterController_Linefeed();
+
+                    printerController.PrinterController_Print(print("CGST(2.5%) " + format1.format(cgstamount)));
+                    printerController.PrinterController_Linefeed();
+                    printerController.PrinterController_Print(print("SGST(2.5%) " + format1.format(sgstamount)));
+                    printerController.PrinterController_Linefeed();
+                }
+
+                printerController.PrinterController_Print(print(getdashline()));
+                printerController.PrinterController_Linefeed();
+
+                printerController.PrinterController_Print(print("Total Qty " + totalqty));
+                if (GlobalApplication.taxPref.getString("tax_val", "t").equalsIgnoreCase("t")) {
+                    printerController.PrinterController_Print(print(addspace(("Total Qty " + totalqty).length(),
+                            getRightPoint("Total Amount")) + format1.format(total + sgstamount + cgstamount)));
+                } else {
+                    printerController.PrinterController_Print(print(addspace(("Total Qty " + totalqty).length(),
+                            getRightPoint("Total Amount")) + format1.format(total)));
+                }
+                printerController.PrinterController_Linefeed();
+                printerController.PrinterController_Print(print(getdashline()));
+                if (companyName.trim().length() != 0) {
+                    centerpoint = getCenterPoint(thankyou.trim());
+                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + thankyou));
+                    printerController.PrinterController_Linefeed();
+                    printerController.PrinterController_Linefeed();
+                }
+
+                printerController.PrinterController_Linefeed();
+                printerController.PrinterController_Linefeed();
+                printerController.PrinterController_Linefeed();
+
+            } else {
+
+                Toast.makeText(getApplicationContext(), "No Printer Available", Toast.LENGTH_SHORT).show();
+            }
+
+            results.clear();
+            orderItems.clear();
+
+            //Printer cloase
+            //printerController.PrinterController_Close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Toast.makeText(getApplicationContext(),
+                    "Print problem" + ex.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    public byte[] print(String line) {
+        return new StringBuffer(line).reverse().toString().getBytes();
     }
 
 }
