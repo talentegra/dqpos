@@ -35,6 +35,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.POSD.controllers.PrinterController;
 import com.dqserv.ConnectivityReceiver;
 import com.dqserv.adapter.OrderAdapter;
 import com.dqserv.adapter.ProductByCategoryAdapter;
@@ -1254,6 +1255,105 @@ public class Orders extends AppCompatActivity {
         double actline = line.length();
         int x = ((int) maxline) - ((int) actline);
         return x;
+    }
+
+    private void TcrPrintOrder(HashMap<String, OrderObject.Orders> confirmItems, String sOrderNo) {
+        StringBuilder sbPrintData = new StringBuilder();
+        int centerpoint = 0;
+        int rightpoint = 0;
+        String OrderNumber = "Order No: " + sOrderNo;
+
+        try {
+            int printerStatus = 0;
+            PrinterController printerController = PrinterController.getInstance();
+
+            // connect printer
+            printerStatus =  printerController.PrinterController_Open();
+            Toast.makeText(getApplicationContext(), "Printer Status: " + printerStatus, Toast.LENGTH_SHORT).show();
+            if (printerStatus==0) {
+
+
+                PrinterController.getInstance().PrinterController_PrinterLanguage(1);
+                printerController.PrinterController_Linefeed();
+
+                if (companyName.trim().length() != 0) {
+                    centerpoint = getCenterPoint(companyName.trim());
+                    printerController.PrinterController_Print(print(addspace(0, centerpoint) + companyName));
+                    printerController.PrinterController_Linefeed();
+
+                }
+                if (addressLine1.trim().length() != 0) {
+                    centerpoint = getCenterPoint(addressLine1.trim());
+                    //  sbPrintData.append(addspace(0, centerpoint) + addressLine1 + "\n");
+                }
+                if (addressLine2.trim().length() != 0) {
+                    centerpoint = getCenterPoint(addressLine2.trim());
+                    //sbPrintData.append(addspace(0, centerpoint) + addressLine2 + "\n");
+                }
+
+                if (addressLine5.trim().length() != 0) {
+                    centerpoint = getCenterPoint(addressLine5.trim());
+                    //   sbPrintData.append(addspace(0, centerpoint) + addressLine5 + "\n");
+                }
+                if (phonenumbers.trim().length() != 0) {
+                    centerpoint = getCenterPoint(phonenumbers.trim());
+                    // sbPrintData.append(addspace(0, centerpoint) + phonenumbers + "\n");
+                }
+                if (GSTNumber.trim().length() != 0) {
+                    centerpoint = getCenterPoint(GSTNumber.trim());
+                    // sbPrintData.append(addspace(0, centerpoint) + GSTNumber + "\n");
+                }
+
+                printerController.PrinterController_Print(print(getdashline()));
+                printerController.PrinterController_Linefeed();
+
+                printerController.PrinterController_Print(print(addspace(0, centerpoint) + "Order No: " + sOrderNo + "\n"));
+
+                printerController.PrinterController_Print(print(getdashline() + "\n"));
+
+                String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm a").format(Calendar.
+                        getInstance().getTime());
+                printerController.PrinterController_Print(print("Date Time: " + timeStamp + "\n\n"));
+
+                printerController.PrinterController_Print(print("Table Name: " + sTableName + "\n"));
+                printerController.PrinterController_Print(print(getdashline() + "\n"));
+
+                String space = "  ";
+                printerController.PrinterController_Print(print("Sno " + "Name" + space + "                 Qty \n"));
+                printerController.PrinterController_Print(print(getdashline() + "\n"));
+
+                int count = 1;
+                DecimalFormat format1 = new DecimalFormat("#.##");
+                format1.setMinimumFractionDigits(2);
+                for (Map.Entry entry : confirmItems.entrySet()) {
+                    OrderObject.Orders orderItem = (OrderObject.Orders) entry.getValue();
+                    printerController.PrinterController_Print(print(count + "  " + orderItem.getProductName() + "\n"));
+                    //String space1 = addspace(0, (("Sno Name" + space).length()));
+                    //printerController.PrinterController_Print(print(space1 + "               " + (format1.format(orderItem.getQuantity())) + "\n"));
+                    String space1 = addspace(0, (("Sno Name" + space).length()));
+                    printerController.PrinterController_Print(print(space1 + "               " + (format1.format(Double.
+                            parseDouble(orderItem.getQuantity()))) + "\n"));
+                    count += 1;
+                }
+                printerController.PrinterController_Linefeed();
+                printerController.PrinterController_Linefeed();
+                printerController.PrinterController_Linefeed();
+                printerController.PrinterController_Linefeed();
+
+
+            } else {
+                Toast.makeText(getApplicationContext(), "No Printer Available", Toast.LENGTH_SHORT).show();
+                // PrinterFunctions.PrintText(WifiPrinterActivity.portName, WifiPrinterActivity.portSettings,0, 0, 1, 0, 0, 5, 0, "Welcome to DQPOS Common");
+            }
+        } catch (Exception ea) {
+            ea.printStackTrace();
+        }
+        confirmItems.clear();
+    }
+
+
+    public byte[] print(String line) {
+        return new StringBuffer(line).reverse().toString().getBytes();
     }
 
 }
