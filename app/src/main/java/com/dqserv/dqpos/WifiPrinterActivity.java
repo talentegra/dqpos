@@ -95,7 +95,7 @@ public class WifiPrinterActivity extends AppCompatActivity implements Navigation
 
                         portName=editPortName.getText().toString();
 
-                        SharedPreferences pref = getSharedPreferences("pref", MODE_WORLD_READABLE | MODE_WORLD_WRITEABLE);
+                        SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
                         SharedPreferences.Editor editor = pref.edit();
                         editor.putString("m_portName", portNameField.getText().toString());
                         editor.commit();
